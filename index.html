@@ -580,13 +580,11 @@
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-top: 0;
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            background: #fbbf24;
+            gap: 20px;
             padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fbbf24;
             border-radius: 30px;
         }
         
@@ -602,26 +600,28 @@
         @media (min-width: 640px) {
             .products-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
+                gap: 24px;
             }
         }
         
         @media (min-width: 768px) {
             .products-grid {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 24px;
+                gap: 28px;
             }
         }
         
         @media (min-width: 1024px) {
             .products-grid {
                 grid-template-columns: repeat(5, 1fr);
+                gap: 30px;
             }
         }
         
         @media (min-width: 1280px) {
             .products-grid {
                 grid-template-columns: repeat(6, 1fr);
+                gap: 32px;
             }
         }
 
@@ -645,7 +645,7 @@
 
         .product-image {
             width: 100%;
-            height: 160px;
+            height: 120px;
             object-fit: contain;
             display: block;
             background: #f8fafc;
@@ -653,23 +653,23 @@
         
         @media (min-width: 640px) {
             .product-image {
-                height: 180px;
+                height: 140px;
             }
         }
         
         @media (min-width: 1024px) {
             .product-image {
-                height: 200px;
+                height: 160px;
             }
         }
 
         .product-info {
-            padding: 16px;
+            padding: 12px;
         }
         
         @media (min-width: 640px) {
             .product-info {
-                padding: 20px;
+                padding: 16px;
             }
         }
 
@@ -913,7 +913,7 @@
             font-weight: 600;
             color: #1f2937;
             margin-bottom: 15px;
-            text-align: left;
+            text-align: center;
         }
 
         .related-products-scroll {
@@ -939,11 +939,11 @@
         }
 
         .related-product-card {
-            flex: 0 0 180px;
+            flex: 0 0 320px;
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-            padding: 12px;
+            padding: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -957,17 +957,17 @@
 
         .related-product-image {
             width: 100%;
-            height: 100px;
+            height: 180px;
             object-fit: contain;
             border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 15px;
         }
 
         .related-product-name {
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 18px;
+            font-weight: 600;
             color: #374151;
-            margin-bottom: 4px;
+            margin-bottom: 12px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
@@ -977,19 +977,19 @@
         }
 
         .related-product-price {
-            font-size: 14px;
-            font-weight: 600;
-            color: #f59e0b;
+            font-size: 20px;
+            font-weight: 700;
+            color: #059669;
         }
 
         @media (max-width: 768px) {
             .related-product-card {
-                flex: 0 0 160px;
-                padding: 10px;
+                flex: 0 0 260px;
+                padding: 18px;
             }
             
             .related-product-image {
-                height: 80px;
+                height: 140px;
             }
             
             .related-products-title {
@@ -1321,7 +1321,8 @@
         .search-page {
             width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0;
+            max-width: 1400px;
             overflow-x: hidden;
         }
         
@@ -1410,7 +1411,7 @@
         
         /* Featured Products Wrapper */
         .featured-products-wrapper {
-            background: #fbbf24;
+            background: yellow;
             padding: 20px 0;
             margin: 20px 0;
             border-radius: 50px;
@@ -5149,7 +5150,6 @@
                 
                 <div class="product-modal-buttons">
                     <button class="btn-cart" onclick="addToCartWithQuantity('${product.id}')">Add to Cart</button>
-                    <button class="btn-order" onclick="openConfirmOrderModal('${product.id}')">Order Now</button>
                 </div>
                 
                 <div class="related-products-section">
@@ -5353,20 +5353,20 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
                     <div class="related-product-name">${product.name}</div>
-                    <div class="product-rating" style="color: #fbbf24; font-size: 11px; margin: 3px 0;">
+                    <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 6px 0;">
                         ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
                     </div>
                     ${(product.originalPrice && product.originalPrice > product.price && product.discount > 0) ? `
                         <div class="product-price-container" style="margin-top: 8px;">
                             <div style="font-size: 10px; color: #27ae60; font-weight: 600; margin-bottom: 2px;">Special price</div>
                             <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-                                <span style="color: #27ae60; font-weight: 700; font-size: 13px;">₹${product.price}</span>
-                                <span style="color: #999; font-size: 11px; text-decoration: line-through;">₹${product.originalPrice}</span>
-                                <span style="background: #27ae60; color: white; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 600;">${product.discount}% off</span>
+                                <span style="color: #27ae60; font-weight: 700; font-size: 18px;">₹${product.price}</span>
+                                <span style="color: #999; font-size: 14px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600;">${product.discount}% off</span>
                             </div>
                         </div>
                     ` : `
-                        <div class="related-product-price" style="color: #27ae60; font-size: 14px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
+                        <div class="related-product-price" style="color: #27ae60; font-size: 18px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
                     `}
                 </div>
             `).join('');
@@ -5412,20 +5412,20 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
                     <div class="related-product-name">${product.name}</div>
-                    <div class="product-rating" style="color: #fbbf24; font-size: 11px; margin: 3px 0;">
+                    <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 6px 0;">
                         ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
                     </div>
                     ${(product.originalPrice && product.originalPrice > product.price && product.discount > 0) ? `
                         <div class="product-price-container" style="margin-top: 8px;">
                             <div style="font-size: 10px; color: #27ae60; font-weight: 600; margin-bottom: 2px;">Special price</div>
                             <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-                                <span style="color: #27ae60; font-weight: 700; font-size: 13px;">₹${product.price}</span>
-                                <span style="color: #999; font-size: 11px; text-decoration: line-through;">₹${product.originalPrice}</span>
-                                <span style="background: #27ae60; color: white; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 600;">${product.discount}% off</span>
+                                <span style="color: #27ae60; font-weight: 700; font-size: 18px;">₹${product.price}</span>
+                                <span style="color: #999; font-size: 14px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600;">${product.discount}% off</span>
                             </div>
                         </div>
                     ` : `
-                        <div class="related-product-price" style="color: #27ae60; font-size: 14px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
+                        <div class="related-product-price" style="color: #27ae60; font-size: 18px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
                     `}
                 </div>
             `).join('');
@@ -5471,20 +5471,20 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
                     <div class="related-product-name">${product.name}</div>
-                    <div class="product-rating" style="color: #fbbf24; font-size: 11px; margin: 3px 0;">
+                    <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 6px 0;">
                         ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
                     </div>
                     ${(product.originalPrice && product.originalPrice > product.price && product.discount > 0) ? `
                         <div class="product-price-container" style="margin-top: 8px;">
                             <div style="font-size: 10px; color: #27ae60; font-weight: 600; margin-bottom: 2px;">Special price</div>
                             <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
-                                <span style="color: #27ae60; font-weight: 700; font-size: 13px;">₹${product.price}</span>
-                                <span style="color: #999; font-size: 11px; text-decoration: line-through;">₹${product.originalPrice}</span>
-                                <span style="background: #27ae60; color: white; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 600;">${product.discount}% off</span>
+                                <span style="color: #27ae60; font-weight: 700; font-size: 18px;">₹${product.price}</span>
+                                <span style="color: #999; font-size: 14px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600;">${product.discount}% off</span>
                             </div>
                         </div>
                     ` : `
-                        <div class="related-product-price" style="color: #27ae60; font-size: 14px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
+                        <div class="related-product-price" style="color: #27ae60; font-size: 18px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
                     `}
                 </div>
             `).join('');
@@ -5511,10 +5511,19 @@
                 }
             }
             
-            // Get size-specific price
+            // Calculate the correct price with discount
             let currentPrice = product.price;
+            let originalPrice = product.originalPrice || product.price;
+            
+            // Apply size-specific pricing if available
             if (selectedSize && product.sizePricing && product.sizePricing[selectedSize]) {
                 currentPrice = product.sizePricing[selectedSize];
+                originalPrice = currentPrice; // Use size price as base
+            }
+            
+            // Apply discount if available
+            if (product.discount && product.discount > 0) {
+                currentPrice = originalPrice - (originalPrice * product.discount / 100);
             }
             
             const deliveryCharge = product.deliveryCharge || 0;
@@ -7018,6 +7027,17 @@
         window.setActiveTab = function(tab) {
             console.log('Setting active tab:', tab);
             
+            // Add to navigation history
+            if (navigationHistory[currentHistoryIndex] !== tab) {
+                // Remove any forward history if we're not at the end
+                navigationHistory = navigationHistory.slice(0, currentHistoryIndex + 1);
+                navigationHistory.push(tab);
+                currentHistoryIndex = navigationHistory.length - 1;
+                
+                // Add to browser history
+                history.pushState({section: tab}, '', `#${tab}`);
+            }
+            
             // Remove active class from all tabs
             document.querySelectorAll('.app-nav-item').forEach(item => {
                 item.classList.remove('active');
@@ -7037,6 +7057,14 @@
                 section.classList.remove('active');
             });
             
+            // Close all modals after section switching
+            setTimeout(() => {
+                closeProductModal();
+                closeConfirmOrderModal();
+                closeSidebar();
+                closeCartModal();
+            }, 50);
+            
             // Show selected section
             switch(tab) {
                 case 'home':
@@ -7047,22 +7075,8 @@
                     loadAllProductsInSearch();
                     break;
                 case 'cart':
-                    console.log('Activating cart section');
-                    const cartSection = document.getElementById('cartSection');
-                    if (cartSection) {
-                        cartSection.classList.add('active');
-                        console.log('Cart section activated, updating display');
-                        // Force reload cart data and update display
-                        setTimeout(async () => {
-                            if (currentUser) {
-                                await loadCartFromFirebase();
-                            }
-                            updateCartDisplayMain();
-                            console.log('Cart data reloaded, items count:', cartItems.length);
-                        }, 100);
-                    } else {
-                        console.error('Cart section not found!');
-                    }
+                    document.getElementById('cartSection').classList.add('active');
+                    updateCartDisplayMain();
                     break;
                 case 'orders':
                     document.getElementById('ordersSection').classList.add('active');
@@ -8029,6 +8043,80 @@
             } else {
                 if (displayDiv) displayDiv.style.display = 'none';
                 if (profileDisplayDiv) profileDisplayDiv.style.display = 'none';
+            }
+        }
+
+        // Navigation history for back button functionality
+        let navigationHistory = ['home'];
+        let currentHistoryIndex = 0;
+
+        // Handle browser back button
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.section) {
+                // Navigate to the previous section without adding to history
+                setActiveTabWithoutHistory(event.state.section);
+            } else {
+                // Default back behavior
+                if (navigationHistory.length > 1 && currentHistoryIndex > 0) {
+                    currentHistoryIndex--;
+                    setActiveTabWithoutHistory(navigationHistory[currentHistoryIndex]);
+                }
+            }
+        });
+
+        // Set active tab without adding to history (for back navigation)
+        function setActiveTabWithoutHistory(tab) {
+            console.log('Setting active tab without history:', tab);
+            
+            // Close all modals first
+            setTimeout(() => {
+                closeProductModal();
+                closeConfirmOrderModal();
+                closeSidebar();
+                closeCartModal();
+            }, 50);
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.app-nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            const navItems = document.querySelectorAll('.app-nav-item');
+            navItems.forEach(item => {
+                const label = item.querySelector('.app-nav-label');
+                if (label && label.textContent.toLowerCase() === tab.toLowerCase()) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Hide all sections
+            document.querySelectorAll('.app-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            switch(tab) {
+                case 'home':
+                    document.getElementById('homeSection').classList.add('active');
+                    break;
+                case 'search':
+                    document.getElementById('searchSection').classList.add('active');
+                    loadAllProductsInSearch();
+                    break;
+                case 'cart':
+                    document.getElementById('cartSection').classList.add('active');
+                    updateCartDisplayMain();
+                    break;
+                case 'orders':
+                    document.getElementById('ordersSection').classList.add('active');
+                    loadOrdersDataFromFirebase();
+                    break;
+                case 'profile':
+                    document.getElementById('profileSection').classList.add('active');
+                    updateProfileInfo();
+                    loadAddressInProfileSection();
+                    break;
             }
         }
 
