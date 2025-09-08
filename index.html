@@ -23,9 +23,9 @@
             color: #1a202c;
         }
 
-        /* Full responsive design - no mobile simulation */
+        /* Full responsive design - 100% width on all devices */
         .container {
-            max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
             padding: 0 16px;
         }
@@ -180,7 +180,7 @@
         }
 
         .nav-container {
-            max-width: 1400px;
+            width: 100%;
             margin: 0 auto;
             display: flex;
             align-items: center;
@@ -399,7 +399,7 @@
             grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             gap: 12px;
             padding: 0 16px;
-            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
         }
         
@@ -1150,7 +1150,7 @@
 
         /* Search Section Styles */
         .search-page {
-            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
@@ -1430,13 +1430,13 @@
 
         /* Cart Section Styles */
         .cart-page {
-            max-width: 1200px;
+            width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
 
         .cart-content {
-            max-width: 800px;
+            width: 100%;
             margin: 0 auto;
         }
 
@@ -4622,9 +4622,20 @@
                 <div class="product-modal-buttons">
                     <button class="btn-order" onclick="openConfirmOrderModalFromCart('${product.id}')">Order Now</button>
                 </div>
+                
+                <div class="related-products-section">
+                    <h4 class="related-products-title">Related Products</h4>
+                    <div class="related-products-scroll" id="relatedProducts-${product.id}">
+                        <!-- Related products will be populated here -->
+                    </div>
+                </div>
             `;
             
             modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Load related products
+            loadRelatedProducts(product.id, product.category);
         };
 
         window.closeProductModal = function() {
@@ -4671,6 +4682,51 @@
         // Load related products for cart sidebar
         window.loadCartRelatedProducts = function() {
             const relatedContainer = document.getElementById('cartRelatedProducts');
+            if (!relatedContainer) return;
+
+            // Get categories from current cart items
+            const cartCategories = [...new Set(cartItems.map(item => {
+                const product = productsData.find(p => p.id === item.id);
+                return product ? product.category : null;
+            }).filter(Boolean))];
+
+            // Get cart product IDs to exclude
+            const cartProductIds = cartItems.map(item => item.id);
+
+            // Get related products from cart categories
+            let relatedProducts = productsData.filter(product => 
+                !cartProductIds.includes(product.id) && 
+                cartCategories.includes(product.category)
+            );
+
+            // If not enough, add random products
+            if (relatedProducts.length < 8) {
+                const otherProducts = productsData.filter(product => 
+                    !cartProductIds.includes(product.id) && 
+                    !cartCategories.includes(product.category)
+                );
+                const shuffled = otherProducts.sort(() => 0.5 - Math.random());
+                relatedProducts = [...relatedProducts, ...shuffled].slice(0, 8);
+            } else {
+                relatedProducts = relatedProducts.slice(0, 8);
+            }
+
+            // Generate HTML for related products
+            const relatedHTML = relatedProducts.map(product => `
+                <div class="related-product-card" onclick="openProductModal('${product.id}')">
+                    <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                    <div class="related-product-name">${product.name}</div>
+                    <div class="related-product-price">₹${product.price}</div>
+                </div>
+            `).join('');
+
+            relatedContainer.innerHTML = relatedHTML;
+        };
+
+        // Load related products for cart confirmation modal
+        window.loadCartModalRelatedProducts = function() {
+            const relatedContainer = document.getElementById('cartModalRelatedProducts');
             if (!relatedContainer) return;
 
             // Get categories from current cart items
@@ -5096,9 +5152,19 @@
                         Confirm All Orders - ₹${total}
                     </button>
                 </div>
+                
+                <div class="related-products-section">
+                    <h4 class="related-products-title">You might also like</h4>
+                    <div class="related-products-scroll" id="cartModalRelatedProducts">
+                        <!-- Related products will be populated here -->
+                    </div>
+                </div>
             `;
             
             modal.style.display = 'flex';
+            
+            // Load related products for cart modal
+            loadCartModalRelatedProducts();
         };
 
         // Confirm order for all cart items with selected address
