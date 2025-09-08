@@ -477,16 +477,16 @@
             text-align: center;
             font-size: 22px;
             color: #1a202c;
-            font-weight: 600;
-            margin-bottom: 16px;
-            letter-spacing: -0.02em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            margin-top: 20px;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         
         @media (min-width: 768px) {
             .section-title {
                 font-size: 26px;
-                margin-bottom: 20px;
+                margin-bottom: 16px;
             }
         }
 
@@ -776,7 +776,7 @@
 
         .product-modal-image {
             width: 100%;
-            height: 200px;
+            height: 800px;
             object-fit: contain;
             border-radius: 12px;
             margin-bottom: 20px;
@@ -939,7 +939,7 @@
         }
 
         .related-product-card {
-            flex: 0 0 140px;
+            flex: 0 0 180px;
             background: white;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
@@ -958,7 +958,7 @@
         .related-product-image {
             width: 100%;
             height: 100px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 8px;
             margin-bottom: 8px;
         }
@@ -984,7 +984,7 @@
 
         @media (max-width: 768px) {
             .related-product-card {
-                flex: 0 0 120px;
+                flex: 0 0 160px;
                 padding: 10px;
             }
             
@@ -2286,7 +2286,7 @@
                 <!-- Categories Section -->
                 <div class="categories-section">
                     <div class="container">
-                        <h2 class="section-title">Shop by Category</h2>
+                        <h2 class="section-title">Categories</h2>
                         <div class="categories-grid" id="categoriesGrid">
                             <!-- Categories will be dynamically added -->
                         </div>
@@ -2947,7 +2947,28 @@
                     </div>
                     
                     <textarea id="productDescription" placeholder="Product Description" required></textarea>
-                    <input type="number" id="productPrice" placeholder="Base Price (₹)" step="0.01" required>
+                    
+                    <!-- Pricing Section -->
+                    <div style="margin-bottom: 15px; padding: 15px; border: 2px solid #f39c12; border-radius: 8px; background: #fef9e7;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #e67e22; font-size: 16px;">💰 Pricing & Discount</label>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 14px;">Original Price (₹):</label>
+                                <input type="number" id="productOriginalPrice" placeholder="Original/Cut Price" step="0.01" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 14px;">Discount (%):</label>
+                                <input type="number" id="productDiscount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #27ae60; font-size: 14px;">Final Price (₹):</label>
+                            <input type="number" id="productFinalPrice" placeholder="Auto-calculated" step="0.01" readonly style="width: 100%; padding: 10px; border: 1px solid #27ae60; border-radius: 5px; background: #e8f5e8; color: #27ae60; font-weight: 600;">
+                        </div>
+                    </div>
+                    
                     <input type="number" id="deliveryCharge" placeholder="Delivery Charge (₹)" step="0.01" value="0">
                     
                     <!-- Star Rating Field -->
@@ -2966,28 +2987,75 @@
                     <select id="productCategory">
                         <option value="">Select Category</option>
                     </select>
-                    <div style="margin: 10px 0;">
-                        <label style="display: block; margin-bottom: 5px; font-weight: 600;">Available Sizes & Pricing:</label>
-                        <div style="display: flex; flex-direction: column; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                                <label style="display: flex; align-items: center; gap: 5px; min-width: 60px;"><input type="checkbox" value="S" class="size-checkbox"> S</label>
-                                <input type="number" id="priceS" placeholder="Price for S" step="0.01" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                    <!-- Size & Weight Based Pricing Section -->
+                    <div style="margin: 15px 0; padding: 15px; border: 2px solid #3498db; border-radius: 8px; background: #f8f9fa;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #2980b9; font-size: 16px;">📏 Available Sizes & Weight-Based Pricing</label>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Regular Sizes -->
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                                <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="S" class="size-checkbox"> S</label>
+                                <input type="number" id="priceS" placeholder="Price for S" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                                <label style="display: flex; align-items: center; gap: 5px; min-width: 60px;"><input type="checkbox" value="M" class="size-checkbox"> M</label>
-                                <input type="number" id="priceM" placeholder="Price for M" step="0.01" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                                <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="M" class="size-checkbox"> M</label>
+                                <input type="number" id="priceM" placeholder="Price for M" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                                <label style="display: flex; align-items: center; gap: 5px; min-width: 60px;"><input type="checkbox" value="L" class="size-checkbox"> L</label>
-                                <input type="number" id="priceL" placeholder="Price for L" step="0.01" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                                <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="L" class="size-checkbox"> L</label>
+                                <input type="number" id="priceL" placeholder="Price for L" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                                <label style="display: flex; align-items: center; gap: 5px; min-width: 60px;"><input type="checkbox" value="XL" class="size-checkbox"> XL</label>
-                                <input type="number" id="priceXL" placeholder="Price for XL" step="0.01" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                                <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="XL" class="size-checkbox"> XL</label>
+                                <input type="number" id="priceXL" placeholder="Price for XL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
-                                <label style="display: flex; align-items: center; gap: 5px; min-width: 60px;"><input type="checkbox" value="XXL" class="size-checkbox"> XXL</label>
-                                <input type="number" id="priceXXL" placeholder="Price for XXL" step="0.01" style="flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 3px;">
+                            <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                                <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="XXL" class="size-checkbox"> XXL</label>
+                                <input type="number" id="priceXXL" placeholder="Price for XXL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                            </div>
+                            
+                            <!-- Weight-Based Options -->
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e74c3c;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #c0392b; font-size: 14px;">⚖️ Weight-Based Pricing Options</label>
+                                
+                                <!-- ML Options -->
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Milliliters (ml):</label>
+                                    <div id="mlContainer">
+                                        <div class="weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                                            <input type="number" class="weight-quantity" placeholder="Quantity (ml)" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addWeightInput('mlContainer', 'ml')" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">+ Add ML Option</button>
+                                </div>
+                                
+                                <!-- Grams Options -->
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Grams (g):</label>
+                                    <div id="gContainer">
+                                        <div class="weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                                            <input type="number" class="weight-quantity" placeholder="Quantity (g)" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addWeightInput('gContainer', 'g')" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">+ Add Gram Option</button>
+                                </div>
+                                
+                                <!-- Kilograms Options -->
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Kilograms (kg):</label>
+                                    <div id="kgContainer">
+                                        <div class="weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                                            <input type="number" class="weight-quantity" placeholder="Quantity (kg)" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addWeightInput('kgContainer', 'kg')" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">+ Add KG Option</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -4505,7 +4573,7 @@
         }
 
         // Add product to Firebase Firestore
-        async function addProductToFirebase(name, imageUrl, description, basePrice, subImages, category, sizes, sizePricing, deliveryCharge, rating) {
+        async function addProductToFirebase(name, imageUrl, description, finalPrice, subImages, category, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing) {
             try {
                 const convertedUrl = convertGoogleDriveUrl(imageUrl);
                 const subImagesArray = subImages ? subImages.split(',').map(url => convertGoogleDriveUrl(url.trim())) : [];
@@ -4514,14 +4582,17 @@
                     name: name,
                     imageUrl: convertedUrl,
                     description: description,
-                    price: parseFloat(basePrice),
-                    basePrice: parseFloat(basePrice),
+                    price: parseFloat(finalPrice),
+                    originalPrice: parseFloat(originalPrice),
+                    discount: parseFloat(discount),
+                    basePrice: parseFloat(finalPrice), // Keep for compatibility
                     deliveryCharge: parseFloat(deliveryCharge),
                     rating: parseFloat(rating),
                     subImages: subImagesArray,
                     category: category,
                     sizes: sizes || [],
                     sizePricing: sizePricing || {},
+                    weightPricing: weightPricing || { ml: [], g: [], kg: [] },
                     createdAt: new Date().toISOString()
                 };
                 
@@ -4576,6 +4647,28 @@
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.onclick = () => openProductModal(product.id);
+                
+                // Create pricing display with discount
+                const originalPrice = product.originalPrice;
+                const currentPrice = product.price;
+                const discount = product.discount;
+                
+                let priceHTML = '';
+                if (originalPrice && originalPrice > currentPrice && discount > 0) {
+                    priceHTML = `
+                        <div class="product-price-container">
+                            <div class="special-price-label" style="color: #27ae60; font-size: 12px; font-weight: 600; margin-bottom: 2px;">Special price</div>
+                            <div class="price-row" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <span class="current-price" style="color: #27ae60; font-size: 18px; font-weight: 700;">₹${currentPrice}</span>
+                                <span class="original-price" style="color: #999; font-size: 14px; text-decoration: line-through;">₹${originalPrice}</span>
+                                <span class="discount-badge" style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">${discount}% off</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    priceHTML = `<div class="product-price" style="color: #27ae60; font-size: 18px; font-weight: 700;">₹${currentPrice}</div>`;
+                }
+                
                 productCard.innerHTML = `
                     <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                     <div class="product-info">
@@ -4583,7 +4676,7 @@
                         <div class="product-rating" style="color: #fbbf24; font-size: 14px; margin: 4px 0;">
                             ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
                         </div>
-                        <div class="product-price">₹${product.price}</div>
+                        ${priceHTML}
                         <div class="product-buttons">
                             <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
                             <button class="btn-order" onclick="event.stopPropagation(); openProductModal('${product.id}')">Order Now</button>
@@ -4653,17 +4746,108 @@
         }
 
         // Admin product management functions
+        // Auto-calculate final price when original price or discount changes
+        window.calculateFinalPrice = function() {
+            const originalPrice = parseFloat(document.getElementById('productOriginalPrice').value) || 0;
+            const discount = parseFloat(document.getElementById('productDiscount').value) || 0;
+            
+            if (originalPrice > 0) {
+                const finalPrice = originalPrice - (originalPrice * discount / 100);
+                document.getElementById('productFinalPrice').value = finalPrice.toFixed(2);
+            } else {
+                document.getElementById('productFinalPrice').value = '';
+            }
+        };
+        
+        // Add event listeners for price calculation
+        document.addEventListener('DOMContentLoaded', function() {
+            const originalPriceInput = document.getElementById('productOriginalPrice');
+            const discountInput = document.getElementById('productDiscount');
+            
+            if (originalPriceInput) {
+                originalPriceInput.addEventListener('input', calculateFinalPrice);
+            }
+            if (discountInput) {
+                discountInput.addEventListener('input', calculateFinalPrice);
+            }
+        });
+        
+        // Weight-based pricing functions
+        window.addWeightInput = function(containerId, unit) {
+            const container = document.getElementById(containerId);
+            const newWeightGroup = document.createElement('div');
+            newWeightGroup.className = 'weight-input-group';
+            newWeightGroup.style.cssText = 'display: flex; gap: 8px; margin-bottom: 8px; align-items: center;';
+            newWeightGroup.innerHTML = `
+                <input type="number" class="weight-quantity" placeholder="Quantity (${unit})" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+            `;
+            container.appendChild(newWeightGroup);
+        };
+        
+        window.removeWeightInput = function(button) {
+            const weightGroup = button.parentElement;
+            weightGroup.remove();
+        };
+        
+        // Collect weight-based pricing data
+        function collectWeightPricing() {
+            const weightPricing = {
+                ml: [],
+                g: [],
+                kg: []
+            };
+            
+            // Collect ML pricing
+            const mlContainer = document.getElementById('mlContainer');
+            const mlGroups = mlContainer.querySelectorAll('.weight-input-group');
+            mlGroups.forEach(group => {
+                const quantity = group.querySelector('.weight-quantity').value;
+                const price = group.querySelector('.weight-price').value;
+                if (quantity && price) {
+                    weightPricing.ml.push({ quantity: parseInt(quantity), price: parseFloat(price) });
+                }
+            });
+            
+            // Collect G pricing
+            const gContainer = document.getElementById('gContainer');
+            const gGroups = gContainer.querySelectorAll('.weight-input-group');
+            gGroups.forEach(group => {
+                const quantity = group.querySelector('.weight-quantity').value;
+                const price = group.querySelector('.weight-price').value;
+                if (quantity && price) {
+                    weightPricing.g.push({ quantity: parseInt(quantity), price: parseFloat(price) });
+                }
+            });
+            
+            // Collect KG pricing
+            const kgContainer = document.getElementById('kgContainer');
+            const kgGroups = kgContainer.querySelectorAll('.weight-input-group');
+            kgGroups.forEach(group => {
+                const quantity = group.querySelector('.weight-quantity').value;
+                const price = group.querySelector('.weight-price').value;
+                if (quantity && price) {
+                    weightPricing.kg.push({ quantity: parseInt(quantity), price: parseFloat(price) });
+                }
+            });
+            
+            return weightPricing;
+        }
+
         window.addProduct = async function() {
             const name = document.getElementById('productName').value;
             const imageUrl = document.getElementById('productImageUrl').value;
             const description = document.getElementById('productDescription').value;
-            const basePrice = document.getElementById('productPrice').value;
+            const originalPrice = document.getElementById('productOriginalPrice').value;
+            const discount = document.getElementById('productDiscount').value || 0;
+            const finalPrice = document.getElementById('productFinalPrice').value;
             const deliveryCharge = document.getElementById('deliveryCharge').value || 0;
             const rating = document.getElementById('productRating').value;
-            const subImages = collectAdditionalImages(); // Use new function to collect additional images
+            const subImages = collectAdditionalImages();
             const category = document.getElementById('productCategory').value;
             
-            // Get selected sizes and their prices
+            // Get selected regular sizes and their prices
             const sizeCheckboxes = document.querySelectorAll('.size-checkbox:checked');
             const sizes = [];
             const sizePricing = {};
@@ -4671,14 +4855,17 @@
             sizeCheckboxes.forEach(checkbox => {
                 const size = checkbox.value;
                 const priceInput = document.getElementById(`price${size}`);
-                const sizePrice = priceInput.value || basePrice;
+                const sizePrice = priceInput.value || finalPrice;
                 
                 sizes.push(size);
                 sizePricing[size] = parseFloat(sizePrice);
             });
             
-            if (!name || !imageUrl || !description || !basePrice || !rating) {
-                showNotification('Please fill in all required fields (name, image, description, base price, rating)', 'warning');
+            // Get weight-based pricing
+            const weightPricing = collectWeightPricing();
+            
+            if (!name || !imageUrl || !description || !originalPrice || !finalPrice || !rating) {
+                showNotification('Please fill in all required fields (name, image, description, original price, rating)', 'warning');
                 return;
             }
             
@@ -4687,11 +4874,13 @@
                 return;
             }
             
-            if (await addProductToFirebase(name, imageUrl, description, basePrice, subImages, category, sizes, sizePricing, deliveryCharge, rating)) {
+            if (await addProductToFirebase(name, imageUrl, description, finalPrice, subImages, category, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing)) {
                 document.getElementById('productName').value = '';
                 document.getElementById('productImageUrl').value = '';
                 document.getElementById('productDescription').value = '';
-                document.getElementById('productPrice').value = '';
+                document.getElementById('productOriginalPrice').value = '';
+                document.getElementById('productDiscount').value = '0';
+                document.getElementById('productFinalPrice').value = '';
                 document.getElementById('deliveryCharge').value = '0';
                 document.getElementById('productSubImages').value = '';
                 document.getElementById('productCategory').value = '';
@@ -4701,7 +4890,24 @@
                 // Clear size checkboxes and price inputs
                 document.querySelectorAll('.size-checkbox').forEach(cb => cb.checked = false);
                 ['S', 'M', 'L', 'XL', 'XXL'].forEach(size => {
-                    document.getElementById(`price${size}`).value = '';
+                    const priceInput = document.getElementById(`price${size}`);
+                    if (priceInput) priceInput.value = '';
+                });
+                
+                // Clear weight-based inputs
+                ['mlContainer', 'gContainer', 'kgContainer'].forEach(containerId => {
+                    const container = document.getElementById(containerId);
+                    const groups = container.querySelectorAll('.weight-input-group');
+                    groups.forEach((group, index) => {
+                        if (index === 0) {
+                            // Keep first group but clear values
+                            group.querySelector('.weight-quantity').value = '';
+                            group.querySelector('.weight-price').value = '';
+                        } else {
+                            // Remove additional groups
+                            group.remove();
+                        }
+                    });
                 });
                 showNotification('Product added successfully! 🎉', 'success');
             } else {
@@ -4728,10 +4934,13 @@
             filteredProducts.forEach(product => {
                 const productItem = document.createElement('div');
                 productItem.className = 'admin-item';
+                const discountText = product.discount && product.discount > 0 ? ` (${product.discount}% off)` : '';
+                const originalPriceText = product.originalPrice && product.originalPrice !== product.price ? `<span style="text-decoration: line-through; color: #999;">₹${product.originalPrice}</span> ` : '';
+                
                 productItem.innerHTML = `
                     <div class="item-info">
                         <strong>${product.name}</strong><br>
-                        <span>Price: ₹${product.price}</span><br>
+                        <span>Price: ${originalPriceText}<span style="color: #27ae60; font-weight: 600;">₹${product.price}</span>${discountText}</span><br>
                         <span>Category: ${product.category || 'No category'}</span><br>
                         ${product.sizes && product.sizes.length > 0 ? `<span>Sizes: ${product.sizes.join(', ')}</span><br>` : ''}
                         <small style="color: #999;">ID: ${product.id}</small>
@@ -4840,7 +5049,7 @@
                 
                 carouselHTML = `
                     <div style="position: relative; margin-bottom: 20px;">
-                        <div id="imageCarousel-${product.id}" style="width: 100%; height: 180px; overflow: hidden; border-radius: 8px; background: #f8f9fa; position: relative;">
+                        <div id="imageCarousel-${product.id}" style="width: 100%; height: 400px; overflow: hidden; border-radius: 8px; background: #f8f9fa; position: relative;">
                             ${imagesHTML}
                         </div>
                         <button onclick="changeCarouselImage('${product.id}', -1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10;">‹</button>
@@ -4861,18 +5070,54 @@
                 <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 8px 0;">
                     ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating}/5)` : 'No rating'}
                 </div>
-                <div class="product-modal-price" id="price-${product.id}">₹${product.price}</div>
+                <div class="product-modal-price-container" id="price-${product.id}">
+                    ${product.originalPrice && product.originalPrice > product.price && product.discount > 0 ? `
+                        <div class="special-price-label" style="color: #27ae60; font-size: 14px; font-weight: 600; margin-bottom: 5px;">Special price</div>
+                        <div class="price-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <span class="current-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${product.price}</span>
+                            <span class="original-price" style="color: #999; font-size: 18px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                            <span class="discount-badge" style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${product.discount}% off</span>
+                        </div>
+                    ` : `
+                        <div class="product-modal-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${product.price}</div>
+                    `}
+                </div>
                 <p class="product-modal-description">${product.description}</p>
                 ${product.category ? `<p><strong>Category:</strong> ${product.category}</p>` : ''}
                 ${product.deliveryCharge ? `<p style="color: #27ae60; font-weight: 600;">Delivery Charge: ₹${product.deliveryCharge}</p>` : ''}
                 
-                ${product.sizes && product.sizes.length > 0 ? `
+                ${(product.sizes && product.sizes.length > 0) || (product.weightPricing && (product.weightPricing.ml.length > 0 || product.weightPricing.g.length > 0 || product.weightPricing.kg.length > 0)) ? `
                 <div style="margin: 15px 0;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;">Size:</label>
-                    <select id="size-${product.id}" style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 14px;" onchange="updatePriceBySize('${product.id}')">
-                        <option value="">Select Size</option>
-                        ${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
-                    </select>
+                    <label style="display: block; margin-bottom: 12px; font-weight: 600; color: #2c3e50;">Size/Quantity:</label>
+                    <div id="size-buttons-${product.id}" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                        ${product.sizes ? product.sizes.map(size => `
+                            <button class="size-btn" data-size="${size}" onclick="selectSize('${product.id}', '${size}')" 
+                                style="padding: 8px 16px; border: 2px solid #ddd; border-radius: 6px; background: white; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease; min-width: 50px;">
+                                ${size}
+                            </button>
+                        `).join('') : ''}
+                        ${product.weightPricing ? [
+                            ...product.weightPricing.ml.map(item => `
+                                <button class="size-btn" data-size="ml-${item.quantity}" onclick="selectSize('${product.id}', 'ml-${item.quantity}')" 
+                                    style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; background: white; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                                    ${item.quantity} ml
+                                </button>
+                            `),
+                            ...product.weightPricing.g.map(item => `
+                                <button class="size-btn" data-size="g-${item.quantity}" onclick="selectSize('${product.id}', 'g-${item.quantity}')" 
+                                    style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; background: white; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                                    ${item.quantity} g
+                                </button>
+                            `),
+                            ...product.weightPricing.kg.map(item => `
+                                <button class="size-btn" data-size="kg-${item.quantity}" onclick="selectSize('${product.id}', 'kg-${item.quantity}')" 
+                                    style="padding: 8px 12px; border: 2px solid #ddd; border-radius: 6px; background: white; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease;">
+                                    ${item.quantity} kg
+                                </button>
+                            `)
+                        ].join('') : ''}
+                    </div>
+                    <input type="hidden" id="selected-size-${product.id}" value="">
                 </div>
                 ` : ''}
                 
@@ -4883,7 +5128,23 @@
                         <input type="number" id="quantity-${product.id}" class="quantity-input" value="1" min="1" max="10" onchange="updateTotalPrice('${product.id}')">
                         <button class="quantity-btn" onclick="changeQuantity('${product.id}', 1)">+</button>
                     </div>
-                    <div class="total-price" id="total-${product.id}">Total: ₹${product.price}</div>
+                </div>
+                
+                <!-- Total Amount Display -->
+                <div id="total-amount-${product.id}" style="margin: 15px 0; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #27ae60;">
+                    <div style="font-size: 14px; color: #666; margin-bottom: 4px;">Total Amount:</div>
+                    <div id="total-price-display-${product.id}">
+                        ${product.originalPrice && product.originalPrice > product.price && product.discount > 0 ? `
+                            <div style="font-size: 12px; color: #27ae60; font-weight: 600; margin-bottom: 4px;">Special Price</div>
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                <span style="color: #27ae60; font-size: 20px; font-weight: 700;" id="total-price-${product.id}">₹${product.price}</span>
+                                <span style="color: #999; font-size: 16px; text-decoration: line-through;" id="total-original-${product.id}">₹${product.originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;" id="total-discount-${product.id}">${product.discount}% off</span>
+                            </div>
+                        ` : `
+                            <div style="font-size: 20px; font-weight: 700; color: #27ae60;" id="total-price-${product.id}">₹${product.price}</div>
+                        `}
+                    </div>
                 </div>
                 
                 <div class="product-modal-buttons">
@@ -4902,6 +5163,9 @@
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
             
+            // Initialize total price display
+            initializeTotalPrice(product.id);
+            
             // Load related products
             loadRelatedProducts(product.id, product.category);
         };
@@ -4911,25 +5175,24 @@
             const product = productsData.find(p => p.id === productId);
             if (!product) return;
             
-            // Find the cart item to get its quantity and size
+            // Find the cart item to get its quantity, size, and pricing info
             const cartItem = cartItems.find(item => item.id === productId);
             const quantity = cartItem ? cartItem.quantity : 1;
             const size = cartItem ? cartItem.size : '';
+            const originalPrice = cartItem ? (cartItem.originalPrice || cartItem.price) : product.price;
+            const currentPrice = cartItem ? cartItem.price : product.price;
+            const discount = cartItem ? (cartItem.discount || 0) : (product.discount || 0);
             
             const modal = document.getElementById('productModal');
             const modalBody = document.getElementById('productModalBody');
             
-            // Get size-specific price if available
-            let currentPrice = product.price;
             let deliveryCharge = product.deliveryCharge || 0;
             
-            if (size && product.sizePricing && product.sizePricing[size]) {
-                currentPrice = product.sizePricing[size];
-            }
-            
-            // Calculate total: (unit price × quantity) + delivery charge (once per order)
+            // Calculate totals with discount applied
             const subtotal = currentPrice * quantity;
+            const originalSubtotal = originalPrice * quantity;
             const totalAmount = subtotal + deliveryCharge;
+            const savings = originalSubtotal - subtotal;
             
             // Prepare all images (main + sub images)
             const allImages = [product.imageUrl];
@@ -4950,7 +5213,7 @@
                 
                 carouselHTML = `
                     <div style="position: relative; margin-bottom: 20px;">
-                        <div id="imageCarousel-${product.id}" style="width: 100%; height: 180px; overflow: hidden; border-radius: 8px; background: #f8f9fa; position: relative;">
+                        <div id="imageCarousel-${product.id}" style="width: 100%; height: 400px; overflow: hidden; border-radius: 8px; background: #f8f9fa; position: relative;">
                             ${imagesHTML}
                         </div>
                         <button onclick="changeCarouselImage('${product.id}', -1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10;">‹</button>
@@ -4967,14 +5230,75 @@
             modalBody.innerHTML = `
                 ${carouselHTML}
                 <h3 class="product-modal-name">${product.name}</h3>
+                <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 8px 0;">
+                    ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating}/5)` : 'No rating'}
+                </div>
                 <p class="product-modal-description">${product.description}</p>
                 ${product.category ? `<p><strong>Category:</strong> ${product.category}</p>` : ''}
-                <p><strong>Size:</strong> ${size || 'N/A'}</p>
-                <p><strong>Quantity:</strong> ${quantity}</p>
-                <p><strong>Unit Price:</strong> ₹${currentPrice}</p>
-                <p><strong>Subtotal:</strong> ₹${subtotal}</p>
-                ${deliveryCharge > 0 ? `<p style="color: #27ae60; font-weight: 600;"><strong>🚚 Delivery Charge:</strong> ₹${deliveryCharge}</p>` : ''}
-                <p style="font-size: 18px; font-weight: 700; color: #27ae60;"><strong>Total Amount:</strong> ₹${totalAmount}</p>
+                
+                <!-- Cart Item Details -->
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #27ae60;">
+                    <h4 style="color: #2c3e50; margin-bottom: 12px; font-size: 16px;">Cart Item Details</h4>
+                    ${size ? `<p style="margin: 5px 0;"><strong>Selected Size:</strong> ${size}</p>` : ''}
+                    <p style="margin: 5px 0;"><strong>Quantity:</strong> ${quantity}</p>
+                    
+                    <!-- Pricing Information -->
+                    ${originalPrice > currentPrice && discount > 0 ? `
+                        <div style="margin: 10px 0; padding: 12px; background: white; border-radius: 6px; border: 1px solid #e0e0e0;">
+                            <div style="font-size: 14px; color: #27ae60; font-weight: 600; margin-bottom: 8px;">🎉 Special Price Applied!</div>
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px;">
+                                <span style="color: #27ae60; font-size: 18px; font-weight: 700;">₹${currentPrice}</span>
+                                <span style="color: #999; font-size: 16px; text-decoration: line-through;">₹${originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${discount}% off</span>
+                            </div>
+                            <div style="color: #666; font-size: 13px;">Unit price after discount</div>
+                        </div>
+                        
+                        <!-- Calculation Breakdown -->
+                        <div style="margin: 10px 0; font-size: 14px;">
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>Subtotal (${quantity} × ₹${currentPrice}):</span>
+                                <span style="font-weight: 600;">₹${subtotal.toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0; color: #999; font-size: 12px;">
+                                <span>Original subtotal (${quantity} × ₹${originalPrice}):</span>
+                                <span style="text-decoration: line-through;">₹${originalSubtotal.toFixed(2)}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 8px 0; color: #27ae60; font-weight: 600; border-top: 1px solid #e0e0e0; padding-top: 8px;">
+                                <span>💰 You Save:</span>
+                                <span>₹${savings.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="margin: 10px 0; padding: 12px; background: white; border-radius: 6px; border: 1px solid #e0e0e0;">
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>Unit Price:</span>
+                                <span style="font-weight: 600; color: #27ae60;">₹${currentPrice}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin: 5px 0;">
+                                <span>Subtotal (${quantity} items):</span>
+                                <span style="font-weight: 600;">₹${subtotal.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `}
+                    
+                    ${deliveryCharge > 0 ? `
+                        <div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px 0; border-top: 1px solid #e0e0e0;">
+                            <span style="color: #27ae60; font-weight: 600;">🚚 Delivery Charge:</span>
+                            <span style="color: #27ae60; font-weight: 600;">₹${deliveryCharge}</span>
+                        </div>
+                    ` : `
+                        <div style="display: flex; justify-content: space-between; margin: 8px 0; padding: 8px 0; border-top: 1px solid #e0e0e0;">
+                            <span style="color: #27ae60; font-weight: 600;">🎁 Delivery:</span>
+                            <span style="color: #27ae60; font-weight: 600;">FREE</span>
+                        </div>
+                    `}
+                    
+                    <div style="display: flex; justify-content: space-between; margin: 12px 0; padding: 12px 0; border-top: 2px solid #27ae60; font-size: 18px; font-weight: 700; color: #27ae60;">
+                        <span>Total Amount:</span>
+                        <span>₹${totalAmount.toFixed(2)}</span>
+                    </div>
+                </div>
                 
                 <div class="product-modal-buttons">
                     <button class="btn-order" onclick="openConfirmOrderModalFromCart('${product.id}')">Order Now</button>
@@ -5029,7 +5353,21 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
                     <div class="related-product-name">${product.name}</div>
-                    <div class="related-product-price">₹${product.price}</div>
+                    <div class="product-rating" style="color: #fbbf24; font-size: 11px; margin: 3px 0;">
+                        ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
+                    </div>
+                    ${(product.originalPrice && product.originalPrice > product.price && product.discount > 0) ? `
+                        <div class="product-price-container" style="margin-top: 8px;">
+                            <div style="font-size: 10px; color: #27ae60; font-weight: 600; margin-bottom: 2px;">Special price</div>
+                            <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                                <span style="color: #27ae60; font-weight: 700; font-size: 13px;">₹${product.price}</span>
+                                <span style="color: #999; font-size: 11px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 600;">${product.discount}% off</span>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="related-product-price" style="color: #27ae60; font-size: 14px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
+                    `}
                 </div>
             `).join('');
 
@@ -5074,7 +5412,21 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
                     <div class="related-product-name">${product.name}</div>
-                    <div class="related-product-price">₹${product.price}</div>
+                    <div class="product-rating" style="color: #fbbf24; font-size: 11px; margin: 3px 0;">
+                        ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
+                    </div>
+                    ${(product.originalPrice && product.originalPrice > product.price && product.discount > 0) ? `
+                        <div class="product-price-container" style="margin-top: 8px;">
+                            <div style="font-size: 10px; color: #27ae60; font-weight: 600; margin-bottom: 2px;">Special price</div>
+                            <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                                <span style="color: #27ae60; font-weight: 700; font-size: 13px;">₹${product.price}</span>
+                                <span style="color: #999; font-size: 11px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 600;">${product.discount}% off</span>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="related-product-price" style="color: #27ae60; font-size: 14px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
+                    `}
                 </div>
             `).join('');
 
@@ -5119,7 +5471,21 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
                     <div class="related-product-name">${product.name}</div>
-                    <div class="related-product-price">₹${product.price}</div>
+                    <div class="product-rating" style="color: #fbbf24; font-size: 11px; margin: 3px 0;">
+                        ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
+                    </div>
+                    ${(product.originalPrice && product.originalPrice > product.price && product.discount > 0) ? `
+                        <div class="product-price-container" style="margin-top: 8px;">
+                            <div style="font-size: 10px; color: #27ae60; font-weight: 600; margin-bottom: 2px;">Special price</div>
+                            <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                                <span style="color: #27ae60; font-weight: 700; font-size: 13px;">₹${product.price}</span>
+                                <span style="color: #999; font-size: 11px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                                <span style="background: #27ae60; color: white; padding: 1px 3px; border-radius: 3px; font-size: 9px; font-weight: 600;">${product.discount}% off</span>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="related-product-price" style="color: #27ae60; font-size: 14px; font-weight: 700; margin-top: 8px;">₹${product.price}</div>
+                    `}
                 </div>
             `).join('');
 
@@ -5904,27 +6270,140 @@
         };
 
         // Quantity control functions
-        // Update price based on selected size
+        // Size selection with buttons
+        window.selectSize = function(productId, selectedSize) {
+            // Update hidden input
+            document.getElementById(`selected-size-${productId}`).value = selectedSize;
+            
+            // Update button styles
+            const sizeButtons = document.querySelectorAll(`#size-buttons-${productId} .size-btn`);
+            sizeButtons.forEach(btn => {
+                if (btn.dataset.size === selectedSize) {
+                    btn.style.background = '#27ae60';
+                    btn.style.color = 'white';
+                    btn.style.borderColor = '#27ae60';
+                } else {
+                    btn.style.background = 'white';
+                    btn.style.color = '#333';
+                    btn.style.borderColor = '#ddd';
+                }
+            });
+            
+            // Update price and total
+            updatePriceBySize(productId);
+        };
+        
+        // Update price based on selected size with discount application
         window.updatePriceBySize = function(productId) {
             const product = productsData.find(p => p.id === productId);
-            const sizeSelect = document.getElementById(`size-${productId}`);
-            const selectedSize = sizeSelect.value;
+            if (!product) return;
             
-            let currentPrice = product.price; // base price
+            const selectedSizeInput = document.getElementById(`selected-size-${productId}`);
+            const priceContainer = document.getElementById(`price-${productId}`);
+            const selectedSize = selectedSizeInput ? selectedSizeInput.value : '';
             
-            // Check if size-specific pricing exists
-            if (selectedSize && product.sizePricing && product.sizePricing[selectedSize]) {
-                currentPrice = product.sizePricing[selectedSize];
+            let originalPrice = product.originalPrice || product.price;
+            let currentPrice = product.price;
+            let discount = product.discount || 0;
+            
+            if (selectedSize) {
+                // Check if it's a regular size
+                if (product.sizePricing && product.sizePricing[selectedSize]) {
+                    originalPrice = product.sizePricing[selectedSize];
+                    currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                }
+                // Check if it's a weight-based option
+                else if (selectedSize.includes('-')) {
+                    const [unit, quantity] = selectedSize.split('-');
+                    const weightOptions = product.weightPricing[unit];
+                    const weightOption = weightOptions.find(item => item.quantity == quantity);
+                    
+                    if (weightOption) {
+                        originalPrice = weightOption.price;
+                        currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                    }
+                }
             }
             
             // Update price display
-            const priceElement = document.getElementById(`price-${productId}`);
-            if (priceElement) {
-                priceElement.textContent = `₹${currentPrice}`;
+            if (originalPrice > currentPrice && discount > 0) {
+                priceContainer.innerHTML = `
+                    <div class="special-price-label" style="color: #27ae60; font-size: 14px; font-weight: 600; margin-bottom: 5px;">Special price</div>
+                    <div class="price-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <span class="current-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${currentPrice.toFixed(2)}</span>
+                        <span class="original-price" style="color: #999; font-size: 18px; text-decoration: line-through;">₹${originalPrice.toFixed(2)}</span>
+                        <span class="discount-badge" style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${discount}% off</span>
+                    </div>
+                `;
+            } else {
+                priceContainer.innerHTML = `<div class="product-modal-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${currentPrice.toFixed(2)}</div>`;
+            }
+            updateTotalPrice(productId);
+        };
+        
+        // Update total price with quantity and discount display
+        window.updateTotalPrice = function(productId) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) return;
+            
+            const selectedSizeInput = document.getElementById(`selected-size-${productId}`);
+            const quantityInput = document.getElementById(`quantity-${productId}`);
+            const totalPriceDisplayElement = document.getElementById(`total-price-display-${productId}`);
+            
+            if (!totalPriceDisplayElement) {
+                console.log('Total price display element not found for product:', productId);
+                return;
             }
             
-            // Update total price
-            updateTotalPrice(productId);
+            const selectedSize = selectedSizeInput ? selectedSizeInput.value : '';
+            const quantity = parseInt(quantityInput ? quantityInput.value : 1) || 1;
+            
+            let originalPrice = product.originalPrice || product.price;
+            let currentPrice = product.price;
+            let discount = product.discount || 0;
+            
+            if (selectedSize) {
+                // Check if it's a regular size
+                if (product.sizePricing && product.sizePricing[selectedSize]) {
+                    originalPrice = product.sizePricing[selectedSize];
+                    currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                }
+                // Check if it's a weight-based option
+                else if (selectedSize.includes('-')) {
+                    const [unit, quantityVal] = selectedSize.split('-');
+                    const weightOptions = product.weightPricing[unit];
+                    const weightOption = weightOptions.find(item => item.quantity == quantityVal);
+                    
+                    if (weightOption) {
+                        originalPrice = weightOption.price;
+                        currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                    }
+                }
+            } else {
+                // No size selected, use base price with discount
+                currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+            }
+            
+            const totalAmount = currentPrice * quantity;
+            const totalOriginalAmount = originalPrice * quantity;
+            
+            // Update the entire total display with discount information
+            if (originalPrice > currentPrice && discount > 0) {
+                totalPriceDisplayElement.innerHTML = `
+                    <div style="font-size: 12px; color: #27ae60; font-weight: 600; margin-bottom: 4px;">Special Price (${quantity} items)</div>
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="color: #27ae60; font-size: 20px; font-weight: 700;">₹${totalAmount.toFixed(2)}</span>
+                        <span style="color: #999; font-size: 16px; text-decoration: line-through;">₹${totalOriginalAmount.toFixed(2)}</span>
+                        <span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${discount}% off</span>
+                    </div>
+                    <div style="font-size: 11px; color: #666; margin-top: 4px;">You save: ₹${(totalOriginalAmount - totalAmount).toFixed(2)}</div>
+                `;
+            } else {
+                totalPriceDisplayElement.innerHTML = `
+                    <div style="font-size: 20px; font-weight: 700; color: #27ae60;">₹${totalAmount.toFixed(2)}</div>
+                    ${quantity > 1 ? `<div style="font-size: 11px; color: #666; margin-top: 4px;">${quantity} items × ₹${currentPrice.toFixed(2)} each</div>` : ''}
+                `;
+            }
         };
 
         window.changeQuantity = function(productId, change) {
@@ -5938,25 +6417,16 @@
             quantityInput.value = currentQuantity;
             updateTotalPrice(productId);
         };
+        
+        // Initialize total price on modal open
+        function initializeTotalPrice(productId) {
+            setTimeout(() => {
+                console.log('Initializing total price for product:', productId);
+                updateTotalPrice(productId);
+            }, 200);
+        }
 
-        window.updateTotalPrice = function(productId) {
-            const product = productsData.find(p => p.id === productId);
-            const quantity = parseInt(document.getElementById(`quantity-${productId}`).value);
-            const sizeSelect = document.getElementById(`size-${productId}`);
-            
-            let currentPrice = product.price; // base price
-            
-            // Check if size is selected and has specific pricing
-            if (sizeSelect && sizeSelect.value && product.sizePricing && product.sizePricing[sizeSelect.value]) {
-                currentPrice = product.sizePricing[sizeSelect.value];
-            }
-            
-            const total = currentPrice * quantity;
-            const totalElement = document.getElementById(`total-${productId}`);
-            if (totalElement) {
-                totalElement.textContent = `Total: ₹${total}`;
-            }
-        };
+        // Remove duplicate - using the enhanced updateTotalPrice function above
 
         // Updated cart and order functions with quantity
         window.addToCartWithQuantity = async function(productId) {
@@ -5966,20 +6436,41 @@
             
             // Get selected size if available
             let selectedSize = '';
-            const sizeSelect = document.getElementById(`size-${productId}`);
-            if (sizeSelect && product.sizes && product.sizes.length > 0) {
-                selectedSize = sizeSelect.value;
+            const selectedSizeInput = document.getElementById(`selected-size-${productId}`);
+            if (selectedSizeInput && ((product.sizes && product.sizes.length > 0) || (product.weightPricing && (product.weightPricing.ml.length > 0 || product.weightPricing.g.length > 0 || product.weightPricing.kg.length > 0)))) {
+                selectedSize = selectedSizeInput.value;
                 if (!selectedSize) {
-                    showNotification('Please select a size before adding to cart.', 'warning');
+                    showNotification('Please select a size/quantity before adding to cart.', 'warning');
                     return;
                 }
             }
             
             if (product) {
-                // Get size-specific price
+                // Get size-specific price with discount application
+                let originalPrice = product.originalPrice || product.price;
                 let currentPrice = product.price; // base price
-                if (selectedSize && product.sizePricing && product.sizePricing[selectedSize]) {
-                    currentPrice = product.sizePricing[selectedSize];
+                let discount = product.discount || 0;
+                
+                if (selectedSize) {
+                    // Check if it's a regular size
+                    if (product.sizePricing && product.sizePricing[selectedSize]) {
+                        originalPrice = product.sizePricing[selectedSize];
+                        currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                    }
+                    // Check if it's a weight-based option
+                    else if (selectedSize.includes('-')) {
+                        const [unit, quantity] = selectedSize.split('-');
+                        const weightOptions = product.weightPricing[unit];
+                        const weightOption = weightOptions.find(item => item.quantity == quantity);
+                        
+                        if (weightOption) {
+                            originalPrice = weightOption.price;
+                            currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                        }
+                    }
+                } else {
+                    // No size selected, use base price with discount
+                    currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
                 }
                 
                 const existingItem = cartItems.find(item => item.id === productId && item.size === selectedSize);
@@ -5989,7 +6480,9 @@
                     cartItems.push({
                         id: product.id,
                         name: product.name,
-                        price: currentPrice,
+                        price: currentPrice, // This is now the discounted price
+                        originalPrice: originalPrice,
+                        discount: discount,
                         imageUrl: product.imageUrl,
                         quantity: quantity,
                         size: selectedSize
@@ -6071,12 +6564,14 @@
             const orderData = {
                 productId: product.id,
                 productName: product.name,
-                productPrice: cartItem.price,
+                productPrice: cartItem.price, // This is the discounted price
+                originalPrice: cartItem.originalPrice || cartItem.price,
+                discount: cartItem.discount || 0,
                 productImage: product.imageUrl,
                 productSize: cartItem.size || '',
                 quantity: cartItem.quantity,
                 deliveryCharge: deliveryCharge,
-                totalAmount: (cartItem.price * cartItem.quantity) + deliveryCharge,
+                totalAmount: (cartItem.price * cartItem.quantity) + deliveryCharge, // Total with discounted price
                 userPhone: userAddressData ? userAddressData.phone : 'Not provided',
                 userAddress: userAddressData ? userAddressData.address : 'Not provided',
                 orderDate: new Date().toLocaleDateString(),
@@ -6315,8 +6810,7 @@
                         <div class="product-rating" style="color: #fbbf24; font-size: 12px; margin: 2px 0;">
                             ${'⭐'.repeat(item.rating || 0)} ${item.rating ? `(${item.rating})` : ''}
                         </div>
-                        ${item.size ? `<div style="color: #666; font-size: 12px;">Size: ${item.size}</div>` : ''}
-                        <div class="cart-item-price">₹${item.price} x ${item.quantity}</div>
+                        <div style="color: #666; font-size: 12px; margin-top: 4px;">Quantity: ${item.quantity}</div>
                     </div>
                     <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">Remove</button>
                 `;
@@ -6353,8 +6847,7 @@
                         <div class="product-rating" style="color: #fbbf24; font-size: 12px; margin: 2px 0;">
                             ${'⭐'.repeat(item.rating || 0)} ${item.rating ? `(${item.rating})` : ''}
                         </div>
-                        ${item.size ? `<div style="color: #666; font-size: 12px; margin-bottom: 3px;">Size: ${item.size}</div>` : ''}
-                        <div class="cart-item-price-main">₹${item.price} x ${item.quantity}</div>
+                        <div style="color: #666; font-size: 13px; margin-top: 4px;">Quantity: ${item.quantity}</div>
                     </div>
                     <button class="cart-item-remove-main" onclick="removeFromCart('${item.id}')">Remove</button>
                 `;
@@ -6417,12 +6910,14 @@
                 const orderData = {
                     productId: item.id,
                     productName: item.name,
-                    productPrice: item.price,
+                    productPrice: item.price, // This is the discounted price
+                    originalPrice: item.originalPrice || item.price,
+                    discount: item.discount || 0,
                     productImage: item.imageUrl,
                     productSize: item.size || '',
                     quantity: item.quantity,
                     deliveryCharge: deliveryCharge,
-                    totalAmount: (item.price * item.quantity) + deliveryCharge,
+                    totalAmount: (item.price * item.quantity) + deliveryCharge, // Total with discounted price
                     userPhone: userAddressData.phone,
                     userAddress: `${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}${userAddressData.nearby ? ', Near ' + userAddressData.nearby : ''}`,
                     orderDate: new Date().toLocaleDateString(),
@@ -6647,6 +7142,28 @@
             const productCard = document.createElement('div');
             productCard.className = 'product-card';
             productCard.onclick = () => openProductModal(product.id);
+            
+            // Create pricing display with discount
+            const originalPrice = product.originalPrice;
+            const currentPrice = product.price;
+            const discount = product.discount;
+            
+            let priceHTML = '';
+            if (originalPrice && originalPrice > currentPrice && discount > 0) {
+                priceHTML = `
+                    <div class="product-price-container">
+                        <div class="special-price-label" style="color: #27ae60; font-size: 12px; font-weight: 600; margin-bottom: 2px;">Special price</div>
+                        <div class="price-row" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span class="current-price" style="color: #27ae60; font-size: 18px; font-weight: 700;">₹${currentPrice}</span>
+                            <span class="original-price" style="color: #999; font-size: 14px; text-decoration: line-through;">₹${originalPrice}</span>
+                            <span class="discount-badge" style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">${discount}% off</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                priceHTML = `<div class="product-price" style="color: #27ae60; font-size: 18px; font-weight: 700;">₹${currentPrice}</div>`;
+            }
+            
             productCard.innerHTML = `
                 <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                 <div class="product-info">
@@ -6654,7 +7171,7 @@
                     <div class="product-rating" style="color: #fbbf24; font-size: 14px; margin: 4px 0;">
                         ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
                     </div>
-                    <div class="product-price">₹${product.price}</div>
+                    ${priceHTML}
                     <div class="product-buttons">
                         <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
                         <button class="btn-order" onclick="event.stopPropagation(); openProductModal('${product.id}')">Order Now</button>
@@ -7728,9 +8245,11 @@
             }
             
             orderItems.forEach(item => {
-                const itemPrice = item.price || item.productPrice || 0;
+                const itemPrice = item.price || item.productPrice || 0; // This is the discounted price
+                const originalPrice = item.originalPrice || itemPrice;
+                const discount = item.discount || 0;
                 const itemQuantity = item.quantity || 1;
-                const itemTotal = itemPrice * itemQuantity;
+                const itemTotal = itemPrice * itemQuantity; // Total with discounted price
                 totalAmount += itemTotal;
                 
                 // Handle product image with better fallback
@@ -7741,17 +8260,35 @@
                     productImageHTML = `<img src="${productImage}" alt="Product" style="width: 30px; height: 30px; border-radius: 4px; object-fit: cover; margin-right: 8px;" onerror="this.style.display='none'">`;
                 }
                 
+                // Create price display with discount information
+                let priceDisplay = '';
+                if (originalPrice > itemPrice && discount > 0) {
+                    priceDisplay = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 11px; color: #27ae60; font-weight: 600;">Special Price</div>
+                            <div style="color: #27ae60; font-weight: 700;">₹${itemPrice}</div>
+                            <div style="color: #999; font-size: 11px; text-decoration: line-through;">₹${originalPrice}</div>
+                            <div style="background: #27ae60; color: white; padding: 2px 4px; border-radius: 3px; font-size: 10px; display: inline-block; margin-top: 2px;">${discount}% off</div>
+                        </div>
+                    `;
+                } else {
+                    priceDisplay = `₹${itemPrice}`;
+                }
+                
                 itemsHTML += `
                     <tr>
                         <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: left; font-size: 13px;">
                             <div style="display: flex; align-items: center;">
                                 ${productImageHTML}
-                                <span>${item.name || item.productName || 'Product'}</span>
+                                <div>
+                                    <div>${item.name || item.productName || 'Product'}</div>
+                                    ${item.productSize ? `<div style="color: #666; font-size: 11px;">Size: ${item.productSize}</div>` : ''}
+                                </div>
                             </div>
                         </td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 13px;">₹${itemPrice}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 13px;">${priceDisplay}</td>
                         <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 13px;">${itemQuantity}</td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: 600; font-size: 13px;">₹${itemTotal}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: 600; font-size: 13px; color: #27ae60;">₹${itemTotal}</td>
                     </tr>
                 `;
             });
