@@ -8052,6 +8052,31 @@
 
         // Handle browser back button
         window.addEventListener('popstate', function(event) {
+            // Check if any modals are open and close them first
+            const productModal = document.getElementById('productModal');
+            const confirmOrderModal = document.getElementById('confirmOrderModal');
+            const cartSidebar = document.getElementById('cartSidebar');
+            const cartModal = document.getElementById('cartModal');
+            
+            const isAnyModalOpen = (
+                (productModal && productModal.style.display === 'flex') ||
+                (confirmOrderModal && confirmOrderModal.style.display === 'flex') ||
+                (cartSidebar && cartSidebar.classList.contains('active')) ||
+                (cartModal && cartModal.style.display === 'flex')
+            );
+            
+            if (isAnyModalOpen) {
+                // Close all modals and prevent default back navigation
+                closeProductModal();
+                closeConfirmOrderModal();
+                closeSidebar();
+                closeCartModal();
+                
+                // Push current state back to prevent actual navigation
+                history.pushState(null, null, window.location.href);
+                return;
+            }
+            
             if (event.state && event.state.section) {
                 // Navigate to the previous section without adding to history
                 setActiveTabWithoutHistory(event.state.section);
