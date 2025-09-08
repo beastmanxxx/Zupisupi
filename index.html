@@ -331,9 +331,17 @@
             margin: 10px auto 20px;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border: 1px solid #e0e6ed;
+            height: 150px;
+        }
+        
+        .slides-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
         }
         
         .container .slideshow-container {
@@ -352,18 +360,14 @@
         }
 
         .slides {
-            display: none;
-            position: relative;
-            animation: slideIn 0.5s ease-in-out;
-        }
-
-        .slides.active {
-            display: block;
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
         }
         
         .slides img {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
             display: block;
             transition: transform 0.4s ease;
@@ -3579,16 +3583,16 @@
         let slideInterval;
 
         function showSlide(index) {
-            const slides = document.querySelectorAll('.slides');
+            const slidesWrapper = document.querySelector('.slides-wrapper');
             const dots = document.querySelectorAll('.dot');
             
-            // Hide all slides and remove active class from dots
-            slides.forEach(slide => slide.classList.remove('active'));
-            dots.forEach(dot => dot.classList.remove('active'));
-            
-            // Show current slide only if slides exist
-            if (slides[index] && slidesData.length > 0) {
-                slides[index].classList.add('active');
+            if (slidesWrapper && slidesData.length > 0) {
+                // Move the wrapper to show the current slide
+                const translateX = -index * 100;
+                slidesWrapper.style.transform = `translateX(${translateX}%)`;
+                
+                // Update dots
+                dots.forEach(dot => dot.classList.remove('active'));
                 if (dots[index]) {
                     dots[index].classList.add('active');
                 }
@@ -3603,7 +3607,7 @@
         }
 
         function startSlideshow() {
-            slideInterval = setInterval(nextSlide, 3000); // Change every 3 seconds
+            slideInterval = setInterval(nextSlide, 5000); // Change every 5 seconds
         }
 
         function stopSlideshow() {
@@ -7126,11 +7130,8 @@
                 return;
             }
             
-            // Clear existing slides
-            const existingSlides = slideshowContainer.querySelectorAll('.slides');
-            existingSlides.forEach(slide => slide.remove());
-            
-            // Clear existing dots
+            // Clear existing content
+            slideshowContainer.innerHTML = '';
             dotsContainer.innerHTML = '';
             
             // If no slides, show empty message
@@ -7140,12 +7141,15 @@
                 return;
             }
             
+            // Create slides wrapper
+            const slidesWrapper = document.createElement('div');
+            slidesWrapper.className = 'slides-wrapper';
+            
             // Add new slides
             slidesData.forEach((slide, index) => {
                 console.log(`Adding slide ${index + 1}:`, slide.title, slide.url);
                 const slideDiv = document.createElement('div');
                 slideDiv.className = 'slides';
-                if (index === 0) slideDiv.classList.add('active');
                 
                 slideDiv.innerHTML = `
                     <img src="${slide.url}" 
@@ -7168,13 +7172,9 @@
                                 };
                             }
                          ">
-                    <div class="slide-content">
-                        <div class="slide-title">${slide.title}</div>
-                        <div class="slide-description">Discover amazing products and deals</div>
-                    </div>
                 `;
                 
-                slideshowContainer.appendChild(slideDiv);
+                slidesWrapper.appendChild(slideDiv);
                 
                 // Add dot
                 const dot = document.createElement('span');
@@ -7183,6 +7183,23 @@
                 dot.onclick = () => currentSlide(index + 1);
                 dotsContainer.appendChild(dot);
             });
+            
+            // Add slides wrapper to container
+            slideshowContainer.appendChild(slidesWrapper);
+            
+            // Add navigation arrows
+            const prevArrow = document.createElement('button');
+            prevArrow.className = 'slideshow-nav prev';
+            prevArrow.innerHTML = '‹';
+            prevArrow.onclick = () => changeSlide(-1);
+            
+            const nextArrow = document.createElement('button');
+            nextArrow.className = 'slideshow-nav next';
+            nextArrow.innerHTML = '›';
+            nextArrow.onclick = () => changeSlide(1);
+            
+            slideshowContainer.appendChild(prevArrow);
+            slideshowContainer.appendChild(nextArrow);
             
             // Reset slideshow
             slideIndex = 0;
