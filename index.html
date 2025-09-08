@@ -17,10 +17,22 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: white !important;
-            min-height: 100vh;
-            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background: #f8fafc;
             color: #1a202c;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Hide all scrollbars globally */
+        * {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+        }
+        
+        *::-webkit-scrollbar {
+            display: none; /* WebKit */
         }
 
         /* Full responsive design - 100% width on all devices */
@@ -411,6 +423,7 @@
             }
         }
 
+
         @keyframes slideIn {
             from { 
                 opacity: 0;
@@ -451,9 +464,9 @@
 
         /* Modern Categories Section */
         .categories-section {
-            margin: 20px 0;
+            margin: 10px 0;
             background: white;
-            padding: 16px 0;
+            padding: 8px 0;
         }
 
         .section-title {
@@ -474,58 +487,49 @@
         }
 
         .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            display: flex;
             gap: 12px;
+            margin-top: 0;
+            overflow-x: auto;
             padding: 0 16px;
-            width: 100%;
-            margin: 0 auto;
+            scroll-behavior: smooth;
         }
         
         @media (min-width: 640px) {
             .categories-grid {
-                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
                 gap: 16px;
             }
         }
         
         @media (min-width: 1024px) {
             .categories-grid {
-                grid-template-columns: repeat(12, 1fr);
-                gap: 12px;
+                gap: 20px;
             }
         }
 
         .categories-grid::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .categories-grid::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-
-        .categories-grid::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 10px;
-        }
-
-        .categories-grid::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
+            display: none;
         }
 
         .category-item {
             background: white;
             border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.2s ease;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
             cursor: pointer;
-            border: 1px solid #f1f5f9;
+            border: 1px solid #e0e6ed;
+            width: 120px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
         }
 
         .category-item:hover {
-            transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border-color: #e2e8f0;
         }
@@ -564,9 +568,9 @@
 
         /* Modern Products Section */
         .products-section {
-            margin: 20px 0;
+            margin: 5px 0;
             background: white;
-            padding: 16px 0;
+            padding: 8px 0;
         }
 
         .products-grid {
@@ -577,6 +581,18 @@
             width: 100%;
             max-width: 100%;
             overflow-x: hidden;
+            background: #fbbf24;
+            padding: 20px;
+            border-radius: 30px;
+        }
+        
+        .products-grid .section-title {
+            color: #1f2937;
+            grid-column: 1 / -1;
+            margin-bottom: 16px;
+            font-weight: 700;
+            text-align: center;
+            font-size: 28px;
         }
         
         @media (min-width: 640px) {
@@ -608,17 +624,19 @@
 
         .product-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 20px;
             overflow: hidden;
             transition: all 0.2s ease;
             cursor: pointer;
-            border: 1px solid #d1d5db;
+            border: 2px solid #e5e7eb;
             position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .product-card:hover {
             transform: translateY(-2px);
-            border-color: #9ca3af;
+            border-color: #3b82f6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .product-image {
@@ -1384,6 +1402,14 @@
             background: white;
             margin: 24px 0;
             padding: 32px 0;
+        }
+        
+        /* Featured Products Wrapper */
+        .featured-products-wrapper {
+            background: #fbbf24;
+            padding: 20px 0;
+            margin: 20px 0;
+            border-radius: 50px;
         }
         
         /* Profile Styles */
@@ -2265,8 +2291,8 @@
 
                 <div class="products-section">
                     <div class="container">
-                        <h2 class="section-title">Featured Products</h2>
                         <div class="products-grid" id="productsGrid">
+                            <h2 class="section-title">Featured Products</h2>
                             <!-- Products will be populated here -->
                         </div>
                     </div>
@@ -2919,6 +2945,19 @@
                     <textarea id="productDescription" placeholder="Product Description" required></textarea>
                     <input type="number" id="productPrice" placeholder="Base Price (₹)" step="0.01" required>
                     <input type="number" id="deliveryCharge" placeholder="Delivery Charge (₹)" step="0.01" value="0">
+                    
+                    <!-- Star Rating Field -->
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50;">Product Rating:</label>
+                        <select id="productRating" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" required>
+                            <option value="">Select Rating</option>
+                            <option value="1">⭐ 1 Star</option>
+                            <option value="2">⭐⭐ 2 Stars</option>
+                            <option value="3">⭐⭐⭐ 3 Stars</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                        </select>
+                    </div>
                     <input type="text" id="productSubImages" placeholder="Sub Images URLs (comma separated)" style="display: none;">
                     <select id="productCategory">
                         <option value="">Select Category</option>
@@ -4292,7 +4331,12 @@
             const categoriesGrid = document.getElementById('categoriesGrid');
             if (!categoriesGrid) return;
             
+            // Preserve the title and clear only category items
+            const title = categoriesGrid.querySelector('.section-title');
             categoriesGrid.innerHTML = '';
+            if (title) {
+                categoriesGrid.appendChild(title);
+            }
             
             categoriesData.forEach(category => {
                 const categoryItem = document.createElement('div');
@@ -4457,7 +4501,7 @@
         }
 
         // Add product to Firebase Firestore
-        async function addProductToFirebase(name, imageUrl, description, basePrice, subImages, category, sizes, sizePricing, deliveryCharge) {
+        async function addProductToFirebase(name, imageUrl, description, basePrice, subImages, category, sizes, sizePricing, deliveryCharge, rating) {
             try {
                 const convertedUrl = convertGoogleDriveUrl(imageUrl);
                 const subImagesArray = subImages ? subImages.split(',').map(url => convertGoogleDriveUrl(url.trim())) : [];
@@ -4469,6 +4513,7 @@
                     price: parseFloat(basePrice),
                     basePrice: parseFloat(basePrice),
                     deliveryCharge: parseFloat(deliveryCharge),
+                    rating: parseFloat(rating),
                     subImages: subImagesArray,
                     category: category,
                     sizes: sizes || [],
@@ -4508,7 +4553,12 @@
             const productsGrid = document.getElementById('productsGrid');
             if (!productsGrid) return;
 
+            // Preserve the title and clear only product items
+            const title = productsGrid.querySelector('.section-title');
             productsGrid.innerHTML = '';
+            if (title) {
+                productsGrid.appendChild(title);
+            }
 
             // Filter products by selected category
             const filteredProducts = selectedCategory 
@@ -4526,6 +4576,9 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
+                        <div class="product-rating" style="color: #fbbf24; font-size: 14px; margin: 4px 0;">
+                            ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
+                        </div>
                         <div class="product-price">₹${product.price}</div>
                         <div class="product-buttons">
                             <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
@@ -4538,7 +4591,15 @@
 
             // Show message if no products found for selected category
             if (filteredProducts.length === 0 && selectedCategory) {
-                productsGrid.innerHTML = `<p style="text-align: center; color: #666; grid-column: 1 / -1;">No products found in "${selectedCategory}" category.</p>`;
+                const title = productsGrid.querySelector('.section-title');
+                productsGrid.innerHTML = '';
+                if (title) {
+                    productsGrid.appendChild(title);
+                }
+                const noProductsMsg = document.createElement('p');
+                noProductsMsg.style.cssText = 'text-align: center; color: #666; grid-column: 1 / -1;';
+                noProductsMsg.textContent = `No products found in "${selectedCategory}" category.`;
+                productsGrid.appendChild(noProductsMsg);
             }
         }
 
@@ -4594,6 +4655,7 @@
             const description = document.getElementById('productDescription').value;
             const basePrice = document.getElementById('productPrice').value;
             const deliveryCharge = document.getElementById('deliveryCharge').value || 0;
+            const rating = document.getElementById('productRating').value;
             const subImages = collectAdditionalImages(); // Use new function to collect additional images
             const category = document.getElementById('productCategory').value;
             
@@ -4611,8 +4673,8 @@
                 sizePricing[size] = parseFloat(sizePrice);
             });
             
-            if (!name || !imageUrl || !description || !basePrice) {
-                showNotification('Please fill in all required fields (name, image, description, base price)', 'warning');
+            if (!name || !imageUrl || !description || !basePrice || !rating) {
+                showNotification('Please fill in all required fields (name, image, description, base price, rating)', 'warning');
                 return;
             }
             
@@ -4621,7 +4683,7 @@
                 return;
             }
             
-            if (await addProductToFirebase(name, imageUrl, description, basePrice, subImages, category, sizes, sizePricing, deliveryCharge)) {
+            if (await addProductToFirebase(name, imageUrl, description, basePrice, subImages, category, sizes, sizePricing, deliveryCharge, rating)) {
                 document.getElementById('productName').value = '';
                 document.getElementById('productImageUrl').value = '';
                 document.getElementById('productDescription').value = '';
@@ -4629,6 +4691,7 @@
                 document.getElementById('deliveryCharge').value = '0';
                 document.getElementById('productSubImages').value = '';
                 document.getElementById('productCategory').value = '';
+                document.getElementById('productRating').value = '';
                 // Clear additional image inputs
                 clearAdditionalImages();
                 // Clear size checkboxes and price inputs
@@ -4791,6 +4854,9 @@
             modalBody.innerHTML = `
                 ${carouselHTML}
                 <h3 class="product-modal-name">${product.name}</h3>
+                <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 8px 0;">
+                    ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating}/5)` : 'No rating'}
+                </div>
                 <div class="product-modal-price" id="price-${product.id}">₹${product.price}</div>
                 <p class="product-modal-description">${product.description}</p>
                 ${product.category ? `<p><strong>Category:</strong> ${product.category}</p>` : ''}
@@ -6242,6 +6308,9 @@
                     <img src="${item.imageUrl}" alt="${item.name}" class="cart-item-image" onclick="openProductModalFromCart('${item.id}')" style="cursor: pointer;">
                     <div class="cart-item-info" onclick="openProductModalFromCart('${item.id}')" style="cursor: pointer;">
                         <div class="cart-item-name">${item.name}</div>
+                        <div class="product-rating" style="color: #fbbf24; font-size: 12px; margin: 2px 0;">
+                            ${'⭐'.repeat(item.rating || 0)} ${item.rating ? `(${item.rating})` : ''}
+                        </div>
                         ${item.size ? `<div style="color: #666; font-size: 12px;">Size: ${item.size}</div>` : ''}
                         <div class="cart-item-price">₹${item.price} x ${item.quantity}</div>
                     </div>
@@ -6277,6 +6346,9 @@
                     <img src="${item.imageUrl}" alt="${item.name}" class="cart-item-image-main" onclick="openProductModalFromCart('${item.id}')">
                     <div class="cart-item-info-main" onclick="openProductModalFromCart('${item.id}')">
                         <div class="cart-item-name-main">${item.name}</div>
+                        <div class="product-rating" style="color: #fbbf24; font-size: 12px; margin: 2px 0;">
+                            ${'⭐'.repeat(item.rating || 0)} ${item.rating ? `(${item.rating})` : ''}
+                        </div>
                         ${item.size ? `<div style="color: #666; font-size: 12px; margin-bottom: 3px;">Size: ${item.size}</div>` : ''}
                         <div class="cart-item-price-main">₹${item.price} x ${item.quantity}</div>
                     </div>
@@ -6575,6 +6647,9 @@
                 <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
+                    <div class="product-rating" style="color: #fbbf24; font-size: 14px; margin: 4px 0;">
+                        ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
+                    </div>
                     <div class="product-price">₹${product.price}</div>
                     <div class="product-buttons">
                         <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
@@ -6781,6 +6856,9 @@
                     <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
+                        <div class="product-rating" style="color: #fbbf24; font-size: 14px; margin: 4px 0;">
+                            ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
+                        </div>
                         <div class="product-price">₹${product.price}</div>
                         <div class="product-buttons">
                             <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
