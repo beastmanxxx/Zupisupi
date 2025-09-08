@@ -574,6 +574,9 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 16px;
             margin-top: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
         }
         
         @media (min-width: 640px) {
@@ -1297,6 +1300,12 @@
             width: 100%;
             margin: 0 auto;
             padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .search-results {
+            width: 100%;
+            overflow-x: hidden;
         }
 
         .search-header {
@@ -1304,15 +1313,19 @@
         }
 
         .search-bar-container {
-            display: flex;
-            gap: 12px;
             margin-top: 24px;
             position: relative;
         }
 
+        .search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
         .search-input {
-            flex: 1;
-            padding: 16px 20px;
+            width: 100%;
+            padding: 16px 50px 16px 20px;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             font-size: 16px;
@@ -1325,6 +1338,26 @@
         .search-input:focus {
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-icon-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            color: #6b7280;
+        }
+
+        .search-icon-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
         }
 
         .search-btn {
@@ -1359,8 +1392,8 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 32px 0;
-            margin-bottom: 32px;
+            padding: 16px 0;
+            margin-bottom: 16px;
         }
         
         .profile-avatar {
@@ -1382,13 +1415,13 @@
             font-size: 24px;
             font-weight: 600;
             color: #1f2937;
-            margin: 0 0 4px 0;
+            margin: 0 0 2px 0;
         }
         
         .profile-email {
             font-size: 14px;
             color: #6b7280;
-            margin: 0 0 20px 0;
+            margin: 0;
         }
         
         .edit-profile-btn {
@@ -2258,8 +2291,10 @@
                         <div class="search-header">
                             <h2 class="section-title">Search Products</h2>
                             <div class="search-bar-container">
-                                <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
-                                <button class="search-btn" onclick="performSearch()">🔍</button>
+                                <div class="search-input-wrapper">
+                                    <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
+                                    <button class="search-icon-btn" onclick="performSearch()">🔍</button>
+                                </div>
                             </div>
                         </div>
                         <div class="search-results">
@@ -2340,14 +2375,10 @@
                     <div class="container">
                         <!-- Profile Header -->
                         <div class="profile-header">
-                            <div class="profile-avatar">
-                                <img id="profileAvatar" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNGM0Y0RjYiLz4KPHN2ZyB4PSIyMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIj4KPHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDMTMuMSAyIDE0IDIuOSAxNCA0QzE0IDUuMSAxMy4xIDYgMTIgNkMxMC45IDYgMTAgNS4xIDEwIDRDMTAgMi45IDEwLjkgMiAxMiAyWk0yMSAxOVYyMEgzVjE5QzMgMTYuMzMgOC4zMyAxNSAxMiAxNUMxNS42NyAxNSAyMSAxNi4zMyAyMSAxOVpNMTIgN0MxNC43NiA3IDE3IDkuMjQgMTcgMTJDMTcgMTMuMzggMTYuNSAxNC42NSAxNS42NCAxNS42NEMxNC42NSAxNi41IDEzLjM4IDE3IDEyIDE3QzkuMjQgMTcgNyAxNC43NiA3IDEyQzcgOS4yNCA5LjI0IDcgMTIgN1oiIGZpbGw9IiM5Q0E0QUYiLz4KPC9zdmc+Cjwvc3ZnPgo8L3N2Zz4K" alt="Profile Avatar">
-                            </div>
                             <div class="profile-info">
                                 <h3 class="profile-name" id="profileName">User Name</h3>
                                 <p class="profile-email" id="profileEmail">user@example.com</p>
                             </div>
-                            <button class="edit-profile-btn" onclick="editProfile()">Edit Profile</button>
                         </div>
                         
                         <!-- Profile Menu -->
