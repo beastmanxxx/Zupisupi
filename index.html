@@ -7,8 +7,7 @@
     <link rel="icon" href="applogo.png" sizes="16x16" type="image/png">
 
     <title>Zupisupi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Honk&family=Macondo&family=Mrs+Sheppards&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -17,46 +16,26 @@
         }
 
         body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #ffffff !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: white !important;
             min-height: 100vh;
             overflow-x: hidden;
-            color: #333333;
-            width: 100%;
-            max-width: 100vw;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
-        
-        .container {
-            width: 100%;
-            max-width: 100%;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            overflow-x: hidden;
-        }
-        
-        @media (min-width: 768px) {
-            .container {
-                padding: 0;
-            }
-        }
-        
-        @media (min-width: 1200px) {
-            .container {
-                padding: 0;
+
+        /* Desktop mobile simulation only */
+        @media (min-width: 769px) {
+            body {
+                max-width: 414px;
+                margin: 0 auto;
             }
         }
 
         /* Login Screen Styles - Hidden by default */
         .login-container {
-            background: #ffffff;
-            border-radius: 24px;
+            background: white;
+            border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             text-align: center;
             max-width: 400px;
             width: 90%;
@@ -64,7 +43,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 215, 0, 0.1);
         }
 
         .logo-section {
@@ -79,15 +57,13 @@
 
         .logo-section h1 {
             font-size: 28px;
-            color: #333333;
+            color: #2c3e50;
             margin-bottom: 10px;
-            font-weight: 600;
         }
 
         .logo-section p {
-            color: #666666;
+            color: #718096;
             font-size: 16px;
-            font-weight: 400;
         }
 
         /* Authentication Form Styles */
@@ -107,23 +83,20 @@
         .form-group input {
             width: 100%;
             padding: 18px 24px;
-            border: 2px solid #f0f0f0;
-            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
             font-size: 16px;
             outline: none;
-            transition: all 0.3s ease-in-out;
-            background: #fafafa;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
             box-sizing: border-box;
             line-height: 1.5;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 400;
         }
 
         .form-group input:focus {
-            border-color: #FFD700;
+            border-color: #3498db;
             background: white;
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
         .form-group input::placeholder {
@@ -133,23 +106,21 @@
         .auth-btn {
             width: 100%;
             padding: 18px 24px;
-            background: #FFD700;
-            color: #333333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
-            border-radius: 16px;
+            border-radius: 15px;
             font-size: 17px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.25);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             margin-top: 10px;
-            font-family: 'Poppins', sans-serif;
         }
 
         .auth-btn:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-            background: #ffed4e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
         .form-switch {
@@ -164,7 +135,7 @@
         }
 
         .form-switch a {
-            color: #FFD700;
+            color: #3498db;
             text-decoration: none;
             font-weight: 600;
         }
@@ -182,38 +153,33 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
+            right: 0;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             z-index: 1000;
-            padding: 12px 20px;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease-in-out;
-            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
-        @media (min-width: 768px) {
+        /* Desktop mobile simulation for navbar */
+        @media (min-width: 769px) {
             .navbar {
-                padding: 15px 30px;
-            }
-        }
-        
-        @media (min-width: 1200px) {
-            .navbar {
-                padding: 15px 50px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 414px;
+                max-width: 414px;
             }
         }
 
         .nav-container {
-            max-width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0;
-            box-sizing: border-box;
-            overflow-x: hidden;
+            padding: 0 20px;
+            height: 90px;
         }
 
         .logo {
@@ -243,17 +209,16 @@
             background: none;
             border: none;
             padding: 15px;
-            border-radius: 16px;
+            border-radius: 15px;
             cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            color: #333333;
+            transition: all 0.3s ease;
+            color: #4a5568;
             position: relative;
         }
 
         .icon-btn:hover {
-            background: rgba(255, 215, 0, 0.1);
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
         }
 
         .icon-btn svg {
@@ -292,22 +257,20 @@
         }
 
         .logout-btn {
-            background: #333333;
+            background: #ff4757;
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 20px;
+            border-radius: 25px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease-in-out;
-            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
         }
 
         .logout-btn:hover {
-            background: #1a1a1a;
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: #ff3742;
+            transform: translateY(-2px);
         }
 
         .main-content {
@@ -316,112 +279,23 @@
             text-align: center;
             background: white;
             min-height: calc(100vh - 90px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .welcome-message {
             font-size: 24px;
-            color: #333333;
+            color: #2c3e50;
             margin-bottom: 30px;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
         }
 
         /* Slideshow Styles */
         .slideshow-container {
             position: relative;
-            width: 90%;
-            max-width: 1200px;
-            margin: 20px 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 25px;
+            max-width: 800px;
+            margin: 15px 10px 0;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .slideshow-wrapper {
-            position: relative;
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-            border-radius: 25px;
-        }
-        
-        /* Responsive slideshow heights */
-        @media (max-width: 480px) {
-            .slideshow-wrapper {
-                height: 150px;
-            }
-            
-            .slideshow-container {
-                width: 95%;
-                margin: 15px 0;
-                border-radius: 15px;
-            }
-            
-            .slideshow-wrapper {
-                border-radius: 15px;
-            }
-            
-            .slides img {
-                border-radius: 15px;
-            }
-            
-            .slide-content {
-                bottom: 15px;
-                left: 15px;
-                right: 15px;
-                padding: 12px;
-            }
-        }
-        
-        @media (min-width: 481px) and (max-width: 768px) {
-            .slideshow-wrapper {
-                height: 180px;
-            }
-            
-            .slideshow-container {
-                width: 92%;
-                border-radius: 20px;
-                margin: 20px 0;
-            }
-            
-            .slideshow-wrapper {
-                border-radius: 20px;
-            }
-            
-            .slides img {
-                border-radius: 20px;
-            }
-            
-            .slide-content {
-                bottom: 20px;
-                left: 20px;
-                right: 20px;
-                padding: 15px;
-            }
-        }
-        
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .slideshow-wrapper {
-                height: 200px;
-            }
-        }
-        
-        @media (min-width: 1025px) {
-            .slideshow-wrapper {
-                height: 220px;
-            }
-        }
-        
-        .slides-track {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid #000;
         }
 
         .slides {
@@ -436,59 +310,9 @@
         .slides img {
             width: 100%;
             height: 100%;
+            max-width: 100%;
+            max-height: 200px;
             object-fit: contain;
-            border-radius: 25px;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
-        .slide-content {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            right: 30px;
-            background: transparent;
-            padding: 20px;
-            border-radius: 15px;
-            color: white;
-            transform: translateY(20px);
-            opacity: 0;
-            animation: slideUp 0.8s ease-out 0.5s forwards;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-        }
-        
-        @keyframes slideUp {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        .slide-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .slide-description {
-            font-size: 14px;
-            opacity: 0.9;
-            line-height: 1.4;
-        }
-
-        .slides {
-            min-width: 100%;
-            height: 250px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            position: relative;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
         }
 
         @keyframes fadeIn {
@@ -496,82 +320,25 @@
             to { opacity: 1; }
         }
 
-        .slide-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 0;
-            cursor: pointer;
-            font-size: 24px;
-            border-radius: 50%;
-            transition: all 0.4s ease;
-            z-index: 10;
-            width: 55px;
-            height: 55px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.7;
-        }
-
-        .slide-nav:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-50%) scale(1.15);
-            opacity: 1;
-            border-color: rgba(255, 255, 255, 0.6);
-        }
-
-        .prev {
-            left: 20px;
-        }
-
-        .next {
-            right: 20px;
-        }
-
         /* Slideshow indicators */
         .dots-container {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            z-index: 10;
+            text-align: center;
+            margin-top: 20px;
         }
 
         .dot {
-            height: 8px;
-            width: 25px;
-            background: rgba(255, 255, 255, 0.4);
-            border-radius: 10px;
+            height: 12px;
+            width: 12px;
+            margin: 0 5px;
+            background-color: #bdc3c7;
+            border-radius: 50%;
+            display: inline-block;
             cursor: pointer;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
 
-        .dot.active {
-            background: rgba(255, 255, 255, 0.9);
-            width: 35px;
-        }
-
-        .dot:hover {
-            background: rgba(255, 255, 255, 0.7);
-            transform: scale(1.1);
-        }
-        
-        .slideshow-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.8);
-            transition: width 5s linear;
-            z-index: 10;
+        .dot.active, .dot:hover {
+            background-color: #717171;
         }
 
         /* Categories Section Styles */
@@ -618,20 +385,18 @@
 
         .category-item {
             background: white;
-            border-radius: 16px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
             cursor: pointer;
             min-width: 100px;
             flex-shrink: 0;
-            border: 1px solid rgba(255, 215, 0, 0.1);
         }
 
         .category-item:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.15);
-            border-color: rgba(255, 215, 0, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
 
         .category-image {
@@ -648,50 +413,29 @@
         .category-name {
             font-size: 16px;
             font-weight: 600;
-            color: #333333;
+            color: #2c3e50;
             margin: 0;
             line-height: 1.2;
-            font-family: 'Poppins', sans-serif;
         }
 
         /* Featured Products Section Styles */
         .products-section {
-            width: 100%;
-            margin: 40px 0;
-            padding: 0;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 25px;
             margin-top: 30px;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-x: hidden;
         }
 
-        /* Mobile: 2 products per row */
-        @media (max-width: 767px) {
+        @media (max-width: 768px) {
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-        }
-        
-        /* Tablet: 4 products per row */
-        @media (min-width: 768px) and (max-width: 1199px) {
-            .products-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-            }
-        }
-        
-        /* Desktop: 6 products per row */
-        @media (min-width: 1200px) {
-            .products-grid {
-                grid-template-columns: repeat(6, 1fr);
-                gap: 25px;
+                gap: 15px;
             }
         }
 
@@ -709,23 +453,19 @@
             background: white;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease-in-out;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
             cursor: pointer;
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            max-width: 180px;
-            width: 100%;
         }
 
         .product-card:hover {
-            transform: translateY(-5px) scale(1.01);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-            border-color: rgba(0, 0, 0, 0.25);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }
 
         .product-image {
             width: 100%;
-            height: 140px;
+            height: 150px;
             object-fit: contain;
             display: block;
             background: #f8f9fa;
@@ -744,33 +484,26 @@
         }
 
         .product-info {
-            padding: 12px;
+            padding: 20px;
         }
 
         @media (max-width: 768px) {
             .product-info {
-                padding: 10px;
+                padding: 15px;
             }
         }
 
         @media (max-width: 480px) {
             .product-info {
-                padding: 8px;
+                padding: 12px;
             }
         }
 
         .product-name {
-            font-size: 14px;
+            font-size: 18px;
             font-weight: 600;
-            color: #333333;
-            margin-bottom: 6px;
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            color: #2c3e50;
+            margin-bottom: 8px;
         }
 
         @media (max-width: 768px) {
@@ -790,24 +523,23 @@
         }
 
         .product-price {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 700;
-            color: #FFD700;
-            margin-bottom: 8px;
-            font-family: 'Poppins', sans-serif;
+            color: #27ae60;
+            margin-bottom: 15px;
         }
 
         @media (max-width: 768px) {
             .product-price {
-                font-size: 15px;
-                margin-bottom: 8px;
+                font-size: 18px;
+                margin-bottom: 12px;
             }
         }
 
         @media (max-width: 480px) {
             .product-price {
-                font-size: 14px;
-                margin-bottom: 6px;
+                font-size: 16px;
+                margin-bottom: 10px;
             }
         }
 
@@ -819,31 +551,30 @@
 
         @media (max-width: 768px) {
             .product-buttons {
+                gap: 6px;
+            }
+        }
 
-@media (max-width: 480px) {
-    .product-buttons {
-        gap: 5px;
-    }
-}
+        @media (max-width: 480px) {
+            .product-buttons {
+                gap: 5px;
+            }
+        }
 
-.btn-cart, .btn-order {
-    width: 100%;
-    padding: 12px 16px;
-    border: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
-}
+        .btn-cart, .btn-order {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
 
-@media (max-width: 768px) {
-    .btn-cart, .btn-order {
-        padding: 10px 12px;
-        font-size: 13px;
-    }
-}
+        @media (max-width: 768px) {
+            .btn-cart, .btn-order {
+                padding: 10px 12px;
                 font-size: 13px;
             }
         }
@@ -856,126 +587,89 @@
         }
 
         .btn-cart {
-            background: #333333;
+            background: #2c3e50;
             color: white;
         }
 
         .btn-cart:hover {
-            background: #1a1a1a;
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: #1a252f;
+            transform: translateY(-2px);
         }
 
         .btn-order {
-            background: #FFD700;
-            color: #333333;
+            background: #f1c40f;
+            color: #2c3e50;
         }
 
         .btn-order:hover {
-            background: #ffed4e;
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            background: #f39c12;
+            transform: translateY(-2px);
         }
 
-        /* Product Detail Modal - Full Viewport */
+        /* Product Detail Modal */
         .product-modal {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #ffffff;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
             display: none;
-            z-index: 9999;
-            overflow-y: auto;
+            justify-content: center;
+            align-items: center;
         }
 
         .product-modal-content {
             background: white;
-            width: 100%;
-            height: 100%;
-            position: relative;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .modal-back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-back-button:hover {
-            background: rgba(0, 0, 0, 0.9);
-            transform: scale(1.1);
+            border-radius: 12px;
+            width: 85%;
+            max-width: 450px;
+            max-height: 75vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
         }
 
         .product-modal-header {
-            display: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
         }
 
         .product-modal-header h2 {
             font-size: 18px;
             margin: 0;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            color: #333333;
         }
 
         .product-modal-body {
-            padding: 80px 20px 20px 20px;
+            padding: 20px;
             box-sizing: border-box;
-            min-height: 100vh;
         }
 
         .product-modal-image {
             width: 100%;
-            height: 400px;
+            height: 180px;
             object-fit: contain;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             background: #f8f9fa;
-        }
-        
-        @media (min-width: 768px) {
-            .product-modal-image {
-                height: 500px;
-            }
-        }
-        
-        @media (min-width: 1200px) {
-            .product-modal-image {
-                height: 600px;
-            }
         }
 
         .product-modal-name {
             font-size: 20px;
             font-weight: 600;
-            color: #333333;
+            color: #2c3e50;
             margin-bottom: 8px;
-            font-family: 'Poppins', sans-serif;
         }
 
         .product-modal-price {
             font-size: 22px;
             font-weight: 700;
-            color: #FFD700;
+            color: #e74c3c;
             margin-bottom: 15px;
-            font-family: 'Poppins', sans-serif;
         }
 
         .product-modal-description {
@@ -997,9 +691,8 @@
 
         .quantity-label {
             font-weight: 600;
-            color: #333333;
+            color: #2c3e50;
             font-size: 14px;
-            font-family: 'Poppins', sans-serif;
         }
 
         .quantity-controls {
@@ -1062,91 +755,6 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
-        
-        /* Related Products Section */
-        .related-products-section {
-            margin-top: 40px;
-            padding: 20px 0;
-            border-top: 1px solid #eee;
-        }
-        
-        .related-products-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333333;
-            margin-bottom: 20px;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .related-products-container {
-            display: flex;
-            overflow-x: auto;
-            gap: 15px;
-            padding: 10px 0;
-            scrollbar-width: thin;
-            scrollbar-color: #FFD700 #f0f0f0;
-        }
-        
-        .related-products-container::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .related-products-container::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 3px;
-        }
-        
-        .related-products-container::-webkit-scrollbar-thumb {
-            background: #FFD700;
-            border-radius: 3px;
-        }
-        
-        .related-product-card {
-            min-width: 150px;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-        }
-        
-        .related-product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
-            border-color: rgba(255, 215, 0, 0.3);
-        }
-        
-        .related-product-image {
-            width: 100%;
-            height: 120px;
-            object-fit: contain;
-            background: #f8f9fa;
-        }
-        
-        .related-product-info {
-            padding: 10px;
-        }
-        
-        .related-product-name {
-            font-size: 12px;
-            font-weight: 500;
-            color: #333333;
-            margin-bottom: 5px;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .related-product-price {
-            font-size: 14px;
-            font-weight: 600;
-            color: #FFD700;
         }
 
         /* Cart Section Styles */
@@ -1263,176 +871,6 @@
             font-weight: 600;
             cursor: pointer;
         }
-        
-        /* Cart Related Products */
-        .cart-related-products {
-            padding: 20px;
-            border-top: 1px solid #eee;
-            margin-top: 20px;
-        }
-        
-        .cart-related-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .cart-related-container {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 5px 0;
-            scrollbar-width: thin;
-            scrollbar-color: #FFD700 #f0f0f0;
-        }
-        
-        .cart-related-container::-webkit-scrollbar {
-            height: 4px;
-        }
-        
-        .cart-related-container::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 2px;
-        }
-        
-        .cart-related-container::-webkit-scrollbar-thumb {
-            background: #FFD700;
-            border-radius: 2px;
-        }
-        
-        .cart-related-item {
-            min-width: 120px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-        }
-        
-        .cart-related-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
-            border-color: rgba(255, 215, 0, 0.3);
-        }
-        
-        .cart-related-image {
-            width: 100%;
-            height: 80px;
-            object-fit: contain;
-            background: #f8f9fa;
-        }
-        
-        .cart-related-info {
-            padding: 8px;
-        }
-        
-        .cart-related-name {
-            font-size: 11px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 4px;
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .cart-related-price {
-            font-size: 12px;
-            font-weight: 600;
-            color: #FFD700;
-        }
-        
-        /* Modal Related Products */
-        .modal-related-products {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        
-        .modal-related-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .modal-related-container {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 5px 0;
-            scrollbar-width: thin;
-            scrollbar-color: #FFD700 #f0f0f0;
-        }
-        
-        .modal-related-container::-webkit-scrollbar {
-            height: 4px;
-        }
-        
-        .modal-related-container::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 2px;
-        }
-        
-        .modal-related-container::-webkit-scrollbar-thumb {
-            background: #FFD700;
-            border-radius: 2px;
-        }
-        
-        .modal-related-item {
-            min-width: 120px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-        }
-        
-        .modal-related-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
-            border-color: rgba(255, 215, 0, 0.3);
-        }
-        
-        .modal-related-image {
-            width: 100%;
-            height: 80px;
-            object-fit: contain;
-            background: #f8f9fa;
-        }
-        
-        .modal-related-info {
-            padding: 8px;
-        }
-        
-        .modal-related-name {
-            font-size: 11px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 4px;
-            line-height: 1.2;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .modal-related-price {
-            font-size: 12px;
-            font-weight: 600;
-            color: #FFD700;
-        }
 
         .cart-overlay {
             position: fixed;
@@ -1455,39 +893,28 @@
         /* New App Bottom Navigation - Only visible in main app */
         .app-bottom-nav {
             position: fixed;
-            bottom: 15px;
-            left: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 25px;
-            padding: 12px 8px;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            box-sizing: border-box;
-            width: calc(100vw - 30px);
+            padding: 8px 0;
+            height: 65px;
         }
 
-        @media (min-width: 768px) {
+        /* Desktop mobile simulation for bottom nav */
+        @media (min-width: 769px) {
             .app-bottom-nav {
-                left: 30px;
-                right: 30px;
-                width: calc(100vw - 60px);
-                padding: 15px 12px;
-            }
-        }
-        
-        @media (min-width: 1200px) {
-            .app-bottom-nav {
-                left: 50px;
-                right: 50px;
-                width: calc(100vw - 100px);
-                padding: 15px 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 414px;
+                max-width: 414px;
             }
         }
 
@@ -1496,49 +923,45 @@
             display: none !important;
         }
 
-@media (min-width: 1200px) {
-    .app-bottom-nav {
-        left: 50px;
-        right: 50px;
-        width: calc(100vw - 100px);
-        padding: 15px 20px;
-    }
-}
+        .app-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            min-width: 60px;
+            position: relative;
+        }
 
-/* Hide navbar by default */
-.app-bottom-nav.hidden {
-    display: none !important;
-}
+        .app-nav-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateY(-2px);
+        }
 
-.app-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: rgba(0, 0, 0, 0.6);
-    min-width: 60px;
-}
+        .app-nav-item.active {
+            background: #3498db;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
 
-.app-nav-item.active {
-    background: linear-gradient(135deg, #FFD700 0%, #ffb300 100%);
-    color: #1a1a1a;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-}
+        .app-nav-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+            transition: transform 0.3s ease;
+        }
 
-.app-nav-item:hover:not(.active) {
-    color: #FFD700;
-    transform: translateY(-1px);
-}
+        .app-nav-item.active .app-nav-icon {
+            transform: scale(1.1);
+        }
 
         .app-nav-label {
             font-size: 11px;
             font-weight: 600;
             text-align: center;
-            font-family: 'Poppins', sans-serif;
         }
 
         /* Cart count badge in bottom navbar */
@@ -1592,7 +1015,7 @@
         .search-page {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 20px;
         }
 
         .search-header {
@@ -1603,63 +1026,42 @@
             display: flex;
             gap: 10px;
             margin-top: 20px;
-            width: calc(100% - 40px);
-            margin-left: 20px;
-            margin-right: 20px;
-            box-sizing: border-box;
-            overflow: hidden;
         }
 
         .search-input {
             flex: 1;
             padding: 15px 20px;
-            border: 2px solid #f0f0f0;
-            border-radius: 16px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
             font-size: 16px;
             outline: none;
-            transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
-            background: #fafafa;
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            min-width: 0;
+            transition: border-color 0.3s ease;
         }
 
         .search-input:focus {
-            border-color: #FFD700;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
-            transform: translateY(-1px);
+            border-color: #3498db;
         }
 
         .search-btn {
             padding: 15px 20px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #333;
+            background: #3498db;
+            color: white;
             border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 25px;
             cursor: pointer;
-            white-space: nowrap;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.3s ease-in-out;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
-            flex-shrink: 0;
+            font-size: 16px;
+            transition: background 0.3s ease;
         }
 
         .search-btn:hover {
-            background: #ffed4e;
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+            background: #2980b9;
         }
 
         /* Orders Section Styles */
         .orders-page, .profile-page, .cart-page {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 10px;
+            padding: 20px;
         }
 
         /* Cart Section Main Page Styles */
@@ -2413,17 +1815,12 @@
         <div class="main-content">
             <!-- Slideshow -->
             <div class="slideshow-container" id="slideshowContainer">
-                <div class="slideshow-wrapper">
-                    <div class="slides-track" id="slidesTrack">
-                        <!-- Slides will be dynamically added by admin -->
-                    </div>
-                    <button class="slide-nav prev" onclick="prevSlide()">‹</button>
-                    <button class="slide-nav next" onclick="nextSlide()">›</button>
-                    <div class="dots-container" id="dotsContainer">
-                        <!-- Dots will be dynamically added -->
-                    </div>
-                    <div class="slideshow-progress" id="slideshowProgress"></div>
-                </div>
+                <!-- Slides will be dynamically added by admin -->
+            </div>
+            
+            <!-- Slideshow Dots -->
+            <div class="dots-container" id="dotsContainer">
+                <!-- Dots will be dynamically added based on slides -->
             </div>
 
             <!-- Home Section -->
@@ -2446,19 +1843,17 @@
 
             <!-- Search Section -->
             <div id="searchSection" class="app-section">
-                <div class="search-page" style="width: 100%; max-width: 100%; box-sizing: border-box; overflow-x: hidden; padding: 0 10px;">
-                    <div class="search-header" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+                <div class="search-page">
+                    <div class="search-header">
                         <h2 class="section-title">Search Products</h2>
                         <div class="search-bar-container">
                             <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
                             <button class="search-btn" onclick="performSearch()">🔍</button>
                         </div>
                     </div>
-                    <div class="search-results" style="width: calc(100% - 20px); max-width: 100%; box-sizing: border-box; overflow-x: hidden; margin: 0 auto;">
-                        <div class="products-section">
-                            <div class="products-grid" id="searchProductsGrid" style="width: 100%; max-width: 100%; box-sizing: border-box; overflow-x: hidden; margin: 0;">
-                                <!-- Search results will be populated here -->
-                            </div>
+                    <div class="search-results">
+                        <div class="products-grid" id="searchProductsGrid">
+                            <!-- Search results will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -3079,7 +2474,6 @@
 
     <!-- Product Detail Modal -->
     <div id="productModal" class="product-modal">
-        <button class="modal-back-button" onclick="closeProductModal()">←</button>
         <div class="product-modal-content">
             <div class="product-modal-header">
                 <h2>Product Details</h2>
@@ -3118,14 +2512,6 @@
         <div class="cart-total" id="cartTotal" style="display: none;">
             <div class="cart-total-amount" id="cartTotalAmount">Total: ₹0</div>
             <button class="cart-checkout" onclick="openConfirmOrderModalForAllCartItems()">Order All</button>
-        </div>
-        
-        <!-- Related Products in Cart -->
-        <div class="cart-related-products" id="cartRelatedProducts" style="display: none;">
-            <h3 class="cart-related-title">You might also like</h3>
-            <div class="cart-related-container" id="cartRelatedContainer">
-                <!-- Related products will be populated here -->
-            </div>
         </div>
 
         <!-- App Bottom Navigation -->
@@ -3591,19 +2977,19 @@
         let slideInterval;
 
         function showSlide(index) {
-            const slidesTrack = document.querySelector('.slides-track');
+            const slides = document.querySelectorAll('.slides');
             const dots = document.querySelectorAll('.dot');
             
-            if (!slidesTrack || slidesData.length === 0) return;
-            
-            // Calculate transform position
-            const translateX = -index * 100;
-            slidesTrack.style.transform = `translateX(${translateX}%)`;
-            
-            // Update dots
+            // Hide all slides and remove active class from dots
+            slides.forEach(slide => slide.classList.remove('active'));
             dots.forEach(dot => dot.classList.remove('active'));
-            if (dots[index]) {
-                dots[index].classList.add('active');
+            
+            // Show current slide only if slides exist
+            if (slides[index] && slidesData.length > 0) {
+                slides[index].classList.add('active');
+                if (dots[index]) {
+                    dots[index].classList.add('active');
+                }
             }
         }
 
@@ -3613,34 +2999,9 @@
                 showSlide(slideIndex);
             }
         }
-        
-        function prevSlide() {
-            if (slidesData.length > 0) {
-                slideIndex = slideIndex === 0 ? slidesData.length - 1 : slideIndex - 1;
-                showSlide(slideIndex);
-            }
-        }
-        
-        // Navigation functions
-        window.nextSlide = nextSlide;
-        window.prevSlide = prevSlide;
 
         function startSlideshow() {
-            slideInterval = setInterval(() => {
-                nextSlide();
-                updateProgressBar();
-            }, 5000); // Change every 5 seconds
-            updateProgressBar();
-        }
-        
-        function updateProgressBar() {
-            const progressBar = document.querySelector('.slideshow-progress');
-            if (progressBar) {
-                progressBar.style.width = '0%';
-                setTimeout(() => {
-                    progressBar.style.width = '100%';
-                }, 100);
-            }
+            slideInterval = setInterval(nextSlide, 5000); // Change every 5 seconds
         }
 
         function stopSlideshow() {
@@ -4353,11 +3714,9 @@
             
             categoriesGrid.innerHTML = '';
             
-            categoriesData.forEach((category, index) => {
+            categoriesData.forEach(category => {
                 const categoryItem = document.createElement('div');
                 categoryItem.className = 'category-item';
-                categoryItem.style.opacity = '0';
-                categoryItem.style.transform = 'translateY(20px)';
                 categoryItem.onclick = () => filterProductsByCategory(category.name);
                 categoryItem.innerHTML = `
                     <img src="${category.imageUrl}" alt="${category.name}" class="category-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
@@ -4366,17 +3725,6 @@
                     </div>
                 `;
                 categoriesGrid.appendChild(categoryItem);
-                
-                // GSAP fade-in animation for category items
-                if (typeof gsap !== 'undefined') {
-                    gsap.to(categoryItem, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.5,
-                        delay: index * 0.1,
-                        ease: 'power2.out'
-                    });
-                }
             });
             
             // Update category dropdown in admin panel
@@ -4590,31 +3938,22 @@
             // Show all products in rows of 2
             const displayProducts = filteredProducts;
 
-            displayProducts.forEach((product, index) => {
+            displayProducts.forEach(product => {
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
-                productCard.style.opacity = '0';
-                productCard.style.transform = 'translateY(20px)';
                 productCard.onclick = () => openProductModal(product.id);
                 productCard.innerHTML = `
                     <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
                         <div class="product-price">₹${product.price}</div>
+                        <div class="product-buttons">
+                            <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
+                            <button class="btn-order" onclick="event.stopPropagation(); openProductModal('${product.id}')">Order Now</button>
+                        </div>
                     </div>
                 `;
                 productsGrid.appendChild(productCard);
-                
-                // GSAP fade-in animation for product cards
-                if (typeof gsap !== 'undefined') {
-                    gsap.to(productCard, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 0.6,
-                        delay: index * 0.1,
-                        ease: 'power2.out'
-                    });
-                }
             });
 
             // Show message if no products found for selected category
@@ -4901,54 +4240,12 @@
                     <button class="btn-cart" onclick="addToCartWithQuantity('${product.id}')">Add to Cart</button>
                     <button class="btn-order" onclick="openConfirmOrderModal('${product.id}')">Order Now</button>
                 </div>
-                
-                ${generateRelatedProductsHTML(product)}
             `;
             
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
         };
 
         // Open product modal from cart (without Add to Cart button)
-        // Generate related products HTML
-        function generateRelatedProductsHTML(currentProduct) {
-            // Get products from same category or random products if no category
-            let relatedProducts = productsData.filter(p => 
-                p.id !== currentProduct.id && 
-                (p.category === currentProduct.category || !currentProduct.category)
-            ).slice(0, 8);
-            
-            // If not enough related products, add random products
-            if (relatedProducts.length < 6) {
-                const remainingProducts = productsData.filter(p => 
-                    p.id !== currentProduct.id && 
-                    !relatedProducts.some(rp => rp.id === p.id)
-                ).slice(0, 6 - relatedProducts.length);
-                relatedProducts = [...relatedProducts, ...remainingProducts];
-            }
-            
-            if (relatedProducts.length === 0) return '';
-            
-            const relatedProductsHTML = relatedProducts.map(product => `
-                <div class="related-product-card" onclick="openProductModal('${product.id}')">
-                    <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
-                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
-                    <div class="related-product-info">
-                        <div class="related-product-name">${product.name}</div>
-                        <div class="related-product-price">₹${product.price}</div>
-                    </div>
-                </div>
-            `).join('');
-            
-            return `
-                <div class="related-products-section">
-                    <h3 class="related-products-title">Related Products</h3>
-                    <div class="related-products-container">
-                        ${relatedProductsHTML}
-                    </div>
-                </div>
-            `;
-        }
-        
         window.openProductModalFromCart = function(productId) {
             const product = productsData.find(p => p.id === productId);
             if (!product) return;
@@ -5021,18 +4318,7 @@
                 <div class="product-modal-buttons">
                     <button class="btn-order" onclick="openConfirmOrderModalFromCart('${product.id}')">Order Now</button>
                 </div>
-                
-                <!-- Related Products Section -->
-                <div class="modal-related-products" id="modalRelatedProducts-${product.id}">
-                    <h3 class="modal-related-title">You might also like</h3>
-                    <div class="modal-related-container" id="modalRelatedContainer-${product.id}">
-                        <!-- Related products will be populated here -->
-                    </div>
-                </div>
             `;
-            
-            // Load related products for this modal
-            loadModalRelatedProducts(product.id, product.category);
             
             modal.style.display = 'flex';
         };
@@ -6226,119 +5512,6 @@
             
             cartTotalAmount.textContent = `Total: ₹${total}`;
             cartTotal.style.display = 'block';
-            
-            // Show related products
-            updateCartRelatedProducts();
-        }
-        
-        // Update cart related products
-        function updateCartRelatedProducts() {
-            const cartRelatedProducts = document.getElementById('cartRelatedProducts');
-            const cartRelatedContainer = document.getElementById('cartRelatedContainer');
-            
-            if (cartItems.length === 0) {
-                cartRelatedProducts.style.display = 'none';
-                return;
-            }
-            
-            // Get categories from cart items
-            const cartCategories = [...new Set(cartItems.map(item => {
-                const product = productsData.find(p => p.id === item.id);
-                return product ? product.category : null;
-            }).filter(Boolean))];
-            
-            // Get related products from same categories, excluding cart items
-            const cartProductIds = cartItems.map(item => item.id);
-            let relatedProducts = productsData.filter(product => 
-                cartCategories.includes(product.category) && 
-                !cartProductIds.includes(product.id)
-            );
-            
-            // If not enough related products, add random products
-            if (relatedProducts.length < 6) {
-                const additionalProducts = productsData.filter(product => 
-                    !cartProductIds.includes(product.id) && 
-                    !relatedProducts.some(rp => rp.id === product.id)
-                );
-                relatedProducts = [...relatedProducts, ...additionalProducts].slice(0, 8);
-            } else {
-                relatedProducts = relatedProducts.slice(0, 8);
-            }
-            
-            if (relatedProducts.length === 0) {
-                cartRelatedProducts.style.display = 'none';
-                return;
-            }
-            
-            cartRelatedContainer.innerHTML = '';
-            relatedProducts.forEach(product => {
-                const relatedItem = document.createElement('div');
-                relatedItem.className = 'cart-related-item';
-                relatedItem.onclick = () => openProductModal(product.id);
-                relatedItem.innerHTML = `
-                    <img src="${product.imageUrl}" alt="${product.name}" class="cart-related-image">
-                    <div class="cart-related-info">
-                        <div class="cart-related-name">${product.name}</div>
-                        <div class="cart-related-price">₹${product.price}</div>
-                    </div>
-                `;
-                cartRelatedContainer.appendChild(relatedItem);
-            });
-            
-            cartRelatedProducts.style.display = 'block';
-        }
-        
-        // Load related products for modal
-        function loadModalRelatedProducts(currentProductId, currentCategory) {
-            const modalRelatedContainer = document.getElementById(`modalRelatedContainer-${currentProductId}`);
-            const modalRelatedProducts = document.getElementById(`modalRelatedProducts-${currentProductId}`);
-            
-            if (!modalRelatedContainer || !modalRelatedProducts) return;
-            
-            // Get related products from same category, excluding current product and cart items
-            const cartProductIds = cartItems.map(item => item.id);
-            let relatedProducts = productsData.filter(product => 
-                product.category === currentCategory && 
-                product.id !== currentProductId &&
-                !cartProductIds.includes(product.id)
-            );
-            
-            // If not enough related products, add random products
-            if (relatedProducts.length < 6) {
-                const additionalProducts = productsData.filter(product => 
-                    product.id !== currentProductId &&
-                    !cartProductIds.includes(product.id) &&
-                    !relatedProducts.some(rp => rp.id === product.id)
-                );
-                relatedProducts = [...relatedProducts, ...additionalProducts].slice(0, 8);
-            } else {
-                relatedProducts = relatedProducts.slice(0, 8);
-            }
-            
-            if (relatedProducts.length === 0) {
-                modalRelatedProducts.style.display = 'none';
-                return;
-            }
-            
-            modalRelatedContainer.innerHTML = '';
-            relatedProducts.forEach(product => {
-                const relatedItem = document.createElement('div');
-                relatedItem.className = 'modal-related-item';
-                relatedItem.onclick = () => {
-                    closeProductModal();
-                    setTimeout(() => openProductModal(product.id), 100);
-                };
-                relatedItem.innerHTML = `
-                    <img src="${product.imageUrl}" alt="${product.name}" class="modal-related-image">
-                    <div class="modal-related-info">
-                        <div class="modal-related-name">${product.name}</div>
-                        <div class="modal-related-price">₹${product.price}</div>
-                    </div>
-                `;
-                modalRelatedContainer.appendChild(relatedItem);
-            });
-            
-            modalRelatedProducts.style.display = 'block';
         }
 
         // Update cart display for main page section
@@ -6626,7 +5799,7 @@
             searchProductsGrid.innerHTML = '';
             
             productsData.forEach(product => {
-                const productCard = createSearchProductCard(product);
+                const productCard = createProductCard(product);
                 searchProductsGrid.appendChild(productCard);
             });
         }
@@ -6649,7 +5822,7 @@
             }
             
             filteredProducts.forEach(product => {
-                const productCard = createSearchProductCard(product);
+                const productCard = createProductCard(product);
                 searchProductsGrid.appendChild(productCard);
             });
         }
@@ -6659,7 +5832,7 @@
             productCard.className = 'product-card';
             productCard.onclick = () => openProductModal(product.id);
             productCard.innerHTML = `
-                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'>">
+                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
                     <div class="product-price">₹${product.price}</div>
@@ -6667,20 +5840,6 @@
                         <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
                         <button class="btn-order" onclick="event.stopPropagation(); openProductModal('${product.id}')">Order Now</button>
                     </div>
-                </div>
-            `;
-            return productCard;
-        }
-        
-        function createSearchProductCard(product) {
-            const productCard = document.createElement('div');
-            productCard.className = 'product-card';
-            productCard.onclick = () => openProductModal(product.id);
-            productCard.innerHTML = `
-                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'>">
-                <div class="product-info">
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">₹${product.price}</div>
                 </div>
             `;
             return productCard;
@@ -6883,6 +6042,10 @@
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
                         <div class="product-price">₹${product.price}</div>
+                        <div class="product-buttons">
+                            <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
+                            <button class="btn-order" onclick="event.stopPropagation(); openProductModal('${product.id}')">Order Now</button>
+                        </div>
                     </div>
                 `;
                 productsGrid.appendChild(productCard);
@@ -7137,23 +6300,24 @@
         // Update slideshow with current data
         function updateSlideshow() {
             console.log('Updating slideshow with', slidesData.length, 'slides');
-            const slidesTrack = document.querySelector('#slidesTrack');
-            const dotsContainer = document.querySelector('#dotsContainer');
+            const slideshowContainer = document.querySelector('.slideshow-container');
+            const dotsContainer = document.querySelector('.dots-container');
             
-            if (!slidesTrack || !dotsContainer) {
+            if (!slideshowContainer || !dotsContainer) {
                 console.error('Slideshow containers not found');
                 return;
             }
             
             // Clear existing slides
-            slidesTrack.innerHTML = '';
+            const existingSlides = slideshowContainer.querySelectorAll('.slides');
+            existingSlides.forEach(slide => slide.remove());
             
             // Clear existing dots
             dotsContainer.innerHTML = '';
             
             // If no slides, show empty message
             if (slidesData.length === 0) {
-                slidesTrack.innerHTML = '<div style="padding: 50px; text-align: center; color: #666; min-width: 100%;">No slides added yet. Admin can add slides through the admin panel.</div>';
+                slideshowContainer.innerHTML = '<div style="padding: 50px; text-align: center; color: #666;">No slides added yet. Admin can add slides through the admin panel.</div>';
                 console.log('Showing empty state message');
                 return;
             }
@@ -7192,7 +6356,7 @@
                     </div>
                 `;
                 
-                slidesTrack.appendChild(slideDiv);
+                slideshowContainer.appendChild(slideDiv);
                 
                 // Add dot
                 const dot = document.createElement('span');
