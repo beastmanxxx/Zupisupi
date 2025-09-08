@@ -17,7 +17,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f8fafc !important;
+            background: white !important;
             min-height: 100vh;
             overflow-x: hidden;
             color: #1a202c;
@@ -296,7 +296,7 @@
         .main-content {
             margin-top: 72px;
             padding: 0;
-            background: #f8fafc;
+            background: white;
             min-height: calc(100vh - 72px);
         }
         
@@ -313,90 +313,169 @@
             margin-bottom: 30px;
         }
 
-        /* Modern Hero Banner Styles */
+        /* Modern Hero Banner Styles - Flipkart Style */
         .slideshow-container {
             position: relative;
-            margin: 24px auto;
-            border-radius: 16px;
+            margin: 10px auto 20px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             background: white;
+            border: 1px solid #e0e6ed;
         }
         
         .container .slideshow-container {
             max-width: none;
-            margin: 24px 0;
+            margin: 0 0 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .slideshow-container {
+                margin: 10px auto 20px;
+            }
+            
+            .container .slideshow-container {
+                margin: 0 0 20px;
+            }
         }
 
         .slides {
             display: none;
-            animation: fadeIn 0.5s ease-in-out;
+            position: relative;
+            animation: slideIn 0.5s ease-in-out;
         }
 
         .slides.active {
             display: block;
         }
-
+        
         .slides img {
             width: 100%;
-            height: 100%;
-            max-width: 100%;
-            max-height: 200px;
-            object-fit: contain;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        
+        .slides:hover img {
+            transform: scale(1.05);
+        }
+        
+        /* Flipkart-style navigation arrows */
+        .slideshow-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #2874f0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .slideshow-nav:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .slideshow-nav.prev {
+            left: 15px;
+        }
+        
+        .slideshow-nav.next {
+            right: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .slideshow-nav {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+            
+            .slideshow-nav.prev {
+                left: 10px;
+            }
+            
+            .slideshow-nav.next {
+                right: 10px;
+            }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         /* Slideshow indicators */
         .dots-container {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 8px;
         }
 
         .dot {
-            height: 12px;
-            width: 12px;
-            margin: 0 5px;
-            background-color: #bdc3c7;
+            height: 8px;
+            width: 8px;
+            margin: 0 3px;
+            background: #c2c8d0;
             border-radius: 50%;
             display: inline-block;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .dot.active, .dot:hover {
-            background-color: #717171;
+        .dot.active {
+            background: #2874f0;
+            transform: scale(1.3);
+        }
+        
+        .dot:hover {
+            background: #2874f0;
+            opacity: 0.7;
         }
 
         /* Modern Categories Section */
         .categories-section {
-            margin: 48px 0;
+            margin: 20px 0;
             background: white;
-            padding: 32px 0;
+            padding: 16px 0;
         }
 
         .section-title {
-            text-align: left;
-            font-size: 24px;
+            text-align: center;
+            font-size: 22px;
             color: #1a202c;
-            margin-bottom: 24px;
-            font-weight: 700;
-            letter-spacing: -0.025em;
+            font-weight: 600;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         
         @media (min-width: 768px) {
             .section-title {
-                font-size: 28px;
-                margin-bottom: 32px;
+                font-size: 26px;
+                margin-bottom: 20px;
             }
         }
 
         .categories-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
             gap: 12px;
             padding: 0 16px;
             width: 100%;
@@ -405,15 +484,15 @@
         
         @media (min-width: 640px) {
             .categories-grid {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
                 gap: 16px;
             }
         }
         
         @media (min-width: 1024px) {
             .categories-grid {
-                grid-template-columns: repeat(6, 1fr);
-                gap: 24px;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 12px;
             }
         }
 
@@ -485,9 +564,9 @@
 
         /* Modern Products Section */
         .products-section {
-            margin: 48px 0;
+            margin: 20px 0;
             background: white;
-            padding: 32px 0;
+            padding: 16px 0;
         }
 
         .products-grid {
@@ -528,17 +607,15 @@
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             transition: all 0.2s ease;
             cursor: pointer;
-            border: 1px solid #f1f5f9;
+            border: 1px solid #d1d5db;
             position: relative;
         }
 
         .product-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border-color: #e2e8f0;
+            border-color: #9ca3af;
         }
 
         .product-image {
@@ -620,31 +697,31 @@
 
         /* Product cards no longer show buttons */
 
-        /* Modern Product Modal */
+        /* Full Viewport Product Modal */
         .product-modal {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
             display: none;
             justify-content: center;
-            align-items: center;
-            padding: 16px;
+            align-items: flex-start;
+            z-index: 2000;
+            backdrop-filter: blur(8px);
+            padding: 0;
+            overflow-y: auto;
         }
 
         .product-modal-content {
             background: white;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 480px;
-            max-height: 85vh;
+            border-radius: 0;
+            width: 100vw;
+            min-height: 100vh;
             overflow-y: auto;
             overflow-x: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: none;
         }
 
         .product-modal-header {
@@ -654,7 +731,10 @@
             padding: 20px 24px;
             border-bottom: 1px solid #f1f5f9;
             background: #fafbfc;
-            border-radius: 16px 16px 0 0;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .product-modal-header h2 {
@@ -798,8 +878,8 @@
         /* Related Products Styles */
         .related-products-section,
         .cart-related-products {
-            margin-top: 30px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 15px;
             border-top: 1px solid #e5e7eb;
         }
 
@@ -892,6 +972,55 @@
             }
         }
 
+        /* Zupisupi Footer Styles */
+        .zupisupi-footer {
+            margin-top: 20px;
+            padding: 15px 0;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            background: white;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-logo {
+            height: 24px;
+            width: auto;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .footer-reserved {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .zupisupi-footer {
+                margin-top: 15px;
+                padding: 12px 0;
+            }
+            
+            .footer-text {
+                font-size: 13px;
+            }
+            
+            .footer-reserved {
+                font-size: 11px;
+            }
+        }
+
         /* Cart Section Styles */
         .cart-sidebar {
             position: fixed;
@@ -938,17 +1067,27 @@
         .cart-item {
             display: flex;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .cart-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
         .cart-item-image {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             object-fit: contain;
             border-radius: 8px;
-            background: #f8f9fa;
-            margin-right: 15px;
+            background: white;
+            margin-right: 12px;
+            border: 1px solid #e5e7eb;
         }
 
         .cart-item-info {
@@ -956,24 +1095,29 @@
         }
 
         .cart-item-name {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 2px;
+            font-size: 14px;
+            line-height: 1.3;
         }
 
         .cart-item-price {
-            color: #27ae60;
-            font-weight: 700;
+            color: #059669;
+            font-weight: 600;
+            font-size: 13px;
         }
 
         .cart-item-remove {
-            background: #e74c3c;
+            background: #ef4444;
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 6px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .cart-empty {
@@ -1318,26 +1462,29 @@
         .cart-item-main {
             display: flex;
             align-items: center;
-            padding: 15px;
-            border: 1px solid #f0f0f0;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            padding: 16px;
+            margin-bottom: 12px;
             background: white;
-            transition: box-shadow 0.3s ease;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
         }
 
         .cart-item-main:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: #e2e8f0;
         }
 
         .cart-item-image-main {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             object-fit: contain;
-            border-radius: 8px;
-            background: #f8f9fa;
-            margin-right: 15px;
+            border-radius: 12px;
+            background: #f8fafc;
+            margin-right: 16px;
             cursor: pointer;
+            border: 1px solid #e5e7eb;
         }
 
         .cart-item-info-main {
@@ -1346,28 +1493,29 @@
         }
 
         .cart-item-name-main {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            font-size: 16px;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 4px;
+            font-size: 15px;
+            line-height: 1.4;
         }
 
         .cart-item-price-main {
-            color: #27ae60;
-            font-weight: 700;
+            color: #059669;
+            font-weight: 600;
             font-size: 14px;
         }
 
         .cart-item-remove-main {
-            background: #e74c3c;
+            background: #ef4444;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
+            padding: 8px 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: background 0.3s ease;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .cart-item-remove-main:hover {
@@ -2057,8 +2205,11 @@
         <div class="main-content">
             <!-- Hero Banner -->
             <div class="container">
+                <h2 class="section-title" style="margin-top: 100px; margin-bottom: 20px;">New Arrivals</h2>
                 <div class="slideshow-container" id="slideshowContainer">
                     <!-- Slides will be dynamically added by admin -->
+                    <button class="slideshow-nav prev" onclick="changeSlide(-1)">‹</button>
+                    <button class="slideshow-nav next" onclick="changeSlide(1)">›</button>
                 </div>
                 
                 <!-- Slideshow Dots -->
@@ -2087,6 +2238,17 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Zupisupi Footer -->
+                <div class="zupisupi-footer">
+                    <div class="container">
+                        <div class="footer-content">
+                            <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                            <span class="footer-text">Zupisupi</span>
+                        </div>
+                        <div class="footer-reserved">All Rights Reserved</div>
+                    </div>
+                </div>
             </div>
 
             <!-- Search Section -->
@@ -2106,6 +2268,17 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Zupisupi Footer -->
+                    <div class="zupisupi-footer">
+                        <div class="container">
+                            <div class="footer-content">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                                <span class="footer-text">Zupisupi</span>
+                            </div>
+                            <div class="footer-reserved">All Rights Reserved</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2116,6 +2289,17 @@
                         <h2 class="section-title">My Orders</h2>
                         <div class="orders-content" id="ordersContent">
                             <p style="text-align: center; color: #666; padding: 40px;" id="noOrdersMessage">No orders yet. Place your first order!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Zupisupi Footer -->
+                    <div class="zupisupi-footer">
+                        <div class="container">
+                            <div class="footer-content">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                                <span class="footer-text">Zupisupi</span>
+                            </div>
+                            <div class="footer-reserved">All Rights Reserved</div>
                         </div>
                     </div>
                 </div>
@@ -2134,6 +2318,17 @@
                                 <div class="cart-total-amount-main" id="cartTotalAmountMain">Total: ₹0</div>
                                 <button class="cart-checkout-main" onclick="openConfirmOrderModalForAllCartItems()">Order All</button>
                             </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Zupisupi Footer -->
+                    <div class="zupisupi-footer">
+                        <div class="container">
+                            <div class="footer-content">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                                <span class="footer-text">Zupisupi</span>
+                            </div>
+                            <div class="footer-reserved">All Rights Reserved</div>
                         </div>
                     </div>
                 </div>
@@ -2608,6 +2803,17 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Zupisupi Footer -->
+                    <div class="zupisupi-footer">
+                        <div class="container">
+                            <div class="footer-content">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                                <span class="footer-text">Zupisupi</span>
+                            </div>
+                            <div class="footer-reserved">All Rights Reserved</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2768,6 +2974,17 @@
             <div class="product-modal-body" id="productModalBody">
                 <!-- Product details will be populated here -->
             </div>
+            
+            <!-- Zupisupi Footer -->
+            <div class="zupisupi-footer">
+                <div class="container">
+                    <div class="footer-content">
+                        <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                        <span class="footer-text">Zupisupi</span>
+                    </div>
+                    <div class="footer-reserved">All Rights Reserved</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2780,6 +2997,17 @@
             </div>
             <div class="product-modal-body" id="confirmOrderModalBody">
                 <!-- Order confirmation details will be populated here -->
+            </div>
+            
+            <!-- Zupisupi Footer -->
+            <div class="zupisupi-footer">
+                <div class="container">
+                    <div class="footer-content">
+                        <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                        <span class="footer-text">Zupisupi</span>
+                    </div>
+                    <div class="footer-reserved">All Rights Reserved</div>
+                </div>
             </div>
         </div>
     </div>
@@ -2804,6 +3032,17 @@
             <h4 class="related-products-title">You might also like</h4>
             <div class="related-products-scroll" id="cartRelatedProducts">
                 <!-- Related products will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Zupisupi Footer -->
+        <div class="zupisupi-footer">
+            <div class="container">
+                <div class="footer-content">
+                    <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
+                    <span class="footer-text">Zupisupi</span>
+                </div>
+                <div class="footer-reserved">All Rights Reserved</div>
             </div>
         </div>
 
@@ -3294,7 +3533,7 @@
         }
 
         function startSlideshow() {
-            slideInterval = setInterval(nextSlide, 5000); // Change every 5 seconds
+            slideInterval = setInterval(nextSlide, 3000); // Change every 3 seconds
         }
 
         function stopSlideshow() {
@@ -3306,6 +3545,23 @@
         // Manual slide navigation
         window.currentSlide = function(index) {
             slideIndex = index - 1; // Convert to 0-based index
+            showSlide(slideIndex);
+            stopSlideshow();
+            startSlideshow(); // Restart auto-scroll
+        };
+
+        // Navigation arrow functions
+        window.changeSlide = function(direction) {
+            if (slidesData.length === 0) return;
+            
+            slideIndex += direction;
+            
+            if (slideIndex >= slidesData.length) {
+                slideIndex = 0;
+            } else if (slideIndex < 0) {
+                slideIndex = slidesData.length - 1;
+            }
+            
             showSlide(slideIndex);
             stopSlideshow();
             startSlideshow(); // Restart auto-scroll
