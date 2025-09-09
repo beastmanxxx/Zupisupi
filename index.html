@@ -4422,11 +4422,20 @@
         // Add event to Firebase Firestore
         async function addEventToFirebase(eventData) {
             try {
+                // Remove any existing local ID before sending to Firebase
+                delete eventData.id;
+                
                 const docRef = await addDoc(collection(db, 'events'), eventData);
-                console.log('Event added with ID: ', docRef.id);
-                // Update the event data with the Firebase ID
-                eventData.id = docRef.id;
-                eventsData.push(eventData);
+                console.log('Event added with Firebase ID: ', docRef.id);
+                
+                // Create new event object with Firebase ID
+                const firebaseEvent = {
+                    id: docRef.id,
+                    ...eventData
+                };
+                
+                console.log('Event with Firebase ID:', firebaseEvent);
+                eventsData.push(firebaseEvent);
                 return true;
             } catch (error) {
                 console.error('Error adding event: ', error);
@@ -4437,12 +4446,41 @@
         // Remove event from Firebase Firestore
         async function removeEventFromFirebase(eventId) {
             try {
-                await deleteDoc(doc(db, 'events', eventId));
-                console.log('Event removed with ID: ', eventId);
+                console.log('Attempting to delete event with ID:', eventId);
+                console.log('Current eventsData before deletion:', eventsData);
+                
+                // Create document reference
+                const eventDocRef = doc(db, 'events', eventId);
+                console.log('Document reference created for:', eventId);
+                
+                // Delete from Firebase with await and error checking
+                const deleteResult = await deleteDoc(eventDocRef);
+                console.log('Firebase deleteDoc completed. Result:', deleteResult);
+                
+                // Verify deletion by trying to get the document
+                try {
+                    const deletedDoc = await getDoc(eventDocRef);
+                    if (deletedDoc.exists()) {
+                        console.error('ERROR: Document still exists in Firebase after deletion!');
+                        return false;
+                    } else {
+                        console.log('SUCCESS: Document confirmed deleted from Firebase');
+                    }
+                } catch (verifyError) {
+                    console.log('Document verification failed (expected for deleted doc):', verifyError.message);
+                }
+                
+                // Remove from local array only after Firebase deletion is confirmed
                 eventsData = eventsData.filter(event => event.id !== eventId);
+                console.log('Event removed from local array. New eventsData:', eventsData);
+                
                 return true;
             } catch (error) {
-                console.error('Error removing event: ', error);
+                console.error('Error removing event from Firebase:', error);
+                console.error('Event ID that failed to delete:', eventId);
+                console.error('Full error object:', error);
+                console.error('Error code:', error.code);
+                console.error('Error message:', error.message);
                 return false;
             }
         }
@@ -7873,14 +7911,15 @@
                 return;
             }
             
+            // Don't set local ID - let Firebase generate the ID
             const eventData = {
-                id: Date.now().toString(),
                 name: eventName,
                 backgroundImage: backgroundImage,
                 products: selectedProducts,
                 createdAt: new Date().toISOString()
             };
             
+            console.log('Adding event without local ID:', eventData);
             const success = await addEventToFirebase(eventData);
             if (success) {
                 document.getElementById('eventName').value = '';
@@ -7908,12 +7947,25 @@
         }
         
         window.removeEvent = async function(eventId) {
+            // Add confirmation dialog
+            if (!confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+                return;
+            }
+            
+            console.log('=== Starting Event Removal Process ===');
+            console.log('Event ID to remove:', eventId);
+            console.log('Type of eventId:', typeof eventId);
+            console.log('Events before removal:', eventsData.map(e => ({id: e.id, name: e.name})));
+            
             const success = await removeEventFromFirebase(eventId);
             if (success) {
+                console.log('Event removal successful, refreshing admin panel');
                 loadEventsData();
                 loadEventsOnHomePage();
                 showNotification('Event removed successfully!', 'success');
+                console.log('=== Event Removal Process Complete ===');
             } else {
+                console.error('Event removal failed');
                 showNotification('Error removing event. Please try again.', 'error');
             }
         };
