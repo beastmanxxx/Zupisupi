@@ -1495,47 +1495,6 @@
         }
 
         /* Cart Section Styles */
-        .cart-sidebar {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 400px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-            transition: right 0.3s ease;
-            z-index: 2000;
-            overflow-y: auto;
-        }
-
-        .cart-sidebar.open {
-            right: 0;
-        }
-
-        .cart-header {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-header h2 {
-            margin: 0;
-            color: #2c3e50;
-        }
-
-        .cart-close {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .cart-items {
-            padding: 20px;
-        }
 
         .cart-item {
             display: flex;
@@ -3923,28 +3882,6 @@
         </div>
     </div>
 
-    <!-- Cart Sidebar -->
-    <div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
-    <div id="cartSidebar" class="cart-sidebar">
-        <div class="cart-header">
-            <h2>Shopping Cart</h2>
-            <button class="cart-close" onclick="closeCart()">&times;</button>
-        </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Cart items will be populated here -->
-        </div>
-        <div class="cart-total" id="cartTotal" style="display: none;">
-            <div class="cart-total-amount" id="cartTotalAmount">Total: ₹0</div>
-            <button class="cart-checkout" onclick="openConfirmOrderModalForAllCartItems()">Order All</button>
-        </div>
-        
-        <div class="cart-related-products">
-            <h4 class="related-products-title">You might also like</h4>
-            <div class="related-products-scroll" id="cartRelatedProducts">
-                <!-- Related products will be populated here -->
-            </div>
-        </div>
-        
         <!-- Zupisupi Footer -->
         <div class="zupisupi-footer">
             <div class="container">
@@ -7957,17 +7894,13 @@
             updateProductsDisplay();
         };
 
-        // Cart functionality
+        // Cart functionality - redirect to cart page
         window.openCart = function() {
-            document.getElementById('cartSidebar').classList.add('open');
-            document.getElementById('cartOverlay').style.display = 'block';
-            updateCartDisplay();
-            loadCartRelatedProducts();
+            setActiveTab('cart');
         };
 
         window.closeCart = function() {
-            document.getElementById('cartSidebar').classList.remove('open');
-            document.getElementById('cartOverlay').style.display = 'none';
+            // No longer needed - cart sidebar removed
         };
 
         window.addToCart = async function(productId) {
@@ -9387,6 +9320,10 @@
             document.getElementById('faqModal').style.display = 'none';
         }
 
+        window.closeSidebar = function() {
+            // No longer needed - cart sidebar removed
+        };
+
         window.openPrivacyModal = function() {
             console.log('Opening Privacy Modal');
             document.getElementById('privacyModal').style.display = 'flex';
@@ -9649,9 +9586,6 @@
                         break;
                     case 'cart':
                         closeCartModal();
-                        break;
-                    case 'cartSidebar':
-                        closeSidebar();
                         break;
                 }
                 return;
