@@ -334,7 +334,7 @@
             background: white;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             border: 1px solid #e0e6ed;
-            height: 150px;
+            height: 250px;
         }
         
         .slides-wrapper {
@@ -367,7 +367,7 @@
         
         .slides img {
             width: 100%;
-            height: 250px;
+            height: 100%;
             object-fit: cover;
             display: block;
             transition: transform 0.4s ease;
@@ -2722,8 +2722,7 @@
                 width: 100%;
                 height: 100%;
                 max-width: 100%;
-                max-height: 150px;
-                object-fit: contain;
+                object-fit: cover;
             }
 
             .slideshow-container {
@@ -5249,6 +5248,10 @@
             
             // Add to modal stack
             modalStack.push('category');
+            
+            // Add to browser history so back button works
+            history.pushState({modal: 'category', categoryName: categoryName}, '', `#category-${categoryName}`);
+            
             const modal = document.getElementById('categoryModal');
             const title = document.getElementById('categoryModalTitle');
             const searchInput = document.getElementById('categorySearchInput');
@@ -6195,6 +6198,9 @@
             
             // Add to modal stack
             modalStack.push('product');
+            
+            // Add to browser history so back button works
+            history.pushState({modal: 'product', productId: productId}, '', `#product-${productId}`);
             
             const modal = document.getElementById('productModal');
             const modalBody = document.getElementById('productModalBody');
@@ -9193,7 +9199,7 @@
                 slideDiv.innerHTML = `
                     <img src="${slide.url}" 
                          alt="${slide.title}" 
-                         style="width: 100%; height: 250px; object-fit: cover;"
+                         style="width: 100%; height: 100%; object-fit: cover;"
                          onload="console.log('Image loaded successfully:', this.src)"
                          onerror="
                             console.error('Failed to load image:', this.src);
@@ -9591,7 +9597,25 @@
                 return;
             }
             
-            if (event.state && event.state.section) {
+            if (event.state && event.state.modal) {
+                // Handle modal back navigation
+                if (event.state.modal === 'category') {
+                    // Remove from modal stack and close modal
+                    const categoryIndex = modalStack.lastIndexOf('category');
+                    if (categoryIndex !== -1) {
+                        modalStack.splice(categoryIndex, 1);
+                    }
+                    closeCategoryModal();
+                } else if (event.state.modal === 'product') {
+                    // Remove from modal stack and close modal
+                    const productIndex = modalStack.lastIndexOf('product');
+                    if (productIndex !== -1) {
+                        modalStack.splice(productIndex, 1);
+                    }
+                    closeProductModal();
+                }
+                return;
+            } else if (event.state && event.state.section) {
                 // Navigate to the previous section without adding to history
                 setActiveTabWithoutHistory(event.state.section);
             } else {
@@ -9599,16 +9623,13 @@
                 if (navigationHistory.length > 1 && currentHistoryIndex > 0) {
                     currentHistoryIndex--;
                     setActiveTabWithoutHistory(navigationHistory[currentHistoryIndex]);
-                } else if (navigationHistory[currentHistoryIndex] === 'home') {
-                    // If we're on home page and user presses back, close the app
-                    if (window.Android && window.Android.closeApp) {
-                        window.Android.closeApp();
-                    } else {
-                        // For web browsers, show a confirmation
-                        if (confirm('Do you want to exit the app?')) {
-                            window.close();
-                        }
-                    }
+                } else {
+                    // If we're at the beginning of navigation history, prevent default back behavior
+                    // Push current state back to prevent browser from going to previous page
+                    history.pushState({section: navigationHistory[currentHistoryIndex]}, '', `#${navigationHistory[currentHistoryIndex]}`);
+                    
+                    // Show a subtle notification instead of closing the app
+                    console.log('Already at the beginning of navigation history');
                 }
             }
         });
