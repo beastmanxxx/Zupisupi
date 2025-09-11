@@ -6922,6 +6922,11 @@
             const modal = document.getElementById('productModal');
             const modalBody = document.getElementById('productModalBody');
             
+            // Scroll modal to top when product changes
+            if (modal) {
+                modal.scrollTop = 0;
+            }
+            
             // Prepare all images (main + sub images)
             const allImages = [product.imageUrl];
             if (product.subImages && product.subImages.length > 0) {
@@ -7084,6 +7089,11 @@
             
             const modal = document.getElementById('productModal');
             const modalBody = document.getElementById('productModalBody');
+            
+            // Scroll modal to top when product changes
+            if (modal) {
+                modal.scrollTop = 0;
+            }
             
             let deliveryCharge = product.deliveryCharge || 0;
             
