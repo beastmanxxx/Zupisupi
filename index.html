@@ -8106,6 +8106,8 @@
                 productId: product.id,
                 productName: product.name,
                 productPrice: currentPrice,
+                originalPrice: originalPrice,
+                discount: discount,
                 productImage: product.imageUrl,
                 productSize: selectedSize,
                 quantity: quantity,
@@ -8175,11 +8177,17 @@
                 return;
             }
             
+            // Calculate discount information
+            const originalPrice = product.originalPrice || product.price;
+            const discount = product.discount || 0;
+            
             // Create order data
             const orderData = {
                 productId: product.id,
                 productName: product.name,
                 productPrice: currentPrice,
+                originalPrice: originalPrice,
+                discount: discount,
                 productImage: product.imageUrl,
                 productSize: selectedSize,
                 quantity: quantity,
@@ -8194,8 +8202,8 @@
             // Save order to Firebase
             const orderId = await saveOrderToFirebase(orderData);
             if (orderId) {
-                // Remove item from cart after successful order
-                removeFromCart(productId);
+                // Remove item from cart after successful order (size-specific)
+                removeFromCart(productId, selectedSize);
                 showNotification(`Order placed successfully! 🎉<br>Order ID: ${orderId}<br>Total: ₹${totalAmount}`, 'success', 6000);
                 closeConfirmOrderModal();
                 closeProductModal();
@@ -8226,6 +8234,9 @@
             
             // Update price and total
             updatePriceBySize(productId);
+            
+            // Update cart button based on new size selection
+            updateProductModalButtons(productId);
         };
         
         // Update price based on selected size with discount application
@@ -8361,15 +8372,21 @@
             }, 200);
         }
 
-        // Function to update product modal buttons based on cart status
+        // Function to update product modal buttons based on cart status (size-specific)
         function updateProductModalButtons(productId) {
             const cartBtn = document.getElementById(`cartBtn-${productId}`);
             if (!cartBtn) return;
             
-            // Check if product is in cart
-            const isInCart = cartItems.some(item => item.id === productId);
+            // Get currently selected size
+            const selectedSizeInput = document.getElementById(`selected-size-${productId}`);
+            const selectedSize = selectedSizeInput ? selectedSizeInput.value : '';
             
-            if (isInCart) {
+            // Check if this specific product with this specific size is in cart
+            const isInCartWithSize = cartItems.some(item => 
+                item.id === productId && item.size === selectedSize
+            );
+            
+            if (isInCartWithSize) {
                 cartBtn.textContent = 'Go to Cart';
                 cartBtn.onclick = function() {
                     closeProductModal();
@@ -8637,10 +8654,17 @@
                 }
                 
                 const deliveryCharge = product.deliveryCharge || 0;
+                
+                // Calculate discount information
+                const originalPrice = product.price;
+                const discount = product.discount || 0;
+                
                 const orderData = {
                     productId: product.id,
                     productName: product.name,
                     productPrice: currentPrice,
+                    originalPrice: originalPrice,
+                    discount: discount,
                     productImage: product.imageUrl,
                     productSize: selectedSize,
                     quantity: quantity,
@@ -8781,9 +8805,9 @@
                         <div class="product-rating" style="color: #fbbf24; font-size: 12px; margin: 2px 0;">
                             ${'⭐'.repeat(item.rating || 0)} ${item.rating ? `(${item.rating})` : ''}
                         </div>
-                        <div style="color: #666; font-size: 12px; margin-top: 4px;">Quantity: ${item.quantity}</div>
+                        <div style="color: #666; font-size: 12px; margin-top: 4px;">Size: ${item.size || 'N/A'} | Quantity: ${item.quantity}</div>
                     </div>
-                    <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">Remove</button>
+                    <button class="cart-item-remove" onclick="removeFromCart('${item.id}', '${item.size}')">Remove</button>
                 `;
                 cartItemsContainer.appendChild(cartItem);
             });
@@ -8824,9 +8848,9 @@
                         <div class="product-rating" style="color: #fbbf24; font-size: 12px; margin: 2px 0;">
                             ${'⭐'.repeat(item.rating || 0)} ${item.rating ? `(${item.rating})` : ''}
                         </div>
-                        <div style="color: #666; font-size: 13px; margin-top: 4px;">Quantity: ${item.quantity}</div>
+                        <div style="color: #666; font-size: 13px; margin-top: 4px;">Size: ${item.size || 'N/A'} | Quantity: ${item.quantity}</div>
                     </div>
-                    <button class="cart-item-remove-main" onclick="removeFromCart('${item.id}')">Remove</button>
+                    <button class="cart-item-remove-main" onclick="removeFromCart('${item.id}', '${item.size}')">Remove</button>
                 `;
                 cartItemsContainer.appendChild(cartItem);
             });
@@ -8835,9 +8859,9 @@
             cartTotal.style.display = 'block';
         }
 
-        window.removeFromCart = async function(productId) {
-            const removedItem = cartItems.find(item => item.id === productId);
-            cartItems = cartItems.filter(item => item.id !== productId);
+        window.removeFromCart = async function(productId, size) {
+            const removedItem = cartItems.find(item => item.id === productId && item.size === size);
+            cartItems = cartItems.filter(item => !(item.id === productId && item.size === size));
             updateCartCount();
             updateCartDisplay();
             updateCartDisplayMain();
@@ -8845,7 +8869,7 @@
             
             // Show removal notification
             if (removedItem) {
-                showNotification(`${removedItem.name} removed from cart! 🗑️`, 'success');
+                showNotification(`${removedItem.name} (${size}) removed from cart! 🗑️`, 'success');
             }
         };
 
@@ -8961,6 +8985,8 @@
                     productId: product.id,
                     productName: product.name,
                     productPrice: product.price,
+                    originalPrice: product.originalPrice || product.price,
+                    discount: product.discount || 0,
                     productImage: product.imageUrl,
                     quantity: 1,
                     totalAmount: product.price,
@@ -9325,6 +9351,11 @@
                             </div>
                             <div style="flex: 1; min-width: 0;">
                                 <h3 style="font-size: 16px; font-weight: 700; color: #2c3e50; margin: 0 0 5px 0; line-height: 1.3; word-break: break-word;">${order.productName}</h3>
+                                ${(() => {
+                                    const product = productsData.find(p => p.id === order.productId);
+                                    const rating = product ? product.rating : 0;
+                                    return rating > 0 ? `<div style="color: #fbbf24; font-size: 12px; margin: 2px 0;">${'⭐'.repeat(rating)} (${rating})</div>` : '';
+                                })()}
                                 <div style="font-size: 12px; color: #666; margin-bottom: 3px;">Order ID: <span style="font-family: monospace; background: #f8f9fa; padding: 1px 4px; border-radius: 3px;">${order.id.substring(0, 12)}...</span></div>
                                 <div style="font-size: 12px; color: #666;">📅 ${order.orderDate}</div>
                             </div>
@@ -9339,8 +9370,29 @@
                                 ${order.deliveryCharge ? `<div style="font-size: 13px; color: #27ae60; font-weight: 600;">🚚 Delivery: ₹${order.deliveryCharge}</div>` : ''}
                             </div>
                             <div style="flex: 1; background: #e8f5e8; padding: 10px; border-radius: 6px; text-align: center; display: flex; flex-direction: column; justify-content: center;">
-                                <div style="font-size: 12px; color: #27ae60; margin-bottom: 2px;">Total Amount</div>
-                                <div style="font-size: 18px; font-weight: 700; color: #27ae60;">₹${order.totalAmount}</div>
+                                ${(() => {
+                                    // Get product data to check for discount
+                                    const product = productsData.find(p => p.id === order.productId);
+                                    const hasDiscount = product && product.discount && product.discount > 0;
+                                    const originalPrice = product ? product.originalPrice || product.price : order.productPrice;
+                                    const discountPercent = product ? product.discount : 0;
+                                    
+                                    if (hasDiscount && originalPrice > order.productPrice) {
+                                        const originalTotal = (originalPrice * order.quantity) + (order.deliveryCharge || 0);
+                                        return `
+                                            <div style="font-size: 10px; color: #999; margin-bottom: 1px;">Original Total</div>
+                                            <div style="font-size: 12px; color: #999; text-decoration: line-through; margin-bottom: 2px;">₹${originalTotal}</div>
+                                            <div style="font-size: 12px; color: #27ae60; margin-bottom: 2px;">Final Amount</div>
+                                            <div style="font-size: 18px; font-weight: 700; color: #27ae60;">₹${order.totalAmount}</div>
+                                            <div style="background: #27ae60; color: white; font-size: 10px; padding: 2px 6px; border-radius: 8px; display: inline-block; margin-top: 3px;">${discountPercent}% OFF</div>
+                                        `;
+                                    } else {
+                                        return `
+                                            <div style="font-size: 12px; color: #27ae60; margin-bottom: 2px;">Total Amount</div>
+                                            <div style="font-size: 18px; font-weight: 700; color: #27ae60;">₹${order.totalAmount}</div>
+                                        `;
+                                    }
+                                })()}
                             </div>
                         </div>
                         
@@ -10702,11 +10754,15 @@
             
             orderItems.forEach(item => {
                 const itemPrice = item.price || item.productPrice || 0; // This is the discounted price
-                const originalPrice = item.originalPrice || itemPrice;
-                const discount = item.discount || 0;
                 const itemQuantity = item.quantity || 1;
                 const itemTotal = itemPrice * itemQuantity; // Total with discounted price
                 totalAmount += itemTotal;
+                
+                // Get product data to get original price and discount
+                const productData = productsData.find(p => p.id === (item.productId || item.id));
+                const originalPrice = (item.originalPrice || (productData ? productData.originalPrice : null) || (productData ? productData.price : itemPrice));
+                const discount = (item.discount || (productData ? productData.discount : 0));
+                const rating = productData ? productData.rating : 0;
                 
                 // Handle product image with better fallback
                 let productImageHTML = '';
@@ -10721,9 +10777,10 @@
                 if (originalPrice > itemPrice && discount > 0) {
                     priceDisplay = `
                         <div style="text-align: center;">
-                            <div style="font-size: 11px; color: #27ae60; font-weight: 600;">Special Price</div>
+                            <div style="font-size: 10px; color: #999; margin-bottom: 1px;">Cut Price</div>
+                            <div style="color: #999; font-size: 11px; text-decoration: line-through; margin-bottom: 2px;">₹${originalPrice}</div>
+                            <div style="font-size: 11px; color: #27ae60; font-weight: 600; margin-bottom: 1px;">Special Price</div>
                             <div style="color: #27ae60; font-weight: 700;">₹${itemPrice}</div>
-                            <div style="color: #999; font-size: 11px; text-decoration: line-through;">₹${originalPrice}</div>
                             <div style="background: #27ae60; color: white; padding: 2px 4px; border-radius: 3px; font-size: 10px; display: inline-block; margin-top: 2px;">${discount}% off</div>
                         </div>
                     `;
@@ -10738,11 +10795,13 @@
                                 ${productImageHTML}
                                 <div>
                                     <div>${item.name || item.productName || 'Product'}</div>
+                                    ${rating > 0 ? `<div style="color: #fbbf24; font-size: 11px; margin: 1px 0;">${'⭐'.repeat(rating)} (${rating})</div>` : ''}
                                     ${item.productSize ? `<div style="color: #666; font-size: 11px;">Size: ${item.productSize}</div>` : ''}
+                                    ${originalPrice > itemPrice && discount > 0 ? `<div style="color: #27ae60; font-size: 10px; font-weight: 600;">💰 Saved: ₹${(originalPrice - itemPrice) * itemQuantity}</div>` : ''}
                                 </div>
                             </div>
                         </td>
-                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 13px;">${priceDisplay}</td>
+                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 13px;">₹${itemPrice}</td>
                         <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: center; font-size: 13px;">${itemQuantity}</td>
                         <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right; font-weight: 600; font-size: 13px; color: #27ae60;">₹${itemTotal}</td>
                     </tr>
@@ -10763,6 +10822,53 @@
                 deliveryAmount = parseFloat(order.deliveryCharge);
                 deliveryCharges = deliveryAmount;
             }
+            
+            // Calculate total discount and original amount
+            let totalDiscount = 0;
+            let originalTotal = 0;
+            
+            orderItems.forEach(item => {
+                const itemPrice = item.price || item.productPrice || 0;
+                const itemQuantity = item.quantity || 1;
+                
+                // Try to get product data from the order first, then from productsData
+                let productData = null;
+                let originalPrice = itemPrice;
+                let discount = 0;
+                
+                // Check if order has the product data stored
+                if (order.productId) {
+                    productData = productsData.find(p => p.id === order.productId);
+                } else if (item.productId || item.id) {
+                    productData = productsData.find(p => p.id === (item.productId || item.id));
+                }
+                
+                // Get original price and discount from multiple sources
+                if (order.originalPrice && order.discount) {
+                    // From order data directly
+                    originalPrice = order.originalPrice;
+                    discount = order.discount;
+                } else if (item.originalPrice && item.discount) {
+                    // From item data
+                    originalPrice = item.originalPrice;
+                    discount = item.discount;
+                } else if (productData && productData.originalPrice && productData.discount) {
+                    // From product data
+                    originalPrice = productData.originalPrice;
+                    discount = productData.discount;
+                } else if (productData && productData.price && productData.discount) {
+                    // Fallback to product price as original
+                    originalPrice = productData.price;
+                    discount = productData.discount;
+                }
+                
+                if (originalPrice > itemPrice && discount > 0) {
+                    totalDiscount += (originalPrice - itemPrice) * itemQuantity;
+                    originalTotal += originalPrice * itemQuantity;
+                } else {
+                    originalTotal += itemPrice * itemQuantity;
+                }
+            });
             
             const finalTotal = totalAmount + deliveryAmount;
             
@@ -10814,6 +10920,16 @@
                     <!-- Total Section -->
                     <div style="text-align: right; margin-bottom: 20px;">
                         <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; display: inline-block; min-width: 200px;">
+                            ${totalDiscount > 0 ? `
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: #555; font-size: 13px;">Original Total:</span>
+                                    <span style="font-weight: 600; color: #999; font-size: 13px; text-decoration: line-through;">₹${originalTotal + deliveryAmount}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="color: #27ae60; font-size: 13px;">Discount:</span>
+                                    <span style="font-weight: 600; color: #27ae60; font-size: 13px;">-₹${totalDiscount}</span>
+                                </div>
+                            ` : ''}
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                                 <span style="color: #555; font-size: 13px;">Subtotal:</span>
                                 <span style="font-weight: 600; color: #2c3e50; font-size: 13px;">₹${totalAmount}</span>
@@ -10822,6 +10938,12 @@
                                 <span style="color: #555; font-size: 13px;">Delivery Charges:</span>
                                 <span style="font-weight: 600; color: #27ae60; font-size: 13px;">${deliveryCharges === 'FREE' ? 'FREE' : '₹' + deliveryCharges}</span>
                             </div>
+                            ${totalDiscount > 0 ? `
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #27ae60;">
+                                    <span style="font-size: 12px; font-weight: 600;">💰 You Saved:</span>
+                                    <span style="font-size: 12px; font-weight: 600;">₹${totalDiscount}</span>
+                                </div>
+                            ` : ''}
                             <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid #3498db;">
                                 <span style="font-size: 15px; font-weight: 700; color: #2c3e50;">Grand Total:</span>
                                 <span style="font-size: 15px; font-weight: 700; color: #27ae60;">₹${finalTotal}</span>
@@ -10841,8 +10963,8 @@
     </script>
     
     <!-- Invoice Modal -->
-    <div id="invoiceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; padding: 0; box-sizing: border-box;">
-        <div style="position: relative; background: white; width: 100%; height: 100%; overflow-y: auto;">
+    <div id="invoiceModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: white; z-index: 10000; overflow-y: auto;">
+        <div style="position: relative; width: 100%; height: 100%; min-height: 100vh;">
             <!-- Modal Header -->
             <div style="position: sticky; top: 0; background: white; padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; z-index: 1;">
                 <h2 style="margin: 0; color: #2c3e50; font-size: 20px;">Invoice Bill</h2>
