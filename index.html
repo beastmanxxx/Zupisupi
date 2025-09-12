@@ -8147,11 +8147,11 @@
             
             // Get selected size if available
             let selectedSize = '';
-            const sizeSelect = document.getElementById(`size-${productId}`);
-            if (sizeSelect && product.sizes && product.sizes.length > 0) {
-                selectedSize = sizeSelect.value;
+            const selectedSizeInput = document.getElementById(`selected-size-${productId}`);
+            if (selectedSizeInput && ((product.sizes && product.sizes.length > 0) || (product.weightPricing && (product.weightPricing.ml.length > 0 || product.weightPricing.g.length > 0 || product.weightPricing.kg.length > 0)))) {
+                selectedSize = selectedSizeInput.value;
                 if (!selectedSize) {
-                    showNotification('Please select a size before placing order.', 'warning');
+                    showNotification('Please select a size/quantity before placing order.', 'warning');
                     return;
                 }
             }
