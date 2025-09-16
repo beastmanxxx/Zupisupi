@@ -61,31 +61,71 @@
             overflow-x: hidden;
         }
         
-        /* Lenis Smooth Scrolling Setup */
-        html.lenis {
-            height: auto;
+        /* TOP LEVEL SMOOTHNESS - Premium App Feel */
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
         
-        .lenis.lenis-smooth {
-            scroll-behavior: auto;
+        html {
+            scroll-behavior: smooth;
         }
         
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
+        body {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000px;
         }
         
         #homeSection {
             height: 100vh;
-            overflow: hidden;
-        }
-        
-        /* Performance optimizations for smooth scrolling */
-        .categories-grid, .event-products, .products-grid {
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            overscroll-behavior: contain;
             transform: translateZ(0);
             will-change: scroll-position;
             backface-visibility: hidden;
+        }
+        
+        /* Ultra-smooth animations for all elements */
+        .categories-grid, .event-products, .products-grid {
+            -webkit-overflow-scrolling: touch;
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
             contain: layout style paint;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        /* Premium card animations */
+        .product-card, .category-card {
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            contain: layout style paint;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .product-card:hover, .category-card:hover {
+            transform: translateZ(0) translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Smooth button interactions */
+        button, .btn {
+            transform: translateZ(0);
+            will-change: transform;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        button:hover, .btn:hover {
+            transform: translateZ(0) translateY(-2px);
+        }
+        
+        button:active, .btn:active {
+            transform: translateZ(0) translateY(0px) scale(0.98);
         }
         
         /* Reduce repaints and reflows */
@@ -13407,56 +13447,128 @@
         }
     </script>
     
-    <!-- Lenis Ultra Smooth Scrolling -->
+    <!-- Premium Smoothness Engine -->
     <script>
-        let lenis;
+        let rafId;
+        let isScrolling = false;
         
-        function initLenisScrolling() {
-            // Initialize Lenis with ultra-smooth settings
-            lenis = new Lenis({
-                duration: 1.2,
-                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                direction: 'vertical',
-                gestureDirection: 'vertical',
-                smooth: true,
-                mouseMultiplier: 1,
-                smoothTouch: true,
-                touchMultiplier: 2,
-                infinite: false,
-            });
+        function initPremiumSmoothness() {
+            const homeSection = document.getElementById('homeSection');
+            if (!homeSection) return;
             
-            // Animation frame loop for ultra-smooth scrolling
-            function raf(time) {
-                lenis.raf(time);
-                requestAnimationFrame(raf);
+            // Enhanced scroll performance
+            homeSection.style.cssText += `
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-behavior: smooth;
+                overscroll-behavior: contain;
+                transform: translateZ(0);
+                will-change: scroll-position;
+                backface-visibility: hidden;
+            `;
+            
+            // 60fps scroll optimization
+            let ticking = false;
+            function updateScrollPerformance() {
+                if (!ticking) {
+                    requestAnimationFrame(() => {
+                        // Optimize scroll performance
+                        homeSection.style.transform = 'translateZ(0)';
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
             }
-            requestAnimationFrame(raf);
             
-            // Prevent scroll on specific elements if needed
-            document.querySelectorAll('.modal, .sidebar').forEach(el => {
-                el.setAttribute('data-lenis-prevent', '');
+            homeSection.addEventListener('scroll', updateScrollPerformance, { passive: true });
+            
+            // Premium touch interactions
+            if ('ontouchstart' in window) {
+                let touchStartTime = 0;
+                
+                homeSection.addEventListener('touchstart', () => {
+                    touchStartTime = Date.now();
+                    homeSection.style.transition = 'none';
+                }, { passive: true });
+                
+                homeSection.addEventListener('touchend', () => {
+                    const touchDuration = Date.now() - touchStartTime;
+                    if (touchDuration < 300) {
+                        homeSection.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    }
+                }, { passive: true });
+            }
+            
+            // Intersection observer for performance
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.willChange = 'transform';
+                    } else {
+                        entry.target.style.willChange = 'auto';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            // Observe all interactive elements
+            document.querySelectorAll('.product-card, .category-card, button, .btn').forEach(el => {
+                observer.observe(el);
             });
         }
         
-        function destroyLenisScrolling() {
-            if (lenis) {
-                lenis.destroy();
-                lenis = null;
-            }
+        // Premium micro-interactions
+        function addPremiumInteractions() {
+            // Smooth hover effects for cards
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.closest('.product-card, .category-card')) {
+                    const card = e.target.closest('.product-card, .category-card');
+                    card.style.transform = 'translateZ(0) translateY(-4px) scale(1.02)';
+                    card.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
+                }
+            });
+            
+            document.addEventListener('mouseout', (e) => {
+                if (e.target.closest('.product-card, .category-card')) {
+                    const card = e.target.closest('.product-card, .category-card');
+                    card.style.transform = 'translateZ(0)';
+                    card.style.boxShadow = '';
+                }
+            });
+            
+            // Premium button interactions
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.matches('button, .btn')) {
+                    e.target.style.transform = 'translateZ(0) translateY(0px) scale(0.98)';
+                }
+            });
+            
+            document.addEventListener('mouseup', (e) => {
+                if (e.target.matches('button, .btn')) {
+                    e.target.style.transform = 'translateZ(0) translateY(-2px)';
+                }
+            });
         }
         
-        // Initialize on page load
+        // Initialize premium smoothness
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initLenisScrolling, 100);
+            setTimeout(() => {
+                initPremiumSmoothness();
+                addPremiumInteractions();
+            }, 100);
         });
         
         // Navigation integration
         function initSmoothScrollForHome() {
-            setTimeout(initLenisScrolling, 100);
+            setTimeout(() => {
+                initPremiumSmoothness();
+                addPremiumInteractions();
+            }, 100);
         }
         
         function destroySmoothScrollForHome() {
-            destroyLenisScrolling();
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+            }
         }
     </script>
     
