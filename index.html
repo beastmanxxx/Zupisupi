@@ -58,11 +58,45 @@
             overflow-x: hidden;
         }
         
-        /* Remove Locomotive Scroll - causing scroll issues */
+        /* Extreme Smooth Scrolling Optimizations */
+        html {
+            scroll-behavior: smooth;
+        }
+        
         #homeSection {
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
+            overscroll-behavior: contain;
+            scroll-snap-type: y proximity;
+            transform: translateZ(0);
+            will-change: scroll-position;
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+        
+        /* Advanced scroll optimizations */
+        .search-categories-container,
+        .slideshow-container,
+        .events-section {
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            contain: layout style paint;
+        }
+        
+        /* Smooth momentum for all scrollable elements */
+        * {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        
+        /* GPU acceleration for better performance */
+        .product-card, .category-card, .event-card {
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            contain: layout style paint;
         }
         
         /* Performance optimizations for smooth scrolling */
@@ -13393,46 +13427,129 @@
         }
     </script>
     
-    <!-- Enhanced Smooth Scrolling for Mobile -->
+    <!-- Extreme Smooth Scrolling Implementation -->
     <script>
-        // Simple smooth scrolling enhancement for mobile
-        function enhanceMobileScrolling() {
+        let scrollRAF = null;
+        let scrollVelocity = 0;
+        let lastScrollTop = 0;
+        let isScrolling = false;
+        
+        function initExtremeSmoothing() {
             const homeSection = document.getElementById('homeSection');
-            if (homeSection && window.innerWidth <= 768) {
-                // Add momentum scrolling for iOS
-                homeSection.style.webkitOverflowScrolling = 'touch';
-                homeSection.style.scrollBehavior = 'smooth';
+            if (!homeSection) return;
+            
+            // Enhanced momentum scrolling
+            homeSection.style.cssText += `
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+                scroll-snap-type: y proximity;
+                transform: translateZ(0);
+                will-change: scroll-position;
+                backface-visibility: hidden;
+                perspective: 1000px;
+            `;
+            
+            // Advanced scroll event handling with RAF
+            let ticking = false;
+            
+            function updateScroll() {
+                const currentScrollTop = homeSection.scrollTop;
+                scrollVelocity = currentScrollTop - lastScrollTop;
+                lastScrollTop = currentScrollTop;
                 
-                // Add smooth scroll animation
-                let isScrolling = false;
-                homeSection.addEventListener('scroll', () => {
-                    if (!isScrolling) {
-                        window.requestAnimationFrame(() => {
-                            isScrolling = false;
+                // Apply momentum easing
+                if (Math.abs(scrollVelocity) > 0.1) {
+                    scrollVelocity *= 0.95; // Smooth deceleration
+                }
+                
+                ticking = false;
+            }
+            
+            homeSection.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(updateScroll);
+                    ticking = true;
+                }
+                
+                // Smooth scroll indicator
+                if (!isScrolling) {
+                    isScrolling = true;
+                    homeSection.style.scrollBehavior = 'smooth';
+                    
+                    clearTimeout(scrollRAF);
+                    scrollRAF = setTimeout(() => {
+                        isScrolling = false;
+                    }, 150);
+                }
+            }, { passive: true });
+            
+            // Touch event optimizations for mobile
+            if ('ontouchstart' in window) {
+                let touchStartY = 0;
+                let touchVelocity = 0;
+                
+                homeSection.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                    touchVelocity = 0;
+                }, { passive: true });
+                
+                homeSection.addEventListener('touchmove', (e) => {
+                    const touchY = e.touches[0].clientY;
+                    touchVelocity = touchY - touchStartY;
+                    
+                    // Apply smooth momentum
+                    if (Math.abs(touchVelocity) > 5) {
+                        homeSection.style.transform = `translateZ(0) translateY(${touchVelocity * 0.1}px)`;
+                        
+                        requestAnimationFrame(() => {
+                            homeSection.style.transform = 'translateZ(0)';
                         });
-                        isScrolling = true;
+                    }
+                }, { passive: true });
+                
+                homeSection.addEventListener('touchend', () => {
+                    homeSection.style.transform = 'translateZ(0)';
+                }, { passive: true });
+            }
+            
+            // Intersection Observer for performance
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.transform = 'translateZ(0)';
+                        entry.target.style.willChange = 'transform';
+                    } else {
+                        entry.target.style.willChange = 'auto';
                     }
                 });
-            }
+            }, { threshold: 0.1 });
+            
+            // Observe all major sections
+            const sections = homeSection.querySelectorAll('.search-categories-container, .slideshow-container, .events-section, .product-card, .category-card');
+            sections.forEach(section => observer.observe(section));
         }
         
-        // Initialize on page load
+        // Initialize extreme smoothing
         document.addEventListener('DOMContentLoaded', () => {
-            enhanceMobileScrolling();
+            setTimeout(initExtremeSmoothing, 100);
         });
         
-        // Re-initialize on window resize
+        // Re-initialize on resize
         window.addEventListener('resize', () => {
-            enhanceMobileScrolling();
+            setTimeout(initExtremeSmoothing, 100);
         });
         
-        // Dummy functions to prevent errors
+        // Navigation integration
         function initSmoothScrollForHome() {
-            enhanceMobileScrolling();
+            setTimeout(initExtremeSmoothing, 100);
         }
         
         function destroySmoothScrollForHome() {
-            // No action needed
+            const homeSection = document.getElementById('homeSection');
+            if (homeSection) {
+                homeSection.style.willChange = 'auto';
+            }
         }
     </script>
     
