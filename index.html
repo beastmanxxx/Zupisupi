@@ -11364,8 +11364,34 @@
             });
         }
 
-        // Check if user is admin
-        function isAdmin(email) {
+        // Check if user is admin (check both localStorage and Firebase)
+        async function isAdmin(email) {
+            // First check localStorage for permanent admins
+            if (adminUsers.includes(email)) {
+                return true;
+            }
+            
+            // Then check Firebase Firestore for dynamic admin status
+            try {
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                let isFirebaseAdmin = false;
+                
+                usersSnapshot.forEach((userDoc) => {
+                    const userData = userDoc.data();
+                    if (userData.email === email && userData.isAdmin === true) {
+                        isFirebaseAdmin = true;
+                    }
+                });
+                
+                return isFirebaseAdmin;
+            } catch (error) {
+                console.error('Error checking Firebase admin status:', error);
+                return false;
+            }
+        }
+        
+        // Synchronous version for backward compatibility
+        function isAdminSync(email) {
             return adminUsers.includes(email);
         }
 
@@ -11384,10 +11410,15 @@
         }
 
         // Show/hide admin button based on user role
-        function updateAdminVisibility(user) {
+        async function updateAdminVisibility(user) {
             const adminBtn = document.getElementById('adminBtn');
-            if (adminBtn && user && isAdmin(user.email)) {
-                adminBtn.style.display = 'block';
+            if (adminBtn && user) {
+                const userIsAdmin = await isAdmin(user.email);
+                if (userIsAdmin) {
+                    adminBtn.style.display = 'block';
+                } else {
+                    adminBtn.style.display = 'none';
+                }
             } else if (adminBtn) {
                 adminBtn.style.display = 'none';
             }
@@ -11400,7 +11431,7 @@
                 registeredUsers.push({
                     name: user.displayName,
                     email: user.email,
-                    isAdmin: isAdmin(user.email)
+                    isAdmin: isAdminSync(user.email)
                 });
                 saveData();
             }
@@ -12070,6 +12101,11 @@
                 
                 // Reload users to reflect changes
                 loadUsersData();
+                
+                // Update admin visibility for current user if they were affected
+                if (currentUser && currentUser.email === email) {
+                    await updateAdminVisibility(currentUser);
+                }
                 
             } catch (error) {
                 console.error('Error toggling admin status:', error);
