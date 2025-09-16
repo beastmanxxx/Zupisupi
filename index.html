@@ -7,6 +7,9 @@
     <link rel="icon" href="applogo.png" sizes="16x16" type="image/png">
 
     <title>Zupisupi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&display=swap" rel="stylesheet">
+    <!-- Lenis Smooth Scrolling Library -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&family=Honk:SHLN@44.1&family=Lexend:wght@100..900&family=Macondo&family=Mrs+Sheppards&display=swap" rel="stylesheet">
     
     <!-- Locomotive Scroll CSS -->
@@ -58,45 +61,22 @@
             overflow-x: hidden;
         }
         
-        /* Extreme Smooth Scrolling Optimizations */
-        html {
-            scroll-behavior: smooth;
+        /* Lenis Smooth Scrolling Setup */
+        html.lenis {
+            height: auto;
+        }
+        
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+        
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
         }
         
         #homeSection {
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-            overscroll-behavior: contain;
-            scroll-snap-type: y proximity;
-            transform: translateZ(0);
-            will-change: scroll-position;
-            backface-visibility: hidden;
-            perspective: 1000px;
-        }
-        
-        /* Advanced scroll optimizations */
-        .search-categories-container,
-        .slideshow-container,
-        .events-section {
-            transform: translateZ(0);
-            will-change: transform;
-            backface-visibility: hidden;
-            contain: layout style paint;
-        }
-        
-        /* Smooth momentum for all scrollable elements */
-        * {
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-        }
-        
-        /* GPU acceleration for better performance */
-        .product-card, .category-card, .event-card {
-            transform: translateZ(0);
-            will-change: transform;
-            backface-visibility: hidden;
-            contain: layout style paint;
+            height: 100vh;
+            overflow: hidden;
         }
         
         /* Performance optimizations for smooth scrolling */
@@ -13427,129 +13407,56 @@
         }
     </script>
     
-    <!-- Extreme Smooth Scrolling Implementation -->
+    <!-- Lenis Ultra Smooth Scrolling -->
     <script>
-        let scrollRAF = null;
-        let scrollVelocity = 0;
-        let lastScrollTop = 0;
-        let isScrolling = false;
+        let lenis;
         
-        function initExtremeSmoothing() {
-            const homeSection = document.getElementById('homeSection');
-            if (!homeSection) return;
+        function initLenisScrolling() {
+            // Initialize Lenis with ultra-smooth settings
+            lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                gestureDirection: 'vertical',
+                smooth: true,
+                mouseMultiplier: 1,
+                smoothTouch: true,
+                touchMultiplier: 2,
+                infinite: false,
+            });
             
-            // Enhanced momentum scrolling
-            homeSection.style.cssText += `
-                scroll-behavior: smooth;
-                -webkit-overflow-scrolling: touch;
-                overscroll-behavior: contain;
-                scroll-snap-type: y proximity;
-                transform: translateZ(0);
-                will-change: scroll-position;
-                backface-visibility: hidden;
-                perspective: 1000px;
-            `;
-            
-            // Advanced scroll event handling with RAF
-            let ticking = false;
-            
-            function updateScroll() {
-                const currentScrollTop = homeSection.scrollTop;
-                scrollVelocity = currentScrollTop - lastScrollTop;
-                lastScrollTop = currentScrollTop;
-                
-                // Apply momentum easing
-                if (Math.abs(scrollVelocity) > 0.1) {
-                    scrollVelocity *= 0.95; // Smooth deceleration
-                }
-                
-                ticking = false;
+            // Animation frame loop for ultra-smooth scrolling
+            function raf(time) {
+                lenis.raf(time);
+                requestAnimationFrame(raf);
             }
+            requestAnimationFrame(raf);
             
-            homeSection.addEventListener('scroll', () => {
-                if (!ticking) {
-                    requestAnimationFrame(updateScroll);
-                    ticking = true;
-                }
-                
-                // Smooth scroll indicator
-                if (!isScrolling) {
-                    isScrolling = true;
-                    homeSection.style.scrollBehavior = 'smooth';
-                    
-                    clearTimeout(scrollRAF);
-                    scrollRAF = setTimeout(() => {
-                        isScrolling = false;
-                    }, 150);
-                }
-            }, { passive: true });
-            
-            // Touch event optimizations for mobile
-            if ('ontouchstart' in window) {
-                let touchStartY = 0;
-                let touchVelocity = 0;
-                
-                homeSection.addEventListener('touchstart', (e) => {
-                    touchStartY = e.touches[0].clientY;
-                    touchVelocity = 0;
-                }, { passive: true });
-                
-                homeSection.addEventListener('touchmove', (e) => {
-                    const touchY = e.touches[0].clientY;
-                    touchVelocity = touchY - touchStartY;
-                    
-                    // Apply smooth momentum
-                    if (Math.abs(touchVelocity) > 5) {
-                        homeSection.style.transform = `translateZ(0) translateY(${touchVelocity * 0.1}px)`;
-                        
-                        requestAnimationFrame(() => {
-                            homeSection.style.transform = 'translateZ(0)';
-                        });
-                    }
-                }, { passive: true });
-                
-                homeSection.addEventListener('touchend', () => {
-                    homeSection.style.transform = 'translateZ(0)';
-                }, { passive: true });
-            }
-            
-            // Intersection Observer for performance
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.transform = 'translateZ(0)';
-                        entry.target.style.willChange = 'transform';
-                    } else {
-                        entry.target.style.willChange = 'auto';
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            // Observe all major sections
-            const sections = homeSection.querySelectorAll('.search-categories-container, .slideshow-container, .events-section, .product-card, .category-card');
-            sections.forEach(section => observer.observe(section));
+            // Prevent scroll on specific elements if needed
+            document.querySelectorAll('.modal, .sidebar').forEach(el => {
+                el.setAttribute('data-lenis-prevent', '');
+            });
         }
         
-        // Initialize extreme smoothing
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(initExtremeSmoothing, 100);
-        });
+        function destroyLenisScrolling() {
+            if (lenis) {
+                lenis.destroy();
+                lenis = null;
+            }
+        }
         
-        // Re-initialize on resize
-        window.addEventListener('resize', () => {
-            setTimeout(initExtremeSmoothing, 100);
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initLenisScrolling, 100);
         });
         
         // Navigation integration
         function initSmoothScrollForHome() {
-            setTimeout(initExtremeSmoothing, 100);
+            setTimeout(initLenisScrolling, 100);
         }
         
         function destroySmoothScrollForHome() {
-            const homeSection = document.getElementById('homeSection');
-            if (homeSection) {
-                homeSection.style.willChange = 'auto';
-            }
+            destroyLenisScrolling();
         }
     </script>
     
