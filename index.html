@@ -6460,28 +6460,41 @@
 
         // Open user's Google Maps location
         window.openUserLocation = function(orderId) {
-            try {
-                // Find the order in admin orders
-                const order = allAdminOrders.find(o => o.id === orderId);
-                if (!order) {
-                    showNotification('❌ Order not found', 'error');
-                    return;
-                }
-                
-                // Check if order has Google Maps link
-                if (!order.userGoogleMapsLink) {
-                    showNotification('📍 No Google Maps location available for this order', 'warning');
-                    return;
-                }
-                
-                // Open Google Maps link in new tab
-                window.open(order.userGoogleMapsLink, '_blank');
-                showNotification('📍 Opening user location on Google Maps', 'success');
-                
-            } catch (error) {
-                console.error('Error opening user location:', error);
-                showNotification('❌ Error opening location', 'error');
+            const order = allAdminOrders.find(o => o.id === orderId);
+            if (!order) {
+                showNotification('❌ Order not found', 'error');
+                return;
             }
+            
+            // Try different possible field names for user location
+            const userLocation = order.userGoogleMapsLink || order.googleMapsLink || order.userLocation || '';
+            
+            console.log('Order data:', order);
+            console.log('Trying userGoogleMapsLink:', order.userGoogleMapsLink);
+            console.log('Trying googleMapsLink:', order.googleMapsLink);
+            console.log('Final userLocation:', userLocation);
+            console.log('Available fields:', Object.keys(order));
+            
+            if (!userLocation) {
+                showNotification('❌ No location link available for this order', 'warning');
+                return;
+            }
+            
+            // Open the Google Maps link in a new tab
+            window.open(userLocation, '_blank');
+            showNotification('📍 Opening user location...', 'success');
+        };
+
+        // Open admin location from user order view
+        window.openAdminLocation = function(adminLocation) {
+            if (!adminLocation) {
+                showNotification('❌ No admin location available', 'warning');
+                return;
+            }
+            
+            // Open the admin Google Maps link in a new tab
+            window.open(adminLocation, '_blank');
+            showNotification('📍 Opening admin location...', 'success');
         };
 
         // Filter orders by status
@@ -6522,9 +6535,25 @@
         // Admin: update order status to Shipped
         window.adminShipOrder = async function(orderId) {
             try {
+                // Get current admin's address data from Firebase
+                let adminLocation = '';
+                if (auth.currentUser) {
+                    try {
+                        const adminDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+                        if (adminDoc.exists()) {
+                            const adminData = adminDoc.data();
+                            adminLocation = adminData.googleMapsLink || '';
+                        }
+                    } catch (e) {
+                        console.log('Could not fetch admin address data:', e);
+                    }
+                }
+                
                 await updateDoc(doc(db, 'orders', orderId), { 
                     status: 'Shipped',
-                    shippedAt: new Date()
+                    shippedAt: new Date(),
+                    adminLocation: adminLocation,
+                    shippedByAdmin: auth.currentUser?.uid || ''
                 });
                 
                 showNotification('Order marked as shipped! 🚚', 'success');
@@ -9732,6 +9761,7 @@
             
             let finalAddress = '';
             let finalPhone = '';
+            let finalGoogleMapsLink = '';
             
             if (savedAddressOption && savedAddressOption.checked) {
                 // Use saved address
@@ -9741,6 +9771,7 @@
                 }
                 finalPhone = userAddressData.phone;
                 finalAddress = `${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}${userAddressData.nearby ? ', Near ' + userAddressData.nearby : ''}`;
+                finalGoogleMapsLink = userAddressData.googleMapsLink || '';
             } else if (customAddressOption && customAddressOption.checked) {
                 // Use custom address
                 const customPhone = document.getElementById('customPhone').value.trim();
@@ -11502,6 +11533,16 @@
                                     onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(231, 76, 60, 0.4)'"
                                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(231, 76, 60, 0.3)'">
                                 ❌ Cancel Order
+                            </button>
+                            ` : ''}
+                            
+                            <!-- Admin Location button: Only show for Shipped orders with admin location -->
+                            ${order.status === 'Shipped' && order.adminLocation ? `
+                            <button onclick="openAdminLocation('${order.adminLocation}')" 
+                                    style="flex: 1; background: linear-gradient(135deg, #4285f4, #3367d6); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);"
+                                    onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 20px rgba(66, 133, 244, 0.4)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(66, 133, 244, 0.3)'">
+                                📍 Admin Location
                             </button>
                             ` : ''}
                         </div>
