@@ -72,6 +72,7 @@
         .categories-grid, .event-products, .products-grid {
             -webkit-overflow-scrolling: touch;
             transform: translateZ(0);
+            will-change: scroll-position;
             backface-visibility: hidden;
             contain: layout style paint;
         }
@@ -79,13 +80,9 @@
         /* Reduce repaints and reflows */
         .product-card, .category-card, .event-card {
             transform: translateZ(0);
+            will-change: transform;
             backface-visibility: hidden;
             contain: layout style paint;
-        }
-        
-        /* Apply will-change only on hover for better performance */
-        .product-card:hover, .category-card:hover, .event-card:hover {
-            will-change: transform;
         }
         
         /* Mobile-specific scroll optimizations */
@@ -148,7 +145,7 @@
             background: white;
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             text-align: center;
             max-width: 400px;
             width: 90%;
@@ -227,13 +224,13 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: none;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
             margin-top: 10px;
         }
 
         .auth-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
         }
 
         .form-switch {
@@ -663,7 +660,6 @@
             background: transparent;
             border-radius: 8px;
             text-align: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
             width: 70px;
             height: 110px;
@@ -672,14 +668,12 @@
             justify-content: center;
             align-items: center;
             flex-shrink: 0;
-            transform: translateZ(0);
             overflow: visible;
             padding: 5px;
         }
 
         .category-item:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border-color: #e2e8f0;
+            opacity: 0.8;
         }
 
         .category-image {
@@ -810,19 +804,15 @@
 
         .product-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 12px;
             overflow: hidden;
-            transition: all 0.2s ease;
             cursor: pointer;
-            border: 2px solid #e5e7eb;
+            border: 1px solid #e5e7eb;
             position: relative;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .product-card:hover {
-            transform: translateY(-2px);
             border-color: #f59e0b;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .product-image-container {
@@ -1771,19 +1761,17 @@
             width: 60px;
             height: 70px;
             background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             padding: 6px;
-            transition: all 0.3s ease;
         }
 
         .subcategory-card:hover {
-            transform: translateY(-2px);
+            opacity: 0.8;
         }
 
         .subcategory-image {
@@ -2977,10 +2965,10 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            border-radius: 20px;
-            margin: 20px 18px;
+            border-radius: 16px;
+            margin: 15px 12px;
             padding: 10px;
-            min-height: 300px;
+            min-height: 280px;
             position: relative;
             overflow: hidden;
             display: flex;
@@ -4312,7 +4300,7 @@
             <button onclick="closeLoginModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
             
             <div class="logo-section">
-                <img src="logo.png" alt="Logo" loading="lazy" onerror="this.style.display='none'">
+                <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
                 <h1>Welcome</h1>
                 <p>Login or register to use app features</p>
             </div>
@@ -4361,7 +4349,7 @@
         <nav class="navbar">
             <div class="nav-container">
                 <a href="#" class="logo">
-                    <img src="logo.png" alt="Logo" loading="lazy">
+                    <img src="logo.png" alt="Logo">
                 </a>
 
                 <div class="nav-actions">
@@ -4421,7 +4409,7 @@
                 <div class="zupisupi-footer">
                     <div class="container">
                         <div class="footer-content">
-                            <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" loading="lazy" onerror="this.style.display='none'">
+                            <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
                             <span class="footer-text">Zupisupi</span>
                         </div>
                         <div class="footer-reserved">All Rights Reserved</div>
@@ -4453,7 +4441,7 @@
                     <div class="zupisupi-footer">
                         <div class="container">
                             <div class="footer-content">
-                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" loading="lazy" onerror="this.style.display='none'">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
                                 <span class="footer-text">Zupisupi</span>
                             </div>
                             <div class="footer-reserved">All Rights Reserved</div>
@@ -4476,7 +4464,7 @@
                     <div class="zupisupi-footer">
                         <div class="container">
                             <div class="footer-content">
-                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" loading="lazy" onerror="this.style.display='none'">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
                                 <span class="footer-text">Zupisupi</span>
                             </div>
                             <div class="footer-reserved">All Rights Reserved</div>
@@ -4505,7 +4493,7 @@
                     <div class="zupisupi-footer">
                         <div class="container">
                             <div class="footer-content">
-                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" loading="lazy" onerror="this.style.display='none'">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
                                 <span class="footer-text">Zupisupi</span>
                             </div>
                             <div class="footer-reserved">All Rights Reserved</div>
@@ -4774,7 +4762,7 @@
                             <button onclick="closeTermsModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; z-index: 1;">×</button>
                             
                             <div class="logo-section">
-                                <img src="logo.png" alt="Logo" loading="lazy" onerror="this.style.display='none'">
+                                <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
                                 <h1>Terms & Conditions</h1>
                                 <p>Zupisupi App Terms of Service</p>
                             </div>
@@ -4845,7 +4833,7 @@
                             <button onclick="closePrivacyModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; z-index: 1;">×</button>
                             
                             <div class="logo-section">
-                                <img src="logo.png" alt="Logo" loading="lazy" onerror="this.style.display='none'">
+                                <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
                                 <h1>Privacy Policy</h1>
                                 <p>Data protection and privacy</p>
                             </div>
@@ -4917,7 +4905,7 @@
                             <button onclick="closeFAQModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; z-index: 1;">×</button>
                             
                             <div class="logo-section">
-                                <img src="logo.png" alt="Logo" loading="lazy" onerror="this.style.display='none'">
+                                <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
                                 <h1>FAQ</h1>
                                 <p>Frequently Asked Questions</p>
                             </div>
@@ -4984,7 +4972,7 @@
                     <div class="zupisupi-footer">
                         <div class="container">
                             <div class="footer-content">
-                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" loading="lazy" onerror="this.style.display='none'">
+                                <img src="logo.png" alt="Zupisupi Logo" class="footer-logo" onerror="this.style.display='none'">
                                 <span class="footer-text">Zupisupi</span>
                             </div>
                             <div class="footer-reserved">All Rights Reserved</div>
@@ -5431,7 +5419,7 @@
                     </div>
                     <!-- Category Banner Section -->
                     <div class="category-banner-section" id="categoryBannerSection">
-                        <img id="categoryBannerImage" src="" alt="Category Banner" class="category-banner-image" loading="lazy">
+                        <img id="categoryBannerImage" src="" alt="Category Banner" class="category-banner-image">
                     </div>
                 </div>
             </div>
@@ -11184,79 +11172,19 @@
             }
         });
 
-        function loadAllProductsInSearch(loadMore = false) {
+        function loadAllProductsInSearch() {
             const searchProductsGrid = document.getElementById('searchProductsGrid');
             if (!searchProductsGrid) return;
             
-            if (!loadMore) {
-                searchProductsGrid.innerHTML = '';
-                currentProductBatch = 0;
-            }
-            
-            if (isLoadingProducts) return;
-            isLoadingProducts = true;
+            searchProductsGrid.innerHTML = '';
             
             // Use allProducts if productsData is not available
             const products = window.allProducts || productsData || [];
             
-            const startIndex = currentProductBatch * BATCH_SIZE;
-            const endIndex = Math.min(startIndex + BATCH_SIZE, products.length);
-            const batchProducts = products.slice(startIndex, endIndex);
-            
-            batchProducts.forEach(product => {
+            products.forEach(product => {
                 const productCard = createProductCard(product);
                 searchProductsGrid.appendChild(productCard);
             });
-            
-            currentProductBatch++;
-            isLoadingProducts = false;
-            
-            // Remove existing Load More button
-            const existingLoadMoreBtn = document.getElementById('loadMoreProductsBtn');
-            if (existingLoadMoreBtn) {
-                existingLoadMoreBtn.remove();
-            }
-            
-            // Add Load More button if there are more products
-            if (endIndex < products.length) {
-                const loadMoreContainer = document.createElement('div');
-                loadMoreContainer.id = 'loadMoreProductsBtn';
-                loadMoreContainer.style.textAlign = 'center';
-                loadMoreContainer.style.padding = '20px';
-                loadMoreContainer.style.gridColumn = '1 / -1';
-                
-                const loadMoreBtn = document.createElement('button');
-                loadMoreBtn.textContent = `Load More Products (${products.length - endIndex} remaining)`;
-                loadMoreBtn.style.cssText = `
-                    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-                    color: white;
-                    border: none;
-                    padding: 12px 24px;
-                    border-radius: 25px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
-                `;
-                
-                loadMoreBtn.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-2px)';
-                    this.style.boxShadow = '0 6px 20px rgba(251, 191, 36, 0.4)';
-                });
-                
-                loadMoreBtn.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 4px 15px rgba(251, 191, 36, 0.3)';
-                });
-                
-                loadMoreBtn.onclick = () => {
-                    loadMoreContainer.remove();
-                    loadAllProductsInSearch(true);
-                };
-                
-                loadMoreContainer.appendChild(loadMoreBtn);
-                searchProductsGrid.appendChild(loadMoreContainer);
-            }
         }
 
         function searchProductsInSection(searchTerm) {
@@ -11290,7 +11218,7 @@
             productCard.className = 'product-card';
             productCard.onclick = () => openProductModal(product.id);
             
-            // Create pricing display with discount
+            // Simplified pricing display
             const originalPrice = product.originalPrice;
             const currentPrice = product.price;
             const discount = product.discount;
@@ -11298,35 +11226,26 @@
             let priceHTML = '';
             if (originalPrice && originalPrice > currentPrice && discount > 0) {
                 priceHTML = `
-                    <div class="product-price-container">
-                        <div class="special-price-label" style="color: #27ae60; font-size: 12px; font-weight: 600; margin-bottom: 2px;">Special price</div>
-                        <div class="price-row" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                            <span class="current-price" style="color: #27ae60; font-size: 18px; font-weight: 700;">₹${currentPrice}</span>
-                            <span class="original-price" style="color: #999; font-size: 14px; text-decoration: line-through;">₹${originalPrice}</span>
-                            <span class="discount-badge" style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;">${discount}% off</span>
-                        </div>
+                    <div style="color: #27ae60; font-size: 12px; font-weight: 600; margin-bottom: 2px;">Special price</div>
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <span style="color: #27ae60; font-size: 16px; font-weight: 700;">₹${currentPrice}</span>
+                        <span style="color: #999; font-size: 12px; text-decoration: line-through;">₹${originalPrice}</span>
+                        <span style="background: #27ae60; color: white; padding: 1px 4px; border-radius: 3px; font-size: 10px; font-weight: 600;">${discount}% off</span>
                     </div>
                 `;
             } else {
-                priceHTML = `<div class="product-price" style="color: #27ae60; font-size: 18px; font-weight: 700;">₹${currentPrice}</div>`;
+                priceHTML = `<div style="color: #27ae60; font-size: 16px; font-weight: 700;">₹${currentPrice}</div>`;
             }
             
+            // Simplified DOM structure - single div with img and text
             productCard.innerHTML = `
-                <div class="product-image-container">
-                    <img src="${product.imageUrl}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='logo.png'">
-                    <button class="product-heart-icon" onclick="event.stopPropagation();">❤️</button>
-                    <button class="product-add-overlay" onclick="event.stopPropagation();">🛒 ADD</button>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-rating" style="color: #fbbf24; font-size: 14px; margin: 4px 0;">
+                <img src="${product.imageUrl}" alt="${product.name}" loading="lazy" style="width: 100%; height: 120px; object-fit: contain; background: #f8fafc; border-radius: 8px 8px 0 0;" onerror="this.src='logo.png'">
+                <div style="padding: 10px;">
+                    <h3 style="font-size: 14px; font-weight: 500; color: #1f2937; margin: 0 0 6px 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${product.name}</h3>
+                    <div style="color: #fbbf24; font-size: 12px; margin: 2px 0;">
                         ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating})` : ''}
                     </div>
                     ${priceHTML}
-                    <div class="product-buttons">
-                        <button class="btn-cart" onclick="event.stopPropagation(); openProductModal('${product.id}')">Add to Cart</button>
-                        <button class="btn-order" onclick="event.stopPropagation(); openProductModal('${product.id}')">Order Now</button>
-                    </div>
                 </div>
             `;
             return productCard;
@@ -11542,7 +11461,7 @@
             productsGrid.innerHTML = '';
             
             if (filteredProducts.length === 0) {
-                productsGrid.innerHTML = '<div class="no-products-message">No products found</div>';
+                productsGrid.innerHTML = `<p style="text-align: center; color: #666; grid-column: 1 / -1;">No products found for "${searchTerm}".</p>`;
                 return;
             }
             
@@ -11550,12 +11469,11 @@
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 productCard.onclick = () => openProductModal(product.id);
-                
                 productCard.innerHTML = `
                     <div class="product-image-container">
-                        <img src="${product.image}" alt="${product.name}" class="product-image" loading="lazy" onerror="this.src='logo.png'">
-                        <div class="heart-icon" onclick="event.stopPropagation(); toggleWishlist('${product.id}')">♡</div>
-                        <div class="add-button" onclick="event.stopPropagation();">🛒 ADD</div>
+                        <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
+                        <button class="product-heart-icon" onclick="event.stopPropagation(); openProductModal('${product.id}')">♡</button>
+                        <button class="product-add-overlay" onclick="event.stopPropagation(); openProductModal('${product.id}')">ADD</button>
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
@@ -11984,7 +11902,7 @@
                 }
                 
                 eventItem.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; justify-content: between; align-items: center;">
                         <div>
                             ${eventDetails}
                         </div>
@@ -12072,36 +11990,16 @@
             }
         }
         
-        // Performance optimization: Batched loading variables
-        let currentEventBatch = 0;
-        let currentProductBatch = 0;
-        const BATCH_SIZE = 20;
-        let isLoadingEvents = false;
-        let isLoadingProducts = false;
-        
-        // Load and display events on home page with batching
-        function loadEventsOnHomePage(loadMore = false) {
+        // Load and display events on home page
+        function loadEventsOnHomePage() {
             const eventsSection = document.getElementById('eventsSection');
+            eventsSection.innerHTML = '';
             
-            if (!loadMore) {
-                eventsSection.innerHTML = '';
-                currentEventBatch = 0;
-            }
-            
-            if (isLoadingEvents) return;
-            isLoadingEvents = true;
-            
-            const startIndex = currentEventBatch * BATCH_SIZE;
-            const endIndex = Math.min(startIndex + BATCH_SIZE, eventsData.length);
-            const batchEvents = eventsData.slice(startIndex, endIndex);
-            
-            batchEvents.forEach(event => {
+            eventsData.forEach(event => {
                 const eventCard = document.createElement('div');
                 eventCard.className = 'event-card';
                 
-                const eventContent = document.createElement('div');
-                eventContent.className = 'event-content';
-                
+                // Simplified - no nested eventContent div
                 const eventTitle = document.createElement('div');
                 eventTitle.className = 'event-title';
                 
@@ -12111,6 +12009,16 @@
                     eventCard.style.backgroundSize = 'cover';
                     eventCard.style.backgroundPosition = 'center';
                     eventCard.style.backgroundRepeat = 'no-repeat';
+                }
+                
+                // Simplified title handling
+                if (event.nameImage && event.nameImage.trim()) {
+                    eventTitle.innerHTML = `<img src="${event.nameImage}" alt="${event.name}" loading="lazy" style="max-width: 100%; height: auto; max-height: 80px; object-fit: contain;">`;
+                } else {
+                    eventTitle.textContent = event.name;
+                    if (event.titleColor) {
+                        eventTitle.style.color = event.titleColor;
+                    }
                 }
                 
                 // Handle different event types
@@ -12140,7 +12048,7 @@
                     categoryHeader.onclick = () => openCategoryModal(actualCategory.name);
                     
                     // Hide the event title for category events
-                    // eventTitleImage.loading = 'lazy'; // Removed undefined variable
+                    eventTitle.style.display = 'none';
                     
                     // Subcategories container
                     const subcategoriesContainer = document.createElement('div');
@@ -12164,35 +12072,18 @@
                             const subcategoryCard = document.createElement('div');
                             subcategoryCard.className = 'subcategory-card';
                             
-                            // Add image if available
-                            if (subcategory.imageUrl) {
-                                const subcategoryImage = document.createElement('img');
-                                subcategoryImage.src = subcategory.imageUrl;
-                                subcategoryImage.className = 'subcategory-image';
-                                subcategoryImage.alt = subcategory.name;
-                                subcategoryCard.appendChild(subcategoryImage);
-                            }
+                            // Simplified subcategory card structure
+                            subcategoryCard.innerHTML = `
+                                ${subcategory.imageUrl ? `<img src="${subcategory.imageUrl}" alt="${subcategory.name}" loading="lazy" style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">` : ''}
+                                <div style="font-size: 15px; text-align: center; margin-top: 2px; color: black; font-weight: 500; word-wrap: break-word; max-width: 100px; min-height: 22px; display: flex; align-items: center; justify-content: center; width: 100px;">${subcategory.name}</div>
+                            `;
                             
                             subcategoryCard.onclick = (e) => {
                                 e.stopPropagation();
                                 openCategoryModal(actualCategory.name, subcategory.name);
                             };
                             
-                            // Create card container with name below
-                            const cardContainer = document.createElement('div');
-                            cardContainer.style.display = 'flex';
-                            cardContainer.style.flexDirection = 'column';
-                            cardContainer.style.alignItems = 'center';
-                            
-                            cardContainer.appendChild(subcategoryCard);
-                            
-                            // Add name below card
-                            const subcategoryName = document.createElement('div');
-                            subcategoryName.className = 'subcategory-name';
-                            subcategoryName.textContent = subcategory.name;
-                            cardContainer.appendChild(subcategoryName);
-                            
-                            firstRow.appendChild(cardContainer);
+                            firstRow.appendChild(subcategoryCard);
                         });
                         
                         // Second row (if needed)
@@ -12203,35 +12094,18 @@
                                 const subcategoryCard = document.createElement('div');
                                 subcategoryCard.className = 'subcategory-card';
                                 
-                                // Add image if available
-                                if (subcategory.imageUrl) {
-                                    const subcategoryImage = document.createElement('img');
-                                    subcategoryImage.src = subcategory.imageUrl;
-                                    subcategoryImage.className = 'subcategory-image';
-                                    subcategoryImage.alt = subcategory.name;
-                                    subcategoryCard.appendChild(subcategoryImage);
-                                }
+                                // Simplified subcategory card structure
+                                subcategoryCard.innerHTML = `
+                                    ${subcategory.imageUrl ? `<img src="${subcategory.imageUrl}" alt="${subcategory.name}" loading="lazy" style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">` : ''}
+                                    <div style="font-size: 15px; text-align: center; margin-top: 2px; color: black; font-weight: 500; word-wrap: break-word; max-width: 100px; min-height: 22px; display: flex; align-items: center; justify-content: center; width: 100px;">${subcategory.name}</div>
+                                `;
                                 
                                 subcategoryCard.onclick = (e) => {
                                     e.stopPropagation();
                                     openCategoryModal(actualCategory.name, subcategory.name);
                                 };
                                 
-                                // Create card container with name below
-                                const cardContainer = document.createElement('div');
-                                cardContainer.style.display = 'flex';
-                                cardContainer.style.flexDirection = 'column';
-                                cardContainer.style.alignItems = 'center';
-                                
-                                cardContainer.appendChild(subcategoryCard);
-                                
-                                // Add name below card
-                                const subcategoryName = document.createElement('div');
-                                subcategoryName.className = 'subcategory-name';
-                                subcategoryName.textContent = subcategory.name;
-                                cardContainer.appendChild(subcategoryName);
-                                
-                                secondRow.appendChild(cardContainer);
+                                secondRow.appendChild(subcategoryCard);
                             });
                         }
                         
@@ -12243,10 +12117,11 @@
                     
                     categoryEventContainer.appendChild(categoryHeader);
                     categoryEventContainer.appendChild(subcategoriesContainer);
-                    eventContent.appendChild(categoryEventContainer);
+                    // Simplified - append directly to eventCard
+                    eventCard.appendChild(categoryEventContainer);
                     
                 } else {
-                    // Product event display (existing logic)
+                    // Simplified product event display
                     const eventProducts = document.createElement('div');
                     eventProducts.className = `event-products ${event.template || 'template-1'}`;
                     
@@ -12260,57 +12135,14 @@
                         eventProducts.appendChild(productCard);
                     });
                     
-                    eventContent.appendChild(eventProducts);
+                    // Simplified - append directly to eventCard
+                    eventCard.appendChild(eventProducts);
                 }
                 
-                eventContent.insertBefore(eventTitle, eventContent.firstChild);
-                eventCard.appendChild(eventContent);
+                // Simplified - append title directly to eventCard
+                eventCard.insertBefore(eventTitle, eventCard.firstChild);
                 eventsSection.appendChild(eventCard);
             });
-            
-            currentEventBatch++;
-            isLoadingEvents = false;
-            
-            // Remove existing Load More button
-            const existingLoadMoreBtn = document.getElementById('loadMoreEventsBtn');
-            if (existingLoadMoreBtn) {
-                existingLoadMoreBtn.remove();
-            }
-            
-            // Add Load More button if there are more events
-            if (endIndex < eventsData.length) {
-                const loadMoreBtn = document.createElement('button');
-                loadMoreBtn.id = 'loadMoreEventsBtn';
-                loadMoreBtn.className = 'load-more-btn';
-                loadMoreBtn.textContent = `Load More Events (${eventsData.length - endIndex} remaining)`;
-                loadMoreBtn.style.cssText = `
-                    display: block;
-                    margin: 20px auto;
-                    padding: 12px 24px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border: none;
-                    border-radius: 25px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-                `;
-                
-                loadMoreBtn.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-2px)';
-                    this.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
-                });
-                
-                loadMoreBtn.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.3)';
-                });
-                
-                loadMoreBtn.onclick = () => loadEventsOnHomePage(true);
-                eventsSection.appendChild(loadMoreBtn);
-            }
         }
 
         // User Management
@@ -13288,7 +13120,7 @@
                 const productImage = item.image || item.productImage;
                 
                 if (productImage && productImage !== 'null' && productImage !== '') {
-                    productImageHTML = `<img src="${productImage}" alt="Product" style="width: 30px; height: 30px; border-radius: 4px; object-fit: cover; margin-right: 8px;" onerror="this.style.display='none'" loading="lazy">`;
+                    productImageHTML = `<img src="${productImage}" alt="Product" style="width: 30px; height: 30px; border-radius: 4px; object-fit: cover; margin-right: 8px;" onerror="this.style.display='none'">`;
                 }
                 
                 // Create price display with discount information
