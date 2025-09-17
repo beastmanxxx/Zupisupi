@@ -13456,22 +13456,84 @@
                 touchZoom: true,
                 dragging: true,
                 maxZoom: 20, // Ultra zoom level
-                minZoom: 3
+                minZoom: 3,
+                fadeAnimation: true,
+                zoomAnimation: true,
+                markerZoomAnimation: true
             }).setView([28.6139, 77.2090], 15);
             
-            // Add satellite tiles with ultra zoom
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            // Add multiple satellite tile layers for better coverage at high zoom
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
                 attribution: '© Esri, Maxar, Earthstar Geographics',
-                maxZoom: 20,
-                id: 'satellite'
+                maxZoom: 18,
+                id: 'satellite',
+                keepBuffer: 6,
+                updateWhenIdle: false,
+                updateWhenZooming: true,
+                crossOrigin: true
             }).addTo(map);
             
-            // Add street labels overlay
+            // Add Google Satellite as fallback for ultra high zoom
+            const googleSatellite = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                attribution: '© Google',
+                maxZoom: 20,
+                keepBuffer: 6,
+                updateWhenIdle: false,
+                updateWhenZooming: true
+            });
+            
+            // Add OpenStreetMap as final fallback
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19,
+                keepBuffer: 6,
+                updateWhenIdle: false,
+                updateWhenZooming: true
+            });
+            
+            // Switch to Google Satellite at zoom level 17+
+            map.on('zoomend', function() {
+                const currentZoom = map.getZoom();
+                if (currentZoom >= 17) {
+                    if (!map.hasLayer(googleSatellite)) {
+                        map.removeLayer(satelliteLayer);
+                        map.addLayer(googleSatellite);
+                    }
+                } else {
+                    if (!map.hasLayer(satelliteLayer)) {
+                        map.removeLayer(googleSatellite);
+                        map.addLayer(satelliteLayer);
+                    }
+                }
+            });
+            
+            // Add street labels overlay with better performance
             L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
                 attribution: '',
                 maxZoom: 20,
-                opacity: 0.8
+                opacity: 0.7,
+                keepBuffer: 6,
+                updateWhenIdle: false,
+                updateWhenZooming: true
             }).addTo(map);
+            
+            // Set dark map background to prevent white flashing
+            map.getContainer().style.backgroundColor = '#1a1a1a';
+            
+            // Add CSS to prevent white tiles
+            const mapStyle = document.createElement('style');
+            mapStyle.textContent = `
+                .leaflet-tile-container {
+                    background-color: #1a1a1a !important;
+                }
+                .leaflet-tile {
+                    background-color: #1a1a1a !important;
+                }
+                .leaflet-container {
+                    background-color: #1a1a1a !important;
+                }
+            `;
+            document.head.appendChild(mapStyle);
             
             // Try to geocode delivery address
             try {
@@ -13491,35 +13553,57 @@
         function addDeliveryLocationDotOnMap() {
             if (!map || !deliveryLocationCoords) return;
             
-            // Create green marker for delivery location
+            // Create enhanced green marker for delivery location
             const greenIcon = L.divIcon({
                 className: 'custom-div-icon',
                 html: `<div style="
-                    background: #27ae60; 
-                    width: 24px; 
-                    height: 24px; 
+                    background: radial-gradient(circle, #27ae60, #1e8449); 
+                    width: 28px; 
+                    height: 28px; 
                     border-radius: 50%; 
-                    border: 4px solid white; 
-                    box-shadow: 0 0 25px rgba(39, 174, 96, 0.9);
-                    animation: deliveryPulse 3s infinite;
+                    border: 5px solid white; 
+                    box-shadow: 0 0 30px rgba(39, 174, 96, 0.9), inset 0 0 10px rgba(255,255,255,0.3);
+                    animation: smoothDeliveryPulse 4s ease-in-out infinite;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 "></div>`,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
             });
             
-            deliveryLocationMarker = L.marker(deliveryLocationCoords, { icon: greenIcon })
+            deliveryLocationMarker = L.marker(deliveryLocationCoords, { 
+                icon: greenIcon,
+                riseOnHover: true,
+                riseOffset: 250
+            })
                 .addTo(map)
                 .bindPopup('🟢 Delivery Location<br>' + (document.getElementById('deliveryLocationText')?.textContent || 'Order delivery address'));
             
-            // Add CSS animation for delivery marker
-            if (!document.querySelector('#deliveryPulseAnimation')) {
+            // Add enhanced CSS animations
+            if (!document.querySelector('#smoothDeliveryPulseAnimation')) {
                 const style = document.createElement('style');
-                style.id = 'deliveryPulseAnimation';
+                style.id = 'smoothDeliveryPulseAnimation';
                 style.textContent = `
-                    @keyframes deliveryPulse {
-                        0% { transform: scale(1); box-shadow: 0 0 25px rgba(39, 174, 96, 0.9); }
-                        50% { transform: scale(1.2); box-shadow: 0 0 35px rgba(39, 174, 96, 1); }
-                        100% { transform: scale(1); box-shadow: 0 0 25px rgba(39, 174, 96, 0.9); }
+                    @keyframes smoothDeliveryPulse {
+                        0% { 
+                            transform: scale(1) rotate(0deg); 
+                            box-shadow: 0 0 30px rgba(39, 174, 96, 0.9), inset 0 0 10px rgba(255,255,255,0.3);
+                        }
+                        25% { 
+                            transform: scale(1.1) rotate(90deg); 
+                            box-shadow: 0 0 40px rgba(39, 174, 96, 1), inset 0 0 15px rgba(255,255,255,0.5);
+                        }
+                        50% { 
+                            transform: scale(1.2) rotate(180deg); 
+                            box-shadow: 0 0 50px rgba(39, 174, 96, 1), inset 0 0 20px rgba(255,255,255,0.7);
+                        }
+                        75% { 
+                            transform: scale(1.1) rotate(270deg); 
+                            box-shadow: 0 0 40px rgba(39, 174, 96, 1), inset 0 0 15px rgba(255,255,255,0.5);
+                        }
+                        100% { 
+                            transform: scale(1) rotate(360deg); 
+                            box-shadow: 0 0 30px rgba(39, 174, 96, 0.9), inset 0 0 10px rgba(255,255,255,0.3);
+                        }
                     }
                 `;
                 document.head.appendChild(style);
@@ -13603,79 +13687,157 @@
         function addOrUpdateLiveLocationMarker(lat, lng) {
             if (!map) return;
             
-            // Remove existing live location marker
+            // Smooth transition for existing marker instead of removing
             if (currentLocationMarker) {
-                map.removeLayer(currentLocationMarker);
+                // Animate marker to new position smoothly
+                const currentLatLng = currentLocationMarker.getLatLng();
+                const newLatLng = L.latLng(lat, lng);
+                
+                // Calculate distance to determine animation duration
+                const distance = currentLatLng.distanceTo(newLatLng);
+                const duration = Math.min(2000, Math.max(500, distance * 10)); // 0.5-2 seconds based on distance
+                
+                // Smooth movement animation
+                animateMarkerToPosition(currentLocationMarker, newLatLng, duration);
+            } else {
+                // Create new enhanced blue marker for live location
+                const blueIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div style="
+                        background: radial-gradient(circle, #3498db, #2980b9); 
+                        width: 26px; 
+                        height: 26px; 
+                        border-radius: 50%; 
+                        border: 5px solid white; 
+                        box-shadow: 0 0 35px rgba(52, 152, 219, 1), inset 0 0 10px rgba(255,255,255,0.4);
+                        animation: smoothLivePulse 3s ease-in-out infinite;
+                        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                    "></div>`,
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 13]
+                });
+                
+                currentLocationMarker = L.marker([lat, lng], { 
+                    icon: blueIcon,
+                    riseOnHover: true,
+                    riseOffset: 250
+                })
+                    .addTo(map)
+                    .bindPopup('🔵 Your Live Location<br>GPS Tracking Active');
             }
             
-            // Create blue pulsing marker for live location
-            const blueIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: `<div style="
-                    background: #3498db; 
-                    width: 20px; 
-                    height: 20px; 
-                    border-radius: 50%; 
-                    border: 4px solid white; 
-                    box-shadow: 0 0 30px rgba(52, 152, 219, 1);
-                    animation: livePulse 2s infinite;
-                "></div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
-            });
-            
-            currentLocationMarker = L.marker([lat, lng], { icon: blueIcon })
-                .addTo(map)
-                .bindPopup('🔵 Your Live Location<br>GPS Tracking Active');
-            
-            // Add CSS animation for live marker
-            if (!document.querySelector('#livePulseAnimation')) {
+            // Add enhanced CSS animations
+            if (!document.querySelector('#smoothLivePulseAnimation')) {
                 const style = document.createElement('style');
-                style.id = 'livePulseAnimation';
+                style.id = 'smoothLivePulseAnimation';
                 style.textContent = `
-                    @keyframes livePulse {
-                        0% { transform: scale(1); box-shadow: 0 0 30px rgba(52, 152, 219, 1); }
-                        50% { transform: scale(1.4); box-shadow: 0 0 40px rgba(52, 152, 219, 0.7); }
-                        100% { transform: scale(1); box-shadow: 0 0 30px rgba(52, 152, 219, 1); }
+                    @keyframes smoothLivePulse {
+                        0% { 
+                            transform: scale(1); 
+                            box-shadow: 0 0 35px rgba(52, 152, 219, 1), inset 0 0 10px rgba(255,255,255,0.4);
+                        }
+                        33% { 
+                            transform: scale(1.15); 
+                            box-shadow: 0 0 45px rgba(52, 152, 219, 0.8), inset 0 0 15px rgba(255,255,255,0.6);
+                        }
+                        66% { 
+                            transform: scale(1.3); 
+                            box-shadow: 0 0 55px rgba(52, 152, 219, 0.6), inset 0 0 20px rgba(255,255,255,0.8);
+                        }
+                        100% { 
+                            transform: scale(1); 
+                            box-shadow: 0 0 35px rgba(52, 152, 219, 1), inset 0 0 10px rgba(255,255,255,0.4);
+                        }
                     }
                 `;
                 document.head.appendChild(style);
             }
             
-            // Auto-fit map to show both locations
+            // Smooth auto-fit map to show both locations
             if (deliveryLocationMarker) {
                 const group = new L.featureGroup([currentLocationMarker, deliveryLocationMarker]);
-                map.fitBounds(group.getBounds().pad(0.1));
+                map.flyToBounds(group.getBounds().pad(0.1), { duration: 1.5 });
             } else {
-                map.setView([lat, lng], 18); // Ultra zoom on current location
+                map.flyTo([lat, lng], 18, { duration: 1.5 }); // Smooth ultra zoom
             }
+        }
+        
+        function animateMarkerToPosition(marker, targetLatLng, duration) {
+            const startLatLng = marker.getLatLng();
+            const startTime = Date.now();
+            
+            function updatePosition() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Smooth easing function
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                const currentLat = startLatLng.lat + (targetLatLng.lat - startLatLng.lat) * easeProgress;
+                const currentLng = startLatLng.lng + (targetLatLng.lng - startLatLng.lng) * easeProgress;
+                
+                marker.setLatLng([currentLat, currentLng]);
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updatePosition);
+                }
+            }
+            
+            requestAnimationFrame(updatePosition);
         }
         
         function drawRouteOnMap() {
             if (!map || !currentLocationCoords || !deliveryLocationCoords) return;
             
-            // Remove existing route
+            // Remove existing route smoothly
             if (routeLine) {
                 map.removeLayer(routeLine);
             }
+            if (window.shadowLine) {
+                map.removeLayer(window.shadowLine);
+            }
             
-            // Draw dark blur line connecting both locations
+            // Create smooth animated route line
             routeLine = L.polyline([currentLocationCoords, deliveryLocationCoords], {
                 color: '#2c3e50',
-                weight: 6,
-                opacity: 0.9,
-                dashArray: '10, 5',
-                className: 'route-line'
-            }).addTo(map);
-            
-            // Add shadow effect
-            const shadowLine = L.polyline([currentLocationCoords, deliveryLocationCoords], {
-                color: '#000000',
                 weight: 8,
-                opacity: 0.4
+                opacity: 0.9,
+                dashArray: '15, 10',
+                className: 'smooth-route-line',
+                smoothFactor: 2.0,
+                lineCap: 'round',
+                lineJoin: 'round'
             }).addTo(map);
             
-            shadowLine.bringToBack();
+            // Add enhanced shadow effect
+            window.shadowLine = L.polyline([currentLocationCoords, deliveryLocationCoords], {
+                color: '#000000',
+                weight: 12,
+                opacity: 0.3,
+                smoothFactor: 2.0,
+                lineCap: 'round',
+                lineJoin: 'round'
+            }).addTo(map);
+            
+            window.shadowLine.bringToBack();
+            
+            // Add smooth route animation CSS
+            if (!document.querySelector('#smoothRouteAnimation')) {
+                const style = document.createElement('style');
+                style.id = 'smoothRouteAnimation';
+                style.textContent = `
+                    .smooth-route-line {
+                        animation: routeFlow 3s linear infinite;
+                        transition: all 0.5s ease;
+                    }
+                    
+                    @keyframes routeFlow {
+                        0% { stroke-dashoffset: 0; }
+                        100% { stroke-dashoffset: 25; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
         }
         
         // Add button to open in Google Maps app
