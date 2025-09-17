@@ -13428,7 +13428,10 @@
         async function initializeLocationMap(deliveryAddress) {
             const mapContainer = document.getElementById('mapContainer');
             
-            // Add Leaflet CSS and JS if not already added
+            // Clear map container and create satellite map
+            mapContainer.innerHTML = '';
+            
+            // Add Leaflet CSS and JS for satellite map
             if (!document.querySelector('link[href*="leaflet"]')) {
                 const leafletCSS = document.createElement('link');
                 leafletCSS.rel = 'stylesheet';
@@ -13445,15 +13448,29 @@
                 });
             }
             
-            // Clear map container
-            mapContainer.innerHTML = '';
+            // Initialize satellite map with ultra zoom capability
+            map = L.map('mapContainer', {
+                zoomControl: true,
+                scrollWheelZoom: true,
+                doubleClickZoom: true,
+                touchZoom: true,
+                dragging: true,
+                maxZoom: 20, // Ultra zoom level
+                minZoom: 3
+            }).setView([28.6139, 77.2090], 15);
             
-            // Initialize map with default location (Delhi, India)
-            map = L.map('mapContainer').setView([28.6139, 77.2090], 10);
+            // Add satellite tiles with ultra zoom
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri, Maxar, Earthstar Geographics',
+                maxZoom: 20,
+                id: 'satellite'
+            }).addTo(map);
             
-            // Add OpenStreetMap tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
+            // Add street labels overlay
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '',
+                maxZoom: 20,
+                opacity: 0.8
             }).addTo(map);
             
             // Try to geocode delivery address
@@ -13461,24 +13478,51 @@
                 const deliveryCoords = await geocodeAddress(deliveryAddress);
                 if (deliveryCoords) {
                     deliveryLocationCoords = deliveryCoords;
-                    
-                    // Add green marker for delivery location
-                    const greenIcon = L.divIcon({
-                        className: 'custom-div-icon',
-                        html: '<div style="background: #27ae60; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px #27ae60;"></div>',
-                        iconSize: [20, 20],
-                        iconAnchor: [10, 10]
-                    });
-                    
-                    deliveryLocationMarker = L.marker(deliveryCoords, { icon: greenIcon })
-                        .addTo(map)
-                        .bindPopup('📍 Delivery Location<br>' + deliveryAddress);
-                    
-                    // Center map on delivery location
-                    map.setView(deliveryCoords, 13);
+                    addDeliveryLocationDotOnMap();
+                    map.setView(deliveryCoords, 16);
                 }
             } catch (error) {
                 console.log('Could not geocode delivery address:', error);
+                deliveryLocationCoords = [28.6139, 77.2090];
+                addDeliveryLocationDotOnMap();
+            }
+        }
+        
+        function addDeliveryLocationDotOnMap() {
+            if (!map || !deliveryLocationCoords) return;
+            
+            // Create green marker for delivery location
+            const greenIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="
+                    background: #27ae60; 
+                    width: 24px; 
+                    height: 24px; 
+                    border-radius: 50%; 
+                    border: 4px solid white; 
+                    box-shadow: 0 0 25px rgba(39, 174, 96, 0.9);
+                    animation: deliveryPulse 3s infinite;
+                "></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+            
+            deliveryLocationMarker = L.marker(deliveryLocationCoords, { icon: greenIcon })
+                .addTo(map)
+                .bindPopup('🟢 Delivery Location<br>' + (document.getElementById('deliveryLocationText')?.textContent || 'Order delivery address'));
+            
+            // Add CSS animation for delivery marker
+            if (!document.querySelector('#deliveryPulseAnimation')) {
+                const style = document.createElement('style');
+                style.id = 'deliveryPulseAnimation';
+                style.textContent = `
+                    @keyframes deliveryPulse {
+                        0% { transform: scale(1); box-shadow: 0 0 25px rgba(39, 174, 96, 0.9); }
+                        50% { transform: scale(1.2); box-shadow: 0 0 35px rgba(39, 174, 96, 1); }
+                        100% { transform: scale(1); box-shadow: 0 0 25px rgba(39, 174, 96, 0.9); }
+                    }
+                `;
+                document.head.appendChild(style);
             }
         }
         
@@ -13488,41 +13532,12 @@
             if (navigator.geolocation) {
                 currentLocationText.textContent = 'Getting your location...';
                 
-                navigator.geolocation.getCurrentPosition(
+                // Start continuous location tracking
+                const watchId = navigator.geolocation.watchPosition(
                     async (position) => {
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
                         currentLocationCoords = [lat, lng];
-                        
-                        // Add blue marker for current location
-                        const blueIcon = L.divIcon({
-                            className: 'custom-div-icon',
-                            html: '<div style="background: #3498db; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px #3498db; animation: pulse 2s infinite;"></div>',
-                            iconSize: [20, 20],
-                            iconAnchor: [10, 10]
-                        });
-                        
-                        // Add pulse animation CSS
-                        if (!document.querySelector('#pulseAnimation')) {
-                            const style = document.createElement('style');
-                            style.id = 'pulseAnimation';
-                            style.textContent = `
-                                @keyframes pulse {
-                                    0% { transform: scale(1); opacity: 1; }
-                                    50% { transform: scale(1.2); opacity: 0.7; }
-                                    100% { transform: scale(1); opacity: 1; }
-                                }
-                            `;
-                            document.head.appendChild(style);
-                        }
-                        
-                        if (currentLocationMarker) {
-                            map.removeLayer(currentLocationMarker);
-                        }
-                        
-                        currentLocationMarker = L.marker([lat, lng], { icon: blueIcon })
-                            .addTo(map)
-                            .bindPopup('📍 Your Current Location');
                         
                         // Get address from coordinates
                         try {
@@ -13532,16 +13547,12 @@
                             currentLocationText.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                         }
                         
-                        // Draw route if both locations are available
+                        // Add or update live location marker on satellite map
+                        addOrUpdateLiveLocationMarker(lat, lng);
+                        
+                        // Draw route line between locations
                         if (deliveryLocationCoords) {
-                            await drawRoute(currentLocationCoords, deliveryLocationCoords);
-                            
-                            // Fit map to show both markers
-                            const group = new L.featureGroup([currentLocationMarker, deliveryLocationMarker]);
-                            map.fitBounds(group.getBounds().pad(0.1));
-                        } else {
-                            // Center on current location if no delivery location
-                            map.setView([lat, lng], 15);
+                            drawRouteOnMap();
                         }
                     },
                     (error) => {
@@ -13589,78 +13600,93 @@
             }
         }
         
-        async function drawRoute(start, end) {
-            try {
-                // Remove existing route
-                if (routeLine) {
-                    map.removeLayer(routeLine);
-                }
-                
-                // Use OpenRouteService for routing (free tier)
-                const response = await fetch(`https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248d1c8c1a6c4b04d9c9b5b4c8f8a8e8c8d&start=${start[1]},${start[0]}&end=${end[1]},${end[0]}`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data.features && data.features.length > 0) {
-                        const coordinates = data.features[0].geometry.coordinates;
-                        const latLngs = coordinates.map(coord => [coord[1], coord[0]]);
-                        
-                        // Create route line with dark blur effect
-                        routeLine = L.polyline(latLngs, {
-                            color: '#2c3e50',
-                            weight: 6,
-                            opacity: 0.8,
-                            dashArray: '10, 5',
-                            className: 'route-line'
-                        }).addTo(map);
-                        
-                        // Add shadow effect
-                        const shadowLine = L.polyline(latLngs, {
-                            color: '#000000',
-                            weight: 8,
-                            opacity: 0.3,
-                            offset: 2
-                        }).addTo(map);
-                        
-                        // Move shadow line behind the main line
-                        shadowLine.bringToBack();
-                        
-                        return;
+        function addOrUpdateLiveLocationMarker(lat, lng) {
+            if (!map) return;
+            
+            // Remove existing live location marker
+            if (currentLocationMarker) {
+                map.removeLayer(currentLocationMarker);
+            }
+            
+            // Create blue pulsing marker for live location
+            const blueIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="
+                    background: #3498db; 
+                    width: 20px; 
+                    height: 20px; 
+                    border-radius: 50%; 
+                    border: 4px solid white; 
+                    box-shadow: 0 0 30px rgba(52, 152, 219, 1);
+                    animation: livePulse 2s infinite;
+                "></div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+            
+            currentLocationMarker = L.marker([lat, lng], { icon: blueIcon })
+                .addTo(map)
+                .bindPopup('🔵 Your Live Location<br>GPS Tracking Active');
+            
+            // Add CSS animation for live marker
+            if (!document.querySelector('#livePulseAnimation')) {
+                const style = document.createElement('style');
+                style.id = 'livePulseAnimation';
+                style.textContent = `
+                    @keyframes livePulse {
+                        0% { transform: scale(1); box-shadow: 0 0 30px rgba(52, 152, 219, 1); }
+                        50% { transform: scale(1.4); box-shadow: 0 0 40px rgba(52, 152, 219, 0.7); }
+                        100% { transform: scale(1); box-shadow: 0 0 30px rgba(52, 152, 219, 1); }
                     }
-                }
-                
-                // Fallback: draw straight line if routing fails
-                drawStraightLine(start, end);
-                
-            } catch (error) {
-                console.error('Routing error:', error);
-                // Fallback: draw straight line
-                drawStraightLine(start, end);
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Auto-fit map to show both locations
+            if (deliveryLocationMarker) {
+                const group = new L.featureGroup([currentLocationMarker, deliveryLocationMarker]);
+                map.fitBounds(group.getBounds().pad(0.1));
+            } else {
+                map.setView([lat, lng], 18); // Ultra zoom on current location
             }
         }
         
-        function drawStraightLine(start, end) {
+        function drawRouteOnMap() {
+            if (!map || !currentLocationCoords || !deliveryLocationCoords) return;
+            
+            // Remove existing route
             if (routeLine) {
                 map.removeLayer(routeLine);
             }
             
-            // Draw straight line with dark blur effect
-            routeLine = L.polyline([start, end], {
+            // Draw dark blur line connecting both locations
+            routeLine = L.polyline([currentLocationCoords, deliveryLocationCoords], {
                 color: '#2c3e50',
-                weight: 4,
-                opacity: 0.8,
-                dashArray: '10, 5'
+                weight: 6,
+                opacity: 0.9,
+                dashArray: '10, 5',
+                className: 'route-line'
             }).addTo(map);
             
             // Add shadow effect
-            const shadowLine = L.polyline([start, end], {
+            const shadowLine = L.polyline([currentLocationCoords, deliveryLocationCoords], {
                 color: '#000000',
-                weight: 6,
-                opacity: 0.3
+                weight: 8,
+                opacity: 0.4
             }).addTo(map);
             
             shadowLine.bringToBack();
+        }
+        
+        // Add button to open in Google Maps app
+        function openInGoogleMaps() {
+            if (currentLocationCoords && deliveryLocationCoords) {
+                const googleMapsUrl = `https://www.google.com/maps/dir/${currentLocationCoords[0]},${currentLocationCoords[1]}/${deliveryLocationCoords[0]},${deliveryLocationCoords[1]}`;
+                window.open(googleMapsUrl, '_blank');
+            } else if (deliveryLocationCoords) {
+                const googleMapsUrl = `https://www.google.com/maps/place/${deliveryLocationCoords[0]},${deliveryLocationCoords[1]}`;
+                window.open(googleMapsUrl, '_blank');
+            }
         }
     </script>
     
@@ -13694,9 +13720,14 @@
             <!-- Modal Header -->
             <div style="position: absolute; top: 0; left: 0; right: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; z-index: 10002;">
                 <h2 style="margin: 0; color: #2c3e50; font-size: 20px;">📍 Order Location</h2>
-                <button onclick="closeLocationModal()" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s ease;">
-                    ✕
-                </button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button onclick="openInGoogleMaps()" style="background: #4285f4; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease;">
+                        🗺️ Open in Maps
+                    </button>
+                    <button onclick="closeLocationModal()" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s ease;">
+                        ✕
+                    </button>
+                </div>
             </div>
             
             <!-- Map Container -->
