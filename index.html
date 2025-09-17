@@ -4648,6 +4648,9 @@
                             <div style="font-size: 10px; color: #666; margin-bottom: 3px;">NEARBY LOCATION</div>
                             <div id="profileDisplayNearby" style="font-weight: 600; color: #2c3e50; font-size: 13px;"></div>
                         </div>
+                        <div id="profileGoogleMapsContainer" style="margin-top: 12px;">
+                            <!-- Google Maps link will be populated here -->
+                        </div>
                         <div style="margin-top: 12px; padding: 10px; background: rgba(40, 167, 69, 0.1); border-radius: 8px; text-align: center;">
                             <div style="font-size: 12px; color: #28a745; font-weight: 500;">✓ This address will be used for all your orders</div>
                         </div>
@@ -4717,6 +4720,10 @@
                                     <div class="form-group" style="margin-bottom: 8px;">
                                         <textarea id="userAddress" placeholder="Full Address (House no, Street, Area)" rows="2" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; resize: none; min-height: 40px;"></textarea>
                                     </div>
+                                    <div class="form-group" style="margin-bottom: 8px;">
+                                        <input type="url" id="userGoogleMapsLink" placeholder="Google Maps Location Link (Required)" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" title="Please paste your Google Maps location link here">
+                                        <div style="font-size: 10px; color: #666; margin-top: 3px;">📍 Open Google Maps → Share → Copy link → Paste here</div>
+                                    </div>
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
                                         <div class="form-group">
                                             <input type="text" id="userPincode" placeholder="Pincode (6 digits)" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;">
@@ -4756,6 +4763,9 @@
                                     <div style="background: white; padding: 10px; border-radius: 6px; border-left: 3px solid #9b59b6;">
                                         <div style="font-size: 10px; color: #666; margin-bottom: 2px;">FULL ADDRESS</div>
                                         <div id="displayAddress" style="font-weight: 600; color: #2c3e50; font-size: 12px; line-height: 1.3;"></div>
+                                    </div>
+                                    <div id="displayGoogleMapsContainer" style="margin-top: 10px;">
+                                        <!-- Google Maps link will be populated here -->
                                     </div>
                                     <div style="margin-top: 10px; padding: 8px; background: rgba(40, 167, 69, 0.1); border-radius: 6px; text-align: center;">
                                         <div style="font-size: 11px; color: #28a745; font-weight: 500;">✓ You can edit any field above to update your address</div>
@@ -6161,6 +6171,7 @@
                     address: addressData.address,
                     pincode: addressData.pincode,
                     nearby: addressData.nearby,
+                    googleMapsLink: addressData.googleMapsLink,
                     updatedAt: new Date()
                 }, { merge: true });
                 
@@ -6187,7 +6198,8 @@
                         city: userData.city || '',
                         address: userData.address || '',
                         pincode: userData.pincode || '',
-                        nearby: userData.nearby || ''
+                        nearby: userData.nearby || '',
+                        googleMapsLink: userData.googleMapsLink || ''
                     };
                     return userAddressData;
                 }
@@ -6434,6 +6446,7 @@
                     </div>
                     <div style="display:flex; gap:8px; margin-top:10px;">
                         <button class="btn-invoice" style="flex:1; background:#3498db; border:none; padding:8px; border-radius:5px; color:white; font-size:12px;" onclick="showInvoice('${order.id}')">📄 Invoice</button>
+                        <button class="btn-location" style="flex:1; background:#4285f4; border:none; padding:8px; border-radius:5px; color:white; font-size:12px;" onclick="openUserLocation('${order.id}')">📍 Location</button>
                         ${order.status === 'Pending' ? `
                         <button class="btn-primary" style="flex:1; background:#3498db; border:none; padding:8px; border-radius:5px; color:white; font-size:12px;" onclick="adminShipOrder('${order.id}')">Ship</button>
                         ` : ''}
@@ -6444,6 +6457,32 @@
                 adminOrdersList.appendChild(el);
             });
         }
+
+        // Open user's Google Maps location
+        window.openUserLocation = function(orderId) {
+            try {
+                // Find the order in admin orders
+                const order = allAdminOrders.find(o => o.id === orderId);
+                if (!order) {
+                    showNotification('❌ Order not found', 'error');
+                    return;
+                }
+                
+                // Check if order has Google Maps link
+                if (!order.userGoogleMapsLink) {
+                    showNotification('📍 No Google Maps location available for this order', 'warning');
+                    return;
+                }
+                
+                // Open Google Maps link in new tab
+                window.open(order.userGoogleMapsLink, '_blank');
+                showNotification('📍 Opening user location on Google Maps', 'success');
+                
+            } catch (error) {
+                console.error('Error opening user location:', error);
+                showNotification('❌ Error opening location', 'error');
+            }
+        };
 
         // Filter orders by status
         window.filterOrders = function() {
@@ -9360,10 +9399,15 @@
                             <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Full Address *</label>
                             <textarea id="customAddress" placeholder="Enter complete address with house/flat number, street, area" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; min-height: 70px; resize: vertical; box-sizing: border-box; transition: border-color 0.3s;" rows="3" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">${userAddressData?.address || ''}</textarea>
                         </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Google Maps Location Link (Optional)</label>
+                            <input type="url" id="customGoogleMapsLink" placeholder="Paste your Google Maps location link here (optional)" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.googleMapsLink || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
+                            <div style="font-size: 12px; color: #666; margin-top: 5px; padding: 8px; background: #f0f8ff; border-radius: 6px;">📍 How to get link: Open Google Maps → Find your location → Share → Copy link → Paste here</div>
+                        </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">State *</label>
-                                <select id="customState" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'" onchange="loadCitiesForState()">
+                                <select id="customState" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
                                     <option value="">Select State</option>
                                     <option value="Andhra Pradesh">Andhra Pradesh</option>
                                     <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -9400,9 +9444,7 @@
                             </div>
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">City *</label>
-                                <select id="customCity" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                                    <option value="">Select City</option>
-                                </select>
+                                <input type="text" id="customCity" placeholder="Enter your city" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.city || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
                             </div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -9601,10 +9643,15 @@
                             <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Full Address *</label>
                             <textarea id="customAddress" placeholder="Enter complete address with house/flat number, street, area" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; min-height: 70px; resize: vertical; box-sizing: border-box; transition: border-color 0.3s;" rows="3" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">${userAddressData?.address || ''}</textarea>
                         </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Google Maps Location Link (Optional)</label>
+                            <input type="url" id="customGoogleMapsLink" placeholder="Paste your Google Maps location link here (optional)" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.googleMapsLink || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
+                            <div style="font-size: 12px; color: #666; margin-top: 5px; padding: 8px; background: #f0f8ff; border-radius: 6px;">📍 How to get link: Open Google Maps → Find your location → Share → Copy link → Paste here</div>
+                        </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">State *</label>
-                                <select id="customState" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'" onchange="loadCitiesForState()">
+                                <select id="customState" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
                                     <option value="">Select State</option>
                                     <option value="Andhra Pradesh">Andhra Pradesh</option>
                                     <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -9641,9 +9688,7 @@
                             </div>
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">City *</label>
-                                <select id="customCity" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                                    <option value="">Select City</option>
-                                </select>
+                                <input type="text" id="customCity" placeholder="Enter your city" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.city || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
                             </div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -9704,15 +9749,23 @@
                 const customState = document.getElementById('customState').value.trim();
                 const customPincode = document.getElementById('customPincode').value.trim();
                 const customNearby = document.getElementById('customNearby').value.trim();
+                const customGoogleMapsLink = document.getElementById('customGoogleMapsLink').value.trim();
                 
                 // Validate custom address
                 if (!customPhone || !customAddress || !customCity || !customState || !customPincode) {
-                    showNotification('❌ Please fill all required address fields (Phone, Address, City, State, Pincode)', 'error');
+                    showNotification('❌ Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Validate Google Maps link (more flexible validation)
+                if (customGoogleMapsLink && !customGoogleMapsLink.includes('maps.google') && !customGoogleMapsLink.includes('goo.gl') && !customGoogleMapsLink.includes('maps.app')) {
+                    showNotification('❌ Please enter a valid Google Maps link', 'error');
                     return;
                 }
                 
                 finalPhone = customPhone;
                 finalAddress = `${customAddress}, ${customCity}, ${customState} - ${customPincode}${customNearby ? ', Near ' + customNearby : ''}`;
+                finalGoogleMapsLink = customGoogleMapsLink;
             } else {
                 showNotification('❌ Please select an address option.', 'error');
                 return;
@@ -9734,6 +9787,7 @@
                         totalAmount: (item.price * item.quantity) + deliveryCharge,
                         userPhone: finalPhone,
                         userAddress: finalAddress,
+                        userGoogleMapsLink: finalGoogleMapsLink,
                         orderDate: new Date().toLocaleDateString(),
                         status: 'Pending',
                         orderType: 'Cart Order All'
@@ -9845,10 +9899,15 @@
                             <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Full Address *</label>
                             <textarea id="customAddress" placeholder="Enter complete address with house/flat number, street, area" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; min-height: 70px; resize: vertical; box-sizing: border-box; transition: border-color 0.3s;" rows="3" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">${userAddressData?.address || ''}</textarea>
                         </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Google Maps Location Link (Optional)</label>
+                            <input type="url" id="customGoogleMapsLink" placeholder="Paste your Google Maps location link here (optional)" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.googleMapsLink || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
+                            <div style="font-size: 12px; color: #666; margin-top: 5px; padding: 8px; background: #f0f8ff; border-radius: 6px;">📍 How to get link: Open Google Maps → Find your location → Share → Copy link → Paste here</div>
+                        </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">State *</label>
-                                <select id="customState" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'" onchange="loadCitiesForState()">
+                                <select id="customState" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
                                     <option value="">Select State</option>
                                     <option value="Andhra Pradesh">Andhra Pradesh</option>
                                     <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -9885,9 +9944,7 @@
                             </div>
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">City *</label>
-                                <select id="customCity" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                                    <option value="">Select City</option>
-                                </select>
+                                <input type="text" id="customCity" placeholder="Enter your city" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.city || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
                             </div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -9918,12 +9975,12 @@
             const product = productsData.find(p => p.id === productId);
             if (!product) return;
             
-            // Get selected address option
+            let finalPhone = '';
+            let finalAddress = '';
+            let finalGoogleMapsLink = '';
+            
             const savedAddressOption = document.querySelector('input[name="addressOption"][value="saved"]');
             const customAddressOption = document.querySelector('input[name="addressOption"][value="custom"]');
-            
-            let finalAddress = '';
-            let finalPhone = '';
             
             if (savedAddressOption && savedAddressOption.checked) {
                 // Use saved address
@@ -9933,6 +9990,7 @@
                 }
                 finalPhone = userAddressData.phone;
                 finalAddress = `${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}${userAddressData.nearby ? ', Near ' + userAddressData.nearby : ''}`;
+                finalGoogleMapsLink = userAddressData.googleMapsLink || '';
             } else if (customAddressOption && customAddressOption.checked) {
                 // Use custom address
                 const customPhone = document.getElementById('customPhone').value.trim();
@@ -9941,27 +9999,39 @@
                 const customState = document.getElementById('customState').value.trim();
                 const customPincode = document.getElementById('customPincode').value.trim();
                 const customNearby = document.getElementById('customNearby').value.trim();
+                const customGoogleMapsLink = document.getElementById('customGoogleMapsLink').value.trim();
                 
                 // Validate custom address
                 if (!customPhone || !customAddress || !customCity || !customState || !customPincode) {
-                    showNotification('❌ Please fill all required address fields (Phone, Address, City, State, Pincode)', 'error');
+                    showNotification('❌ Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Validate Google Maps link (more flexible validation)
+                if (customGoogleMapsLink && !customGoogleMapsLink.includes('maps.google') && !customGoogleMapsLink.includes('goo.gl') && !customGoogleMapsLink.includes('maps.app')) {
+                    showNotification('❌ Please enter a valid Google Maps link', 'error');
                     return;
                 }
                 
                 finalPhone = customPhone;
                 finalAddress = `${customAddress}, ${customCity}, ${customState} - ${customPincode}${customNearby ? ', Near ' + customNearby : ''}`;
+                finalGoogleMapsLink = customGoogleMapsLink;
             } else {
                 showNotification('❌ Please select an address option', 'error');
                 return;
             }
+            
+            // Calculate discount information
+            const originalPrice = product.originalPrice || product.price;
+            const discount = product.discount || 0;
             
             // Create order data
             const orderData = {
                 productId: product.id,
                 productName: product.name,
                 productPrice: currentPrice,
-                originalPrice: product.originalPrice || currentPrice,
-                discount: product.discount || 0,
+                originalPrice: originalPrice,
+                discount: discount,
                 productImage: product.imageUrl,
                 productSize: selectedSize,
                 quantity: quantity,
@@ -9969,6 +10039,7 @@
                 totalAmount: totalAmount,
                 userPhone: finalPhone,
                 userAddress: finalAddress,
+                googleMapsLink: finalGoogleMapsLink,
                 orderDate: new Date().toLocaleDateString(),
                 status: 'Pending'
             };
@@ -9994,12 +10065,12 @@
                 return;
             }
             
-            // Get selected address option
+            let finalPhone = '';
+            let finalAddress = '';
+            let finalGoogleMapsLink = '';
+            
             const savedAddressOption = document.querySelector('input[name="addressOption"][value="saved"]');
             const customAddressOption = document.querySelector('input[name="addressOption"][value="custom"]');
-            
-            let finalAddress = '';
-            let finalPhone = '';
             
             if (savedAddressOption && savedAddressOption.checked) {
                 // Use saved address
@@ -10009,6 +10080,7 @@
                 }
                 finalPhone = userAddressData.phone;
                 finalAddress = `${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}${userAddressData.nearby ? ', Near ' + userAddressData.nearby : ''}`;
+                finalGoogleMapsLink = userAddressData.googleMapsLink || '';
             } else if (customAddressOption && customAddressOption.checked) {
                 // Use custom address
                 const customPhone = document.getElementById('customPhone').value.trim();
@@ -10017,15 +10089,23 @@
                 const customState = document.getElementById('customState').value.trim();
                 const customPincode = document.getElementById('customPincode').value.trim();
                 const customNearby = document.getElementById('customNearby').value.trim();
+                const customGoogleMapsLink = document.getElementById('customGoogleMapsLink').value.trim();
                 
                 // Validate custom address
                 if (!customPhone || !customAddress || !customCity || !customState || !customPincode) {
-                    showNotification('❌ Please fill all required address fields (Phone, Address, City, State, Pincode)', 'error');
+                    showNotification('❌ Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Validate Google Maps link (more flexible validation)
+                if (customGoogleMapsLink && !customGoogleMapsLink.includes('maps.google') && !customGoogleMapsLink.includes('goo.gl') && !customGoogleMapsLink.includes('maps.app')) {
+                    showNotification('❌ Please enter a valid Google Maps link', 'error');
                     return;
                 }
                 
                 finalPhone = customPhone;
                 finalAddress = `${customAddress}, ${customCity}, ${customState} - ${customPincode}${customNearby ? ', Near ' + customNearby : ''}`;
+                finalGoogleMapsLink = customGoogleMapsLink;
             } else {
                 showNotification('❌ Please select an address option', 'error');
                 return;
@@ -10049,6 +10129,7 @@
                 totalAmount: totalAmount,
                 userPhone: finalPhone,
                 userAddress: finalAddress,
+                userGoogleMapsLink: finalGoogleMapsLink,
                 orderDate: new Date().toLocaleDateString(),
                 status: 'Pending'
             };
@@ -12545,6 +12626,29 @@
                     document.getElementById('displayPhone').textContent = userAddressData.phone || 'Not set';
                     document.getElementById('displayNearby').textContent = userAddressData.nearby || 'Not set';
                     
+                    // Display Google Maps link
+                    const googleMapsContainer = document.getElementById('displayGoogleMapsContainer');
+                    if (googleMapsContainer) {
+                        if (userAddressData.googleMapsLink) {
+                            googleMapsContainer.innerHTML = `
+                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 3px solid #4285f4;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 2px;">GOOGLE MAPS LOCATION</div>
+                                    <a href="${userAddressData.googleMapsLink}" target="_blank" style="color: #4285f4; text-decoration: none; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                        📍 View on Google Maps
+                                        <span style="font-size: 10px;">↗</span>
+                                    </a>
+                                </div>
+                            `;
+                        } else {
+                            googleMapsContainer.innerHTML = `
+                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 3px solid #e74c3c;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 2px;">GOOGLE MAPS LOCATION</div>
+                                    <div style="color: #e74c3c; font-weight: 600; font-size: 12px;">Not provided</div>
+                                </div>
+                            `;
+                        }
+                    }
+                    
                     document.getElementById('currentAddressDisplay').style.display = 'block';
                 } else {
                     // Hide current address display if no data
@@ -12622,13 +12726,28 @@
                 return;
             }
             
+            const googleMapsLink = document.getElementById('userGoogleMapsLink').value.trim();
+            
+            // Validate Google Maps link
+            if (!googleMapsLink) {
+                showNotification('Please provide Google Maps location link', 'warning');
+                return;
+            }
+            
+            // Basic validation for Google Maps URL
+            if (!googleMapsLink.includes('maps.google.com') && !googleMapsLink.includes('goo.gl') && !googleMapsLink.includes('maps.app.goo.gl')) {
+                showNotification('Please enter a valid Google Maps link', 'warning');
+                return;
+            }
+            
             const addressData = {
                 phone: phone,
                 state: state,
                 city: city,
                 address: address,
                 pincode: pincode,
-                nearby: nearby
+                nearby: nearby,
+                googleMapsLink: googleMapsLink
             };
             
             const success = await saveUserAddressToFirebase(addressData);
@@ -12663,6 +12782,7 @@
                 document.getElementById('userAddress').value = userAddressData.address || '';
                 document.getElementById('userPincode').value = userAddressData.pincode || '';
                 document.getElementById('userNearby').value = userAddressData.nearby || '';
+                document.getElementById('userGoogleMapsLink').value = userAddressData.googleMapsLink || '';
                 displayCurrentAddress();
             }
         }
@@ -12721,6 +12841,29 @@
                     if (profileDisplayAddress) profileDisplayAddress.textContent = userAddressData.address || 'Not provided';
                     if (profileDisplayPincode) profileDisplayPincode.textContent = userAddressData.pincode || 'Not provided';
                     if (profileDisplayNearby) profileDisplayNearby.textContent = userAddressData.nearby || 'Not provided';
+                    
+                    // Display Google Maps link in profile section
+                    const profileGoogleMapsContainer = document.getElementById('profileGoogleMapsContainer');
+                    if (profileGoogleMapsContainer) {
+                        if (userAddressData.googleMapsLink) {
+                            profileGoogleMapsContainer.innerHTML = `
+                                <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #4285f4;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 3px;">GOOGLE MAPS LOCATION</div>
+                                    <a href="${userAddressData.googleMapsLink}" target="_blank" style="color: #4285f4; text-decoration: none; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                                        📍 View on Google Maps
+                                        <span style="font-size: 12px;">↗</span>
+                                    </a>
+                                </div>
+                            `;
+                        } else {
+                            profileGoogleMapsContainer.innerHTML = `
+                                <div style="background: white; padding: 12px; border-radius: 8px; border-left: 3px solid #e74c3c;">
+                                    <div style="font-size: 10px; color: #666; margin-bottom: 3px;">GOOGLE MAPS LOCATION</div>
+                                    <div style="color: #e74c3c; font-weight: 600; font-size: 13px;">Not provided</div>
+                                </div>
+                            `;
+                        }
+                    }
                 }
             } else {
                 if (displayDiv) displayDiv.style.display = 'none';
