@@ -8283,12 +8283,9 @@
                 return;
             }
             
-            if (productsData.length >= 20) {
-                showNotification('Maximum 20 products allowed', 'warning');
-                return;
-            }
             
             if (await addProductToFirebase(name, imageUrl, description, finalPrice, subImages, selectedCategories, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing, selectedSubcategories)) {
+                showNotification('Product successfully added!', 'success');
                 document.getElementById('productName').value = '';
                 document.getElementById('productImageUrl').value = '';
                 document.getElementById('productDescription').value = '';
