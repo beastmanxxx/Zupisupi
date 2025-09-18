@@ -5103,17 +5103,18 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 14px;">Original Price (₹):</label>
-                                <input type="number" id="productOriginalPrice" placeholder="Original/Cut Price" step="0.01" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <input type="number" id="productOriginalPrice" placeholder="Original/Cut Price" step="0.01" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" oninput="calculateMainProductFinalPrice()">
                             </div>
                             <div>
                                 <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 14px;">Discount (%):</label>
-                                <input type="number" id="productDiscount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <input type="number" id="productDiscount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" oninput="calculateMainProductFinalPrice()">
                             </div>
                         </div>
                         
                         <div style="margin-bottom: 10px;">
                             <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #27ae60; font-size: 14px;">Final Price (₹):</label>
-                            <input type="number" id="productFinalPrice" placeholder="Auto-calculated" step="0.01" readonly style="width: 100%; padding: 10px; border: 1px solid #27ae60; border-radius: 5px; background: #e8f5e8; color: #27ae60; font-weight: 600;">
+                            <div id="productFinalPrice" style="width: 100%; padding: 10px; border: 1px solid #27ae60; border-radius: 5px; background: #e8f5e8; color: #27ae60; font-weight: 600; text-align: center; font-size: 18px;">₹0.00</div>
+                            <input type="hidden" id="productFinalPriceValue" value="0">
                         </div>
                     </div>
                     
@@ -5155,23 +5156,33 @@
                             <!-- Regular Sizes -->
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
                                 <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="S" class="size-checkbox"> S</label>
-                                <input type="number" id="priceS" placeholder="Price for S" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                <input type="number" id="priceS" placeholder="Original Price for S" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateFinalPrice('S')">
+                                <input type="number" id="discountS" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateFinalPrice('S')">
+                                <div id="finalPriceS" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
                                 <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="M" class="size-checkbox"> M</label>
-                                <input type="number" id="priceM" placeholder="Price for M" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                <input type="number" id="priceM" placeholder="Original Price for M" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateFinalPrice('M')">
+                                <input type="number" id="discountM" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateFinalPrice('M')">
+                                <div id="finalPriceM" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
                                 <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="L" class="size-checkbox"> L</label>
-                                <input type="number" id="priceL" placeholder="Price for L" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                <input type="number" id="priceL" placeholder="Original Price for L" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateFinalPrice('L')">
+                                <input type="number" id="discountL" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateFinalPrice('L')">
+                                <div id="finalPriceL" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
                                 <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="XL" class="size-checkbox"> XL</label>
-                                <input type="number" id="priceXL" placeholder="Price for XL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                <input type="number" id="priceXL" placeholder="Original Price for XL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateFinalPrice('XL')">
+                                <input type="number" id="discountXL" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateFinalPrice('XL')">
+                                <div id="finalPriceXL" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
                                 <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="XXL" class="size-checkbox"> XXL</label>
-                                <input type="number" id="priceXXL" placeholder="Price for XXL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                <input type="number" id="priceXXL" placeholder="Original Price for XXL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateFinalPrice('XXL')">
+                                <input type="number" id="discountXXL" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateFinalPrice('XXL')">
+                                <div id="finalPriceXXL" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                             </div>
                             
                             <!-- Weight-Based Options -->
@@ -5183,8 +5194,10 @@
                                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Milliliters (ml):</label>
                                     <div id="mlContainer">
                                         <div class="weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
-                                            <input type="number" class="weight-quantity" placeholder="Quantity (ml)" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
-                                            <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-quantity" placeholder="Quantity (ml)" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateWeightFinalPrice(this)">
+                                            <input type="number" class="weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateWeightFinalPrice(this)">
+                                            <div class="weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                                             <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
                                         </div>
                                     </div>
@@ -5196,8 +5209,10 @@
                                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Grams (g):</label>
                                     <div id="gContainer">
                                         <div class="weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
-                                            <input type="number" class="weight-quantity" placeholder="Quantity (g)" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
-                                            <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-quantity" placeholder="Quantity (g)" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateWeightFinalPrice(this)">
+                                            <input type="number" class="weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateWeightFinalPrice(this)">
+                                            <div class="weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                                             <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
                                         </div>
                                     </div>
@@ -5209,8 +5224,10 @@
                                     <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Kilograms (kg):</label>
                                     <div id="kgContainer">
                                         <div class="weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
-                                            <input type="number" class="weight-quantity" placeholder="Quantity (kg)" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
-                                            <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-quantity" placeholder="Quantity (kg)" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                            <input type="number" class="weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateWeightFinalPrice(this)">
+                                            <input type="number" class="weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateWeightFinalPrice(this)">
+                                            <div class="weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                                             <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
                                         </div>
                                     </div>
@@ -7964,7 +7981,7 @@
         }
 
         // Add product to Firebase Firestore
-        async function addProductToFirebase(name, imageUrl, description, finalPrice, subImages, categories, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing, subcategories = []) {
+        async function addProductToFirebase(name, imageUrl, description, finalPrice, subImages, categories, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing, subcategories = [], sizeDiscounts = {}) {
             try {
                 const convertedUrl = convertGoogleDriveUrl(imageUrl);
                 const subImagesArray = subImages ? subImages.split(',').map(url => convertGoogleDriveUrl(url.trim())) : [];
@@ -7985,6 +8002,7 @@
                     subcategories: subcategories || [],
                     sizes: sizes || [],
                     sizePricing: sizePricing || {},
+                    sizeDiscounts: sizeDiscounts || {},
                     weightPricing: weightPricing || { ml: [], g: [], kg: [] },
                     createdAt: new Date().toISOString()
                 };
@@ -8144,15 +8162,17 @@
 
         // Admin product management functions
         // Auto-calculate final price when original price or discount changes
-        window.calculateFinalPrice = function() {
+        window.calculateMainProductFinalPrice = function() {
             const originalPrice = parseFloat(document.getElementById('productOriginalPrice').value) || 0;
             const discount = parseFloat(document.getElementById('productDiscount').value) || 0;
             
             if (originalPrice > 0) {
                 const finalPrice = originalPrice - (originalPrice * discount / 100);
-                document.getElementById('productFinalPrice').value = finalPrice.toFixed(2);
+                document.getElementById('productFinalPrice').textContent = `₹${finalPrice.toFixed(2)}`;
+                document.getElementById('productFinalPriceValue').value = finalPrice.toFixed(2);
             } else {
-                document.getElementById('productFinalPrice').value = '';
+                document.getElementById('productFinalPrice').textContent = '₹0.00';
+                document.getElementById('productFinalPriceValue').value = '0';
             }
         };
         
@@ -8162,13 +8182,48 @@
             const discountInput = document.getElementById('productDiscount');
             
             if (originalPriceInput) {
-                originalPriceInput.addEventListener('input', calculateFinalPrice);
+                originalPriceInput.addEventListener('input', calculateMainProductFinalPrice);
             }
             if (discountInput) {
-                discountInput.addEventListener('input', calculateFinalPrice);
+                discountInput.addEventListener('input', calculateMainProductFinalPrice);
             }
         });
         
+        // Calculate final price for size options
+        window.calculateFinalPrice = function(size) {
+            const priceInput = document.getElementById(`price${size}`);
+            const discountInput = document.getElementById(`discount${size}`);
+            const finalPriceDiv = document.getElementById(`finalPrice${size}`);
+            
+            const originalPrice = parseFloat(priceInput.value) || 0;
+            const discount = parseFloat(discountInput.value) || 0;
+            
+            let finalPrice = originalPrice;
+            if (discount > 0) {
+                finalPrice = originalPrice - (originalPrice * discount / 100);
+            }
+            
+            finalPriceDiv.textContent = `₹${finalPrice.toFixed(2)}`;
+        };
+
+        // Calculate final price for weight-based options
+        window.calculateWeightFinalPrice = function(inputElement) {
+            const weightGroup = inputElement.parentElement;
+            const priceInput = weightGroup.querySelector('.weight-price');
+            const discountInput = weightGroup.querySelector('.weight-discount');
+            const finalPriceDiv = weightGroup.querySelector('.weight-final-price');
+            
+            const originalPrice = parseFloat(priceInput.value) || 0;
+            const discount = parseFloat(discountInput.value) || 0;
+            
+            let finalPrice = originalPrice;
+            if (discount > 0) {
+                finalPrice = originalPrice - (originalPrice * discount / 100);
+            }
+            
+            finalPriceDiv.textContent = `₹${finalPrice.toFixed(2)}`;
+        };
+
         // Weight-based pricing functions
         window.addWeightInput = function(containerId, unit) {
             const container = document.getElementById(containerId);
@@ -8176,8 +8231,10 @@
             newWeightGroup.className = 'weight-input-group';
             newWeightGroup.style.cssText = 'display: flex; gap: 8px; margin-bottom: 8px; align-items: center;';
             newWeightGroup.innerHTML = `
-                <input type="number" class="weight-quantity" placeholder="Quantity (${unit})" min="1" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
-                <input type="number" class="weight-price" placeholder="Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                <input type="number" class="weight-quantity" placeholder="Quantity (${unit})" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                <input type="number" class="weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateWeightFinalPrice(this)">
+                <input type="number" class="weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateWeightFinalPrice(this)">
+                <div class="weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
                 <button type="button" onclick="removeWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
             `;
             container.appendChild(newWeightGroup);
@@ -8202,8 +8259,13 @@
             mlGroups.forEach(group => {
                 const quantity = group.querySelector('.weight-quantity').value;
                 const price = group.querySelector('.weight-price').value;
+                const discount = group.querySelector('.weight-discount').value || 0;
                 if (quantity && price) {
-                    weightPricing.ml.push({ quantity: parseInt(quantity), price: parseFloat(price) });
+                    weightPricing.ml.push({ 
+                        quantity: parseInt(quantity), 
+                        price: parseFloat(price),
+                        discount: parseFloat(discount)
+                    });
                 }
             });
             
@@ -8213,8 +8275,13 @@
             gGroups.forEach(group => {
                 const quantity = group.querySelector('.weight-quantity').value;
                 const price = group.querySelector('.weight-price').value;
+                const discount = group.querySelector('.weight-discount').value || 0;
                 if (quantity && price) {
-                    weightPricing.g.push({ quantity: parseInt(quantity), price: parseFloat(price) });
+                    weightPricing.g.push({ 
+                        quantity: parseInt(quantity), 
+                        price: parseFloat(price),
+                        discount: parseFloat(discount)
+                    });
                 }
             });
             
@@ -8224,8 +8291,13 @@
             kgGroups.forEach(group => {
                 const quantity = group.querySelector('.weight-quantity').value;
                 const price = group.querySelector('.weight-price').value;
+                const discount = group.querySelector('.weight-discount').value || 0;
                 if (quantity && price) {
-                    weightPricing.kg.push({ quantity: parseInt(quantity), price: parseFloat(price) });
+                    weightPricing.kg.push({ 
+                        quantity: parseInt(quantity), 
+                        price: parseFloat(price),
+                        discount: parseFloat(discount)
+                    });
                 }
             });
             
@@ -8238,7 +8310,7 @@
             const description = document.getElementById('productDescription').value;
             const originalPrice = document.getElementById('productOriginalPrice').value;
             const discount = document.getElementById('productDiscount').value || 0;
-            const finalPrice = document.getElementById('productFinalPrice').value;
+            const finalPrice = document.getElementById('productFinalPriceValue').value;
             const deliveryCharge = document.getElementById('deliveryCharge').value || 0;
             const rating = document.getElementById('productRating').value;
             const subImages = collectAdditionalImages();
@@ -8256,18 +8328,22 @@
                 selectedSubcategories.push(checkbox.value);
             });
             
-            // Get selected regular sizes and their prices
+            // Get selected regular sizes and their prices with discounts
             const sizeCheckboxes = document.querySelectorAll('.size-checkbox:checked');
             const sizes = [];
             const sizePricing = {};
+            const sizeDiscounts = {};
             
             sizeCheckboxes.forEach(checkbox => {
                 const size = checkbox.value;
                 const priceInput = document.getElementById(`price${size}`);
+                const discountInput = document.getElementById(`discount${size}`);
                 const sizePrice = priceInput.value || finalPrice;
+                const sizeDiscount = discountInput.value || 0;
                 
                 sizes.push(size);
                 sizePricing[size] = parseFloat(sizePrice);
+                sizeDiscounts[size] = parseFloat(sizeDiscount);
             });
             
             // Get weight-based pricing
@@ -8284,14 +8360,15 @@
             }
             
             
-            if (await addProductToFirebase(name, imageUrl, description, finalPrice, subImages, selectedCategories, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing, selectedSubcategories)) {
+            if (await addProductToFirebase(name, imageUrl, description, finalPrice, subImages, selectedCategories, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing, selectedSubcategories, sizeDiscounts)) {
                 showNotification('Product successfully added!', 'success');
                 document.getElementById('productName').value = '';
                 document.getElementById('productImageUrl').value = '';
                 document.getElementById('productDescription').value = '';
                 document.getElementById('productOriginalPrice').value = '';
                 document.getElementById('productDiscount').value = '0';
-                document.getElementById('productFinalPrice').value = '';
+                document.getElementById('productFinalPrice').textContent = '₹0.00';
+                document.getElementById('productFinalPriceValue').value = '0';
                 document.getElementById('deliveryCharge').value = '0';
                 document.getElementById('productSubImages').value = '';
                 document.getElementById('productRating').value = '';
@@ -9383,9 +9460,26 @@
                         <div>
                             <div style="font-weight: 600; color: #2c3e50;">${product.name}</div>
                             ${selectedSize ? `<div style="color: #666; font-size: 12px;">Size: ${selectedSize}</div>` : ''}
-                            <div style="color: #27ae60; font-weight: 600;">₹${currentPrice} x ${quantity} = ₹${subtotal}</div>
+                            ${product.discount && product.discount > 0 && originalPrice > currentPrice ? `
+                                <div style="margin: 5px 0;">
+                                    <div style="font-size: 11px; color: #999; margin-bottom: 2px;">Original Price</div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <span style="color: #27ae60; font-weight: 600;">₹${currentPrice}</span>
+                                        <span style="color: #999; font-size: 13px; text-decoration: line-through;">₹${originalPrice}</span>
+                                        <span style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">${product.discount}% off</span>
+                                    </div>
+                                </div>
+                                <div style="color: #27ae60; font-weight: 600; margin-top: 3px;">₹${currentPrice} x ${quantity} = ₹${subtotal}</div>
+                            ` : `
+                                <div style="color: #27ae60; font-weight: 600;">₹${currentPrice} x ${quantity} = ₹${subtotal}</div>
+                            `}
                             ${deliveryCharge > 0 ? `<div style="color: #666; font-size: 12px;">Delivery: ₹${deliveryCharge}</div>` : ''}
-                            <div style="font-weight: 700; color: #e74c3c; font-size: 16px;">Total: ₹${totalAmount}</div>
+                            ${product.discount && product.discount > 0 && originalPrice > currentPrice ? `
+                                <div style="margin-top: 5px; padding: 5px; background: #e8f5e8; border-radius: 4px;">
+                                    <div style="font-size: 11px; color: #27ae60; font-weight: 600;">💰 You Save: ₹${(originalPrice - currentPrice) * quantity}</div>
+                                </div>
+                            ` : ''}
+                            <div style="font-weight: 700; color: #e74c3c; font-size: 16px; margin-top: 5px;">Total: ₹${totalAmount}</div>
                         </div>
                     </div>
                 </div>
@@ -9867,6 +9961,8 @@
             const quantity = cartItem.quantity;
             const selectedSize = cartItem.size || '';
             const currentPrice = cartItem.price;
+            const originalPrice = cartItem.originalPrice || currentPrice;
+            const discount = cartItem.discount || 0;
             const deliveryCharge = product.deliveryCharge || 0;
             const subtotal = currentPrice * quantity;
             const totalAmount = subtotal + deliveryCharge;
@@ -9885,9 +9981,26 @@
                         <div>
                             <div style="font-weight: 600; color: #2c3e50;">${product.name}</div>
                             ${selectedSize ? `<div style="color: #666; font-size: 12px;">Size: ${selectedSize}</div>` : ''}
-                            <div style="color: #27ae60; font-weight: 600;">₹${currentPrice} x ${quantity} = ₹${subtotal}</div>
+                            ${discount && discount > 0 && originalPrice > currentPrice ? `
+                                <div style="margin: 5px 0;">
+                                    <div style="font-size: 11px; color: #999; margin-bottom: 2px;">Original Price</div>
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                        <span style="color: #27ae60; font-weight: 600;">₹${currentPrice}</span>
+                                        <span style="color: #999; font-size: 13px; text-decoration: line-through;">₹${originalPrice}</span>
+                                        <span style="background: #27ae60; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600;">${discount}% off</span>
+                                    </div>
+                                </div>
+                                <div style="color: #27ae60; font-weight: 600; margin-top: 3px;">₹${currentPrice} x ${quantity} = ₹${subtotal}</div>
+                            ` : `
+                                <div style="color: #27ae60; font-weight: 600;">₹${currentPrice} x ${quantity} = ₹${subtotal}</div>
+                            `}
                             ${deliveryCharge > 0 ? `<div style="color: #666; font-size: 12px;">Delivery: ₹${deliveryCharge}</div>` : ''}
-                            <div style="font-weight: 700; color: #e74c3c; font-size: 16px;">Total: ₹${totalAmount}</div>
+                            ${discount && discount > 0 && originalPrice > currentPrice ? `
+                                <div style="margin-top: 5px; padding: 5px; background: #e8f5e8; border-radius: 4px;">
+                                    <div style="font-size: 11px; color: #27ae60; font-weight: 600;">💰 You Save: ₹${(originalPrice - currentPrice) * quantity}</div>
+                                </div>
+                            ` : ''}
+                            <div style="font-weight: 700; color: #e74c3c; font-size: 16px; margin-top: 5px;">Total: ₹${totalAmount}</div>
                         </div>
                     </div>
                 </div>
@@ -10219,7 +10332,9 @@
                 // Check if it's a regular size
                 if (product.sizePricing && product.sizePricing[selectedSize]) {
                     originalPrice = product.sizePricing[selectedSize];
-                    currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                    // Use size-specific discount if available, otherwise use general discount
+                    const sizeDiscount = (product.sizeDiscounts && product.sizeDiscounts[selectedSize]) ? product.sizeDiscounts[selectedSize] : discount;
+                    currentPrice = sizeDiscount > 0 ? originalPrice - (originalPrice * sizeDiscount / 100) : originalPrice;
                 }
                 // Check if it's a weight-based option
                 else if (selectedSize.includes('-')) {
@@ -10229,19 +10344,35 @@
                     
                     if (weightOption) {
                         originalPrice = weightOption.price;
-                        currentPrice = discount > 0 ? originalPrice - (originalPrice * discount / 100) : originalPrice;
+                        // Use weight-specific discount if available, otherwise use general discount
+                        const weightDiscount = weightOption.discount || discount;
+                        currentPrice = weightDiscount > 0 ? originalPrice - (originalPrice * weightDiscount / 100) : originalPrice;
                     }
                 }
             }
             
-            // Update price display
-            if (originalPrice > currentPrice && discount > 0) {
+            // Update price display with size-specific discount
+            let actualDiscount = discount;
+            if (selectedSize) {
+                if (product.sizePricing && product.sizePricing[selectedSize] && product.sizeDiscounts && product.sizeDiscounts[selectedSize]) {
+                    actualDiscount = product.sizeDiscounts[selectedSize];
+                } else if (selectedSize.includes('-')) {
+                    const [unit, quantity] = selectedSize.split('-');
+                    const weightOptions = product.weightPricing[unit];
+                    const weightOption = weightOptions.find(item => item.quantity == quantity);
+                    if (weightOption && weightOption.discount) {
+                        actualDiscount = weightOption.discount;
+                    }
+                }
+            }
+            
+            if (originalPrice > currentPrice && actualDiscount > 0) {
                 priceContainer.innerHTML = `
                     <div class="special-price-label" style="color: #27ae60; font-size: 14px; font-weight: 600; margin-bottom: 5px;">Special price</div>
                     <div class="price-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                         <span class="current-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${currentPrice.toFixed(2)}</span>
                         <span class="original-price" style="color: #999; font-size: 18px; text-decoration: line-through;">₹${originalPrice.toFixed(2)}</span>
-                        <span class="discount-badge" style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${discount}% off</span>
+                        <span class="discount-badge" style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${actualDiscount}% off</span>
                     </div>
                 `;
             } else {
