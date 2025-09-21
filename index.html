@@ -10212,9 +10212,9 @@
                 <div class="quantity-selection">
                     <label for="quantity-${product.id}"><strong>Quantity:</strong></label>
                     <div class="quantity-controls">
-                        <button onclick="changeQuantity('${product.id}', -1)">-</button>
-                        <input type="number" id="quantity-${product.id}" value="1" min="1" max="10" onchange="updateTotalPrice('${product.id}')">
-                        <button onclick="changeQuantity('${product.id}', 1)">+</button>
+                        <button class="quantity-btn" onclick="changeQuantity('${product.id}', -1)">-</button>
+                        <input type="number" id="quantity-${product.id}" class="quantity-input" value="1" min="1" max="10" onchange="updateTotalPrice('${product.id}')">
+                        <button class="quantity-btn" onclick="changeQuantity('${product.id}', 1)">+</button>
                     </div>
                 </div>
                 
@@ -10367,9 +10367,9 @@
                 <div class="quantity-selection">
                     <label for="quantity-${product.id}"><strong>Quantity:</strong></label>
                     <div class="quantity-controls">
-                        <button onclick="changeQuantity('${product.id}', -1)">-</button>
-                        <input type="number" id="quantity-${product.id}" value="1" min="1" max="10" onchange="updateTotalPrice('${product.id}')">
-                        <button onclick="changeQuantity('${product.id}', 1)">+</button>
+                        <button class="quantity-btn" onclick="changeQuantity('${product.id}', -1)">-</button>
+                        <input type="number" id="quantity-${product.id}" class="quantity-input" value="1" min="1" max="10" onchange="updateTotalPrice('${product.id}')">
+                        <button class="quantity-btn" onclick="changeQuantity('${product.id}', 1)">+</button>
                     </div>
                 </div>
                 
