@@ -10078,6 +10078,10 @@
                     <button class="btn-order" onclick="handleOrderNow('${product.id}')" style="background: #fbbf24; color: #000; font-weight: 600;">Order Now</button>
                 </div>
                 
+                <div class="features-image-container" style="margin: 20px 0; text-align: center;">
+                    <img src="features.png" alt="Product Features" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                </div>
+                
                 <div class="related-products-section">
                     <h4 class="related-products-title">Related Products</h4>
                     <div class="related-products-scroll" id="relatedProducts-${product.id}">
@@ -10097,6 +10101,315 @@
             
             // Update button state based on cart
             updateProductModalButtons(product.id);
+        };
+
+        // Function to update product modal content without adding to navigation stack
+        function updateProductModalContent(productId) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) return;
+            
+            const modal = document.getElementById('productModal');
+            const modalBody = document.getElementById('productModalBody');
+            
+            // Scroll modal to top when product changes
+            if (modal) {
+                modal.scrollTop = 0;
+            }
+            
+            // Prepare all images (main + sub images)
+            const allImages = [product.imageUrl];
+            if (product.subImages && product.subImages.length > 0) {
+                allImages.push(...product.subImages);
+            }
+            
+            // Create enhanced image carousel with thumbnails
+            let carouselHTML = '';
+            if (allImages.length > 1) {
+                // Multiple images - show carousel with thumbnails
+                let slidesHTML = '';
+                let thumbnailsHTML = '';
+                
+                allImages.forEach((imgUrl, index) => {
+                    slidesHTML += `
+                        <div class="carousel-slide" data-index="${index}">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
+                    
+                    thumbnailsHTML += `
+                        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="goToSlide('${product.id}', ${index})">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
+                });
+                
+                carouselHTML = `
+                    <div class="image-carousel-container">
+                        <div class="image-carousel" id="imageCarousel-${product.id}">
+                            <div class="carousel-images" id="carouselImages-${product.id}">
+                                ${slidesHTML}
+                            </div>
+                            <button class="carousel-nav prev" onclick="navigateCarousel('${product.id}', -1)">‹</button>
+                            <button class="carousel-nav next" onclick="navigateCarousel('${product.id}', 1)">›</button>
+                        </div>
+                        <div class="thumbnail-strip" id="thumbnailStrip-${product.id}">
+                            ${thumbnailsHTML}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Single image - show normally
+                carouselHTML = `<img src="${product.imageUrl}" alt="${product.name}" class="product-modal-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">`;
+            }
+            
+            modalBody.innerHTML = `
+                ${carouselHTML}
+                <h3 class="product-modal-name">${product.name}</h3>
+                <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 8px 0;">
+                    ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating}/5)` : 'No rating'}
+                </div>
+                <div class="product-modal-price-container" id="price-${product.id}">
+                    ${product.originalPrice && product.originalPrice > product.price && product.discount > 0 ? `
+                        <div class="special-price-label" style="color: #27ae60; font-size: 14px; font-weight: 600; margin-bottom: 5px;">Special price</div>
+                        <div class="price-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <span class="current-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${product.price}</span>
+                            <span class="original-price" style="color: #999; font-size: 18px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                            <span class="discount-badge" style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${product.discount}% off</span>
+                        </div>
+                    ` : `
+                        <div class="product-modal-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${product.price}</div>
+                    `}
+                </div>
+                <div class="description-container">
+                    <div class="description-text truncated" id="description-${product.id}">${product.description}</div>
+                    <button class="read-more-btn" id="readMoreBtn-${product.id}" onclick="toggleDescription('${product.id}')">Read More</button>
+                </div>
+                ${product.category ? `<p><strong>Category:</strong> ${product.category}</p>` : ''}
+                
+                ${product.sizes && product.sizes.length > 0 ? `
+                    <div class="size-selection">
+                        <label for="size-${product.id}"><strong>Size:</strong></label>
+                        <div class="size-buttons" id="sizeButtons-${product.id}">
+                            ${product.sizes.map(size => `
+                                <button class="size-btn" onclick="selectSize('${product.id}', '${size}')" data-size="${size}">${size}</button>
+                            `).join('')}
+                            ${product.weightPricing && (product.weightPricing.ml?.length > 0 || product.weightPricing.g?.length > 0 || product.weightPricing.kg?.length > 0) ? `
+                                ${product.weightPricing.ml?.map(option => `
+                                    <button class="size-btn" onclick="selectSize('${product.id}', '${option.quantity}ml')" data-size="${option.quantity}ml">${option.quantity}ml</button>
+                                `).join('') || ''}
+                                ${product.weightPricing.g?.map(option => `
+                                    <button class="size-btn" onclick="selectSize('${product.id}', '${option.quantity}g')" data-size="${option.quantity}g">${option.quantity}g</button>
+                                `).join('') || ''}
+                                ${product.weightPricing.kg?.map(option => `
+                                    <button class="size-btn" onclick="selectSize('${product.id}', '${option.quantity}kg')" data-size="${option.quantity}kg">${option.quantity}kg</button>
+                                `).join('') || ''}
+                            ` : ''}
+                        </div>
+                        <input type="hidden" id="selectedSize-${product.id}" value="${product.sizes[0] || ''}">
+                    </div>
+                ` : ''}
+                
+                <div class="quantity-selection">
+                    <label for="quantity-${product.id}"><strong>Quantity:</strong></label>
+                    <div class="quantity-controls">
+                        <button onclick="changeQuantity('${product.id}', -1)">-</button>
+                        <input type="number" id="quantity-${product.id}" value="1" min="1" max="10" onchange="updateTotalPrice('${product.id}')">
+                        <button onclick="changeQuantity('${product.id}', 1)">+</button>
+                    </div>
+                </div>
+                
+                <div class="total-amount-section" id="totalSection-${product.id}">
+                    <div style="font-size: 18px; font-weight: 600; color: #2c3e50; margin: 15px 0 5px 0;">Total Amount</div>
+                    ${product.originalPrice && product.originalPrice > product.price && product.discount > 0 ? `
+                        <div style="font-size: 20px; font-weight: 700; color: #27ae60;" id="total-price-${product.id}">₹${product.price}</div>
+                    ` : `
+                        <div style="font-size: 20px; font-weight: 700; color: #27ae60;" id="total-price-${product.id}">₹${product.price}</div>
+                    `}
+                </div>
+                
+                <div class="product-modal-buttons">
+                    <button class="btn-cart" id="cartBtn-${product.id}" onclick="addToCartWithQuantity('${product.id}')">Add to Cart</button>
+                    <button class="btn-order" onclick="handleOrderNow('${product.id}')" style="background: #fbbf24; color: #000; font-weight: 600;">Order Now</button>
+                </div>
+                
+                <div class="features-image-container" style="margin: 20px 0; text-align: center;">
+                    <img src="features.png" alt="Product Features" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                </div>
+                
+                <div class="related-products-section">
+                    <h4 class="related-products-title">Related Products</h4>
+                    <div class="related-products-scroll" id="relatedProducts-${product.id}">
+                        <!-- Related products will be populated here -->
+                    </div>
+                </div>
+            `;
+            
+            // Load related products
+            loadRelatedProducts(product.id, product.category);
+            
+            // Update button state based on cart
+            updateProductModalButtons(product.id);
+            
+            // Initialize total price display
+            initializeTotalPrice(product.id);
+        }
+
+        // Open product modal from related products (with navigation stack)
+        window.openProductModalFromRelated = function(productId) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) return;
+            
+            // Always add to navigation stack for product-to-product navigation
+            // This allows users to go back through all opened products one by one
+            pushToNavigationStack('product-modal', { productId: productId });
+            
+            const modal = document.getElementById('productModal');
+            const modalBody = document.getElementById('productModalBody');
+            
+            // Scroll modal to top when product changes
+            if (modal) {
+                modal.scrollTop = 0;
+            }
+            
+            // Prepare all images (main + sub images)
+            const allImages = [product.imageUrl];
+            if (product.subImages && product.subImages.length > 0) {
+                allImages.push(...product.subImages);
+            }
+            
+            // Create enhanced image carousel with thumbnails
+            let carouselHTML = '';
+            if (allImages.length > 1) {
+                // Multiple images - show carousel with thumbnails
+                let slidesHTML = '';
+                let thumbnailsHTML = '';
+                
+                allImages.forEach((imgUrl, index) => {
+                    slidesHTML += `
+                        <div class="carousel-slide" data-index="${index}">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
+                    
+                    thumbnailsHTML += `
+                        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="goToSlide('${product.id}', ${index})">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi0vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
+                });
+                
+                carouselHTML = `
+                    <div class="image-carousel-container">
+                        <div class="image-carousel" id="imageCarousel-${product.id}">
+                            <div class="carousel-images" id="carouselImages-${product.id}">
+                                ${slidesHTML}
+                            </div>
+                            <button class="carousel-nav prev" onclick="navigateCarousel('${product.id}', -1)">‹</button>
+                            <button class="carousel-nav next" onclick="navigateCarousel('${product.id}', 1)">›</button>
+                        </div>
+                        <div class="thumbnail-strip" id="thumbnailStrip-${product.id}">
+                            ${thumbnailsHTML}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Single image - show normally
+                carouselHTML = `<img src="${product.imageUrl}" alt="${product.name}" class="product-modal-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">`;
+            }
+            
+            modalBody.innerHTML = `
+                ${carouselHTML}
+                <h3 class="product-modal-name">${product.name}</h3>
+                <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 8px 0;">
+                    ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating}/5)` : 'No rating'}
+                </div>
+                <div class="product-modal-price-container" id="price-${product.id}">
+                    ${product.originalPrice && product.originalPrice > product.price && product.discount > 0 ? `
+                        <div class="special-price-label" style="color: #27ae60; font-size: 14px; font-weight: 600; margin-bottom: 5px;">Special price</div>
+                        <div class="price-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <span class="current-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${product.price}</span>
+                            <span class="original-price" style="color: #999; font-size: 18px; text-decoration: line-through;">₹${product.originalPrice}</span>
+                            <span class="discount-badge" style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">${product.discount}% off</span>
+                        </div>
+                    ` : `
+                        <div class="product-modal-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${product.price}</div>
+                    `}
+                </div>
+                <div class="description-container">
+                    <div class="description-text truncated" id="description-${product.id}">${product.description}</div>
+                    <button class="read-more-btn" id="readMoreBtn-${product.id}" onclick="toggleDescription('${product.id}')">Read More</button>
+                </div>
+                ${product.category ? `<p><strong>Category:</strong> ${product.category}</p>` : ''}
+                
+                ${product.sizes && product.sizes.length > 0 ? `
+                    <div class="size-selection">
+                        <label for="size-${product.id}"><strong>Size:</strong></label>
+                        <div class="size-buttons" id="sizeButtons-${product.id}">
+                            ${product.sizes.map(size => `
+                                <button class="size-btn" onclick="selectSize('${product.id}', '${size}')" data-size="${size}">${size}</button>
+                            `).join('')}
+                            ${product.weightPricing && (product.weightPricing.ml?.length > 0 || product.weightPricing.g?.length > 0 || product.weightPricing.kg?.length > 0) ? `
+                                ${product.weightPricing.ml?.map(option => `
+                                    <button class="size-btn" onclick="selectSize('${product.id}', '${option.quantity}ml')" data-size="${option.quantity}ml">${option.quantity}ml</button>
+                                `).join('') || ''}
+                                ${product.weightPricing.g?.map(option => `
+                                    <button class="size-btn" onclick="selectSize('${product.id}', '${option.quantity}g')" data-size="${option.quantity}g">${option.quantity}g</button>
+                                `).join('') || ''}
+                                ${product.weightPricing.kg?.map(option => `
+                                    <button class="size-btn" onclick="selectSize('${product.id}', '${option.quantity}kg')" data-size="${option.quantity}kg">${option.quantity}kg</button>
+                                `).join('') || ''}
+                            ` : ''}
+                        </div>
+                        <input type="hidden" id="selectedSize-${product.id}" value="${product.sizes[0] || ''}">
+                    </div>
+                ` : ''}
+                
+                <div class="quantity-selection">
+                    <label for="quantity-${product.id}"><strong>Quantity:</strong></label>
+                    <div class="quantity-controls">
+                        <button onclick="changeQuantity('${product.id}', -1)">-</button>
+                        <input type="number" id="quantity-${product.id}" value="1" min="1" max="10" onchange="updateTotalPrice('${product.id}')">
+                        <button onclick="changeQuantity('${product.id}', 1)">+</button>
+                    </div>
+                </div>
+                
+                <div class="total-amount-section" id="totalSection-${product.id}">
+                    <div style="font-size: 18px; font-weight: 600; color: #2c3e50; margin: 15px 0 5px 0;">Total Amount</div>
+                    ${product.originalPrice && product.originalPrice > product.price && product.discount > 0 ? `
+                        <div style="font-size: 20px; font-weight: 700; color: #27ae60;" id="total-price-${product.id}">₹${product.price}</div>
+                    ` : `
+                        <div style="font-size: 20px; font-weight: 700; color: #27ae60;" id="total-price-${product.id}">₹${product.price}</div>
+                    `}
+                </div>
+                
+                <div class="product-modal-buttons">
+                    <button class="btn-cart" id="cartBtn-${product.id}" onclick="addToCartWithQuantity('${product.id}')">Add to Cart</button>
+                    <button class="btn-order" onclick="handleOrderNow('${product.id}')" style="background: #fbbf24; color: #000; font-weight: 600;">Order Now</button>
+                </div>
+                
+                <div class="features-image-container" style="margin: 20px 0; text-align: center;">
+                    <img src="features.png" alt="Product Features" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                </div>
+                
+                <div class="related-products-section">
+                    <h4 class="related-products-title">Related Products</h4>
+                    <div class="related-products-scroll" id="relatedProducts-${product.id}">
+                        <!-- Related products will be populated here -->
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Load related products
+            loadRelatedProducts(product.id, product.category);
+            
+            // Update button state based on cart
+            updateProductModalButtons(product.id);
+            
+            // Initialize total price display
+            initializeTotalPrice(product.id);
         };
 
         // Open product modal from cart (without Add to Cart button)
@@ -10137,30 +10450,43 @@
                 allImages.push(...product.subImages);
             }
             
-            // Create carousel HTML
+            // Create enhanced image carousel with thumbnails (same as regular product modal)
             let carouselHTML = '';
             if (allImages.length > 1) {
-                let imagesHTML = '';
-                let indicatorsHTML = '';
+                // Multiple images - show carousel with thumbnails
+                let slidesHTML = '';
+                let thumbnailsHTML = '';
                 
                 allImages.forEach((imgUrl, index) => {
-                    imagesHTML += `<img src="${imgUrl}" alt="${product.name}" class="carousel-image" data-index="${index}" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; transition: opacity 0.3s ease; ${index === 0 ? 'opacity: 1;' : 'opacity: 0;'}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">`;
-                    indicatorsHTML += `<div onclick="goToCarouselImage('${product.id}', ${index})" class="carousel-indicator" data-index="${index}" style="width: 8px; height: 8px; border-radius: 50%; background: ${index === 0 ? 'white' : 'rgba(255,255,255,0.5)'}; cursor: pointer; transition: background 0.3s ease;"></div>`;
+                    slidesHTML += `
+                        <div class="carousel-slide" data-index="${index}">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
+                    
+                    thumbnailsHTML += `
+                        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="goToSlide('${product.id}', ${index})">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
                 });
                 
                 carouselHTML = `
-                    <div style="position: relative; margin-bottom: 20px;">
-                        <div id="imageCarousel-${product.id}" style="width: 100%; height: 400px; overflow: hidden; border-radius: 8px; background: #f8f9fa; position: relative;">
-                            ${imagesHTML}
+                    <div class="image-carousel-container">
+                        <div class="image-carousel" id="imageCarousel-${product.id}">
+                            <div class="carousel-images" id="carouselImages-${product.id}">
+                                ${slidesHTML}
+                            </div>
+                            <button class="carousel-nav prev" onclick="navigateCarousel('${product.id}', -1)">‹</button>
+                            <button class="carousel-nav next" onclick="navigateCarousel('${product.id}', 1)">›</button>
                         </div>
-                        <button onclick="changeCarouselImage('${product.id}', -1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10;">‹</button>
-                        <button onclick="changeCarouselImage('${product.id}', 1)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10;">›</button>
-                        <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10;">
-                            ${indicatorsHTML}
+                        <div class="thumbnail-strip" id="thumbnailStrip-${product.id}">
+                            ${thumbnailsHTML}
                         </div>
                     </div>
                 `;
             } else {
+                // Single image - show normally
                 carouselHTML = `<img src="${product.imageUrl}" alt="${product.name}" class="product-modal-image" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">`;
             }
             
@@ -10244,6 +10570,10 @@
                     <button class="btn-order" onclick="openConfirmOrderModalFromCart('${product.id}')">Order Now</button>
                 </div>
                 
+                <div class="features-image-container" style="margin: 20px 0; text-align: center;">
+                    <img src="features.png" alt="Product Features" style="width: 100%; max-width: 600px; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                </div>
+                
                 <div class="related-products-section">
                     <h4 class="related-products-title">Related Products</h4>
                     <div class="related-products-scroll" id="relatedProducts-${product.id}">
@@ -10292,7 +10622,7 @@
 
             // Generate HTML for related products
             const relatedHTML = relatedProducts.map(product => `
-                <div class="related-product-card" onclick="openProductModal('${product.id}')">
+                <div class="related-product-card" onclick="openProductModalFromRelated('${product.id}')">
                     <div class="related-product-image-container">
                         <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
@@ -10355,7 +10685,7 @@
 
             // Generate HTML for related products
             const relatedHTML = relatedProducts.map(product => `
-                <div class="related-product-card" onclick="openProductModal('${product.id}')">
+                <div class="related-product-card" onclick="openProductModalFromRelated('${product.id}')">
                     <div class="related-product-image-container">
                         <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
@@ -10418,7 +10748,7 @@
 
             // Generate HTML for related products
             const relatedHTML = relatedProducts.map(product => `
-                <div class="related-product-card" onclick="openProductModal('${product.id}')">
+                <div class="related-product-card" onclick="openProductModalFromRelated('${product.id}')">
                     <div class="related-product-image-container">
                         <img src="${product.imageUrl}" alt="${product.name}" class="related-product-image" 
                              onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
@@ -14302,7 +14632,25 @@ window.handleProfileClick = function() {
             // Close the appropriate modal/section based on type
             switch(lastNavigation.type) {
                 case 'product-modal':
-                    closeProductModalInternal();
+                    // Check if there are more product modals in the stack after removing current one
+                    const remainingProductModals = navigationStack.filter(item => item.type === 'product-modal');
+                    if (remainingProductModals.length > 0) {
+                        // Get the previous product (last one in remaining stack)
+                        const previousProduct = remainingProductModals[remainingProductModals.length - 1];
+                        // Don't add to navigation stack when going back (to avoid infinite loop)
+                        const product = productsData.find(p => p.id === previousProduct.data.productId);
+                        if (product) {
+                            // Directly update the modal content without adding to navigation stack
+                            const modal = document.getElementById('productModal');
+                            const modalBody = document.getElementById('productModalBody');
+                            
+                            // Update modal with previous product content (without adding to navigation stack)
+                            updateProductModalContent(previousProduct.data.productId);
+                        }
+                    } else {
+                        // No more product modals, close completely
+                        closeProductModalInternal();
+                    }
                     break;
                 case 'category-modal':
                     closeCategoryModalInternal();
