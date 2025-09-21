@@ -1117,6 +1117,159 @@
             line-height: 1.5;
             margin-bottom: 15px;
         }
+        
+        .description-container {
+            margin-bottom: 15px;
+        }
+        
+        .description-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .description-text.truncated {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .read-more-btn {
+            background: none;
+            border: none;
+            color: #fbbf24;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        
+        .read-more-btn:hover {
+            color: #f59e0b;
+        }
+        
+        /* Image carousel with thumbnails */
+        .image-carousel-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .image-carousel {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        
+        .carousel-images {
+            display: flex;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        
+        .carousel-slide {
+            flex: 0 0 100%;
+            height: 100%;
+        }
+        
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #f8fafc;
+        }
+        
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background 0.3s ease;
+        }
+        
+        .carousel-nav:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .carousel-nav.prev {
+            left: 10px;
+        }
+        
+        .carousel-nav.next {
+            right: 10px;
+        }
+        
+        .thumbnail-strip {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            overflow-x: auto;
+            padding: 4px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .thumbnail-strip::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .thumbnail {
+            flex: 0 0 60px;
+            height: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .thumbnail:hover {
+            transform: scale(1.05);
+        }
+        
+        .thumbnail.active {
+            border-color: #fbbf24;
+        }
+        
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (min-width: 768px) {
+            .image-carousel {
+                height: 400px;
+            }
+            
+            .thumbnail {
+                flex: 0 0 80px;
+                height: 80px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .image-carousel {
+                height: 500px;
+            }
+        }
 
         .product-modal-quantity {
             display: flex;
@@ -8443,7 +8596,7 @@
                     <img src="${product.imageUrl}" class="product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                     <div class="product-info">
-                        <button class="product-add-button" onclick="event.stopPropagation(); openUpdateCategoriesModal('${product.id}')">EDIT</button>
+                        <button class="product-add-button" onclick="event.stopPropagation(); editProduct('${product.id}')">EDIT</button>
                         <h3 class="product-name">${product.name}</h3>
                         <div class="product-rating">
                             <span class="stars">${'⭐'.repeat(Math.floor(product.rating || 4))}</span>
@@ -8456,7 +8609,7 @@
                         ${product.sizes && product.sizes.length > 0 ? `<div style="font-size: 10px; color: #666; margin-bottom: 8px;">Sizes: ${product.sizes.join(', ')}</div>` : '<div style="margin-bottom: 8px;"></div>'}
                     </div>
                         <div style="display: flex; gap: 5px; margin-top: 8px;">
-                            <button onclick="openEditCategoryModal('${product.id}', '${product.category || ''}', '${product.subcategory || ''}')" style="flex: 1; background: #f59e0b; color: white; border: none; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600;">Edit Category</button>
+                            <button onclick="editProduct('${product.id}')" style="flex: 1; background: #10b981; color: white; border: none; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600;">Edit Product</button>
                             <button onclick="removeProduct('${product.id}')" style="flex: 1; background: #dc3545; color: white; border: none; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600;">Remove</button>
                         </div>
                     </div>
@@ -8491,6 +8644,285 @@
         window.searchProducts = function() {
             loadProductsAdminData();
         };
+        
+        // Global variable to track editing state
+        let isEditingProduct = false;
+        let editingProductId = null;
+        
+        // Edit product function - opens add product form with existing data
+        window.editProduct = function(productId) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) {
+                showNotification('Product not found', 'error');
+                return;
+            }
+            
+            // Set editing state
+            isEditingProduct = true;
+            editingProductId = productId;
+            
+            // Switch to products tab and open add product form
+            showTab('products');
+            
+            // Pre-fill the form with existing product data
+            setTimeout(() => {
+                populateEditForm(product);
+                
+                // Update form title and button text
+                const formTitle = document.querySelector('#addProductForm h3');
+                if (formTitle) {
+                    formTitle.textContent = 'Edit Product';
+                }
+                
+                const submitButton = document.querySelector('#addProductForm button[type="button"][onclick="addProduct()"]');
+                if (submitButton) {
+                    submitButton.textContent = 'Update Product';
+                    submitButton.onclick = function() { updateProduct(); };
+                }
+                
+                // Scroll to form
+                const form = document.getElementById('addProductForm');
+                if (form) {
+                    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        };
+        
+        // Populate form with existing product data
+        function populateEditForm(product) {
+            // Basic fields
+            document.getElementById('productName').value = product.name || '';
+            document.getElementById('productPrice').value = product.price || '';
+            document.getElementById('productDescription').value = product.description || '';
+            document.getElementById('productImageUrl').value = product.imageUrl || '';
+            document.getElementById('productRating').value = product.rating || '';
+            document.getElementById('productDeliveryCharge').value = product.deliveryCharge || '';
+            
+            // Pricing fields
+            document.getElementById('originalPrice').value = product.originalPrice || '';
+            document.getElementById('discountPercentage').value = product.discount || '';
+            
+            // Additional images
+            if (product.subImages && product.subImages.length > 0) {
+                const additionalImagesContainer = document.getElementById('additionalImages');
+                additionalImagesContainer.innerHTML = '';
+                
+                product.subImages.forEach((imageUrl, index) => {
+                    addImageInput();
+                    const inputs = additionalImagesContainer.querySelectorAll('input[type="url"]');
+                    if (inputs[index]) {
+                        inputs[index].value = imageUrl;
+                    }
+                });
+            }
+            
+            // Categories
+            if (product.categories && product.categories.length > 0) {
+                product.categories.forEach(categoryName => {
+                    const checkbox = document.querySelector(`.category-checkbox[value="${categoryName}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+                
+                // Load subcategories after categories are selected
+                setTimeout(() => {
+                    loadSubcategoriesForProduct();
+                    
+                    // Select subcategories
+                    if (product.subcategories && product.subcategories.length > 0) {
+                        setTimeout(() => {
+                            product.subcategories.forEach(subcategoryName => {
+                                const checkbox = document.querySelector(`.subcategory-checkbox[value="${subcategoryName}"]`);
+                                if (checkbox) {
+                                    checkbox.checked = true;
+                                }
+                            });
+                        }, 200);
+                    }
+                }, 100);
+            }
+            
+            // Sizes
+            if (product.sizes && product.sizes.length > 0) {
+                const sizesContainer = document.getElementById('sizesContainer');
+                sizesContainer.innerHTML = '';
+                
+                product.sizes.forEach(size => {
+                    addSizeInput();
+                    const inputs = sizesContainer.querySelectorAll('input[type="text"]');
+                    const lastInput = inputs[inputs.length - 1];
+                    if (lastInput) {
+                        lastInput.value = size;
+                    }
+                });
+            }
+            
+            // Weight-based pricing
+            if (product.weightPricing) {
+                // ML weights
+                if (product.weightPricing.ml && product.weightPricing.ml.length > 0) {
+                    product.weightPricing.ml.forEach(item => {
+                        addWeightInput('mlContainer', 'ml');
+                        const container = document.getElementById('mlContainer');
+                        const weightInputs = container.querySelectorAll('.weight-input-group');
+                        const lastGroup = weightInputs[weightInputs.length - 1];
+                        if (lastGroup) {
+                            lastGroup.querySelector('input[placeholder*="quantity"]').value = item.quantity;
+                            lastGroup.querySelector('input[placeholder*="price"]').value = item.price;
+                        }
+                    });
+                }
+                
+                // G weights
+                if (product.weightPricing.g && product.weightPricing.g.length > 0) {
+                    product.weightPricing.g.forEach(item => {
+                        addWeightInput('gContainer', 'g');
+                        const container = document.getElementById('gContainer');
+                        const weightInputs = container.querySelectorAll('.weight-input-group');
+                        const lastGroup = weightInputs[weightInputs.length - 1];
+                        if (lastGroup) {
+                            lastGroup.querySelector('input[placeholder*="quantity"]').value = item.quantity;
+                            lastGroup.querySelector('input[placeholder*="price"]').value = item.price;
+                        }
+                    });
+                }
+                
+                // KG weights
+                if (product.weightPricing.kg && product.weightPricing.kg.length > 0) {
+                    product.weightPricing.kg.forEach(item => {
+                        addWeightInput('kgContainer', 'kg');
+                        const container = document.getElementById('kgContainer');
+                        const weightInputs = container.querySelectorAll('.weight-input-group');
+                        const lastGroup = weightInputs[weightInputs.length - 1];
+                        if (lastGroup) {
+                            lastGroup.querySelector('input[placeholder*="quantity"]').value = item.quantity;
+                            lastGroup.querySelector('input[placeholder*="price"]').value = item.price;
+                        }
+                    });
+                }
+            }
+            
+            // Trigger price calculation
+            setTimeout(() => {
+                calculateFinalPrice();
+            }, 300);
+        }
+        
+        // Update product function
+        window.updateProduct = async function() {
+            if (!isEditingProduct || !editingProductId) {
+                showNotification('No product selected for editing', 'error');
+                return;
+            }
+            
+            // Collect form data (reuse existing collection logic)
+            const productData = {
+                name: document.getElementById('productName').value.trim(),
+                price: parseFloat(document.getElementById('productPrice').value) || 0,
+                description: document.getElementById('productDescription').value.trim(),
+                imageUrl: document.getElementById('productImageUrl').value.trim(),
+                rating: parseFloat(document.getElementById('productRating').value) || 4.0,
+                deliveryCharge: parseFloat(document.getElementById('productDeliveryCharge').value) || 0,
+                originalPrice: parseFloat(document.getElementById('originalPrice').value) || 0,
+                discount: parseFloat(document.getElementById('discountPercentage').value) || 0
+            };
+            
+            // Validation
+            if (!productData.name || !productData.imageUrl || productData.price <= 0) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            // Collect additional images
+            const additionalImageInputs = document.querySelectorAll('#additionalImages input[type="url"]');
+            productData.subImages = Array.from(additionalImageInputs)
+                .map(input => input.value.trim())
+                .filter(url => url !== '');
+            
+            // Collect categories
+            const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
+            const selectedSubcategories = Array.from(document.querySelectorAll('.subcategory-checkbox:checked')).map(cb => cb.value);
+            
+            productData.categories = selectedCategories;
+            productData.subcategories = selectedSubcategories;
+            productData.category = selectedCategories[0] || ''; // Backward compatibility
+            
+            // Collect sizes
+            const sizeInputs = document.querySelectorAll('#sizesContainer input[type="text"]');
+            productData.sizes = Array.from(sizeInputs)
+                .map(input => input.value.trim())
+                .filter(size => size !== '');
+            
+            // Collect weight pricing
+            productData.weightPricing = collectWeightPricing();
+            
+            try {
+                // Update in Firebase
+                const productRef = doc(db, 'products', editingProductId);
+                await updateDoc(productRef, productData);
+                
+                // Update local data
+                const productIndex = productsData.findIndex(p => p.id === editingProductId);
+                if (productIndex !== -1) {
+                    productsData[productIndex] = { ...productsData[productIndex], ...productData };
+                }
+                
+                // Reset editing state
+                isEditingProduct = false;
+                editingProductId = null;
+                
+                // Reset form
+                resetProductForm();
+                
+                // Refresh displays
+                loadProductsAdminData();
+                updateProductsDisplay();
+                loadEventsOnHomePage();
+                
+                showNotification('Product updated successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error updating product:', error);
+                showNotification('Error updating product. Please try again.', 'error');
+            }
+        };
+        
+        // Reset product form to add mode
+        function resetProductForm() {
+            // Reset form title and button
+            const formTitle = document.querySelector('#addProductForm h3');
+            if (formTitle) {
+                formTitle.textContent = 'Add New Product';
+            }
+            
+            const submitButton = document.querySelector('#addProductForm button[onclick="updateProduct()"]');
+            if (submitButton) {
+                submitButton.textContent = 'Add Product';
+                submitButton.onclick = function() { addProduct(); };
+            }
+            
+            // Clear form fields
+            document.getElementById('addProductForm').reset();
+            
+            // Clear dynamic containers
+            document.getElementById('additionalImages').innerHTML = '';
+            document.getElementById('sizesContainer').innerHTML = '';
+            document.getElementById('mlContainer').innerHTML = '';
+            document.getElementById('gContainer').innerHTML = '';
+            document.getElementById('kgContainer').innerHTML = '';
+            
+            // Uncheck all checkboxes
+            document.querySelectorAll('.category-checkbox, .subcategory-checkbox').forEach(cb => {
+                cb.checked = false;
+            });
+            
+            // Clear subcategories section
+            const subcategoriesSection = document.getElementById('subcategoriesSection');
+            if (subcategoriesSection) {
+                subcategoriesSection.style.display = 'none';
+            }
+        }
 
         // Update Categories Modal Functions
         let currentUpdateProductId = null;
@@ -8872,32 +9304,82 @@
             });
         };
         
-        window.goToCarouselImage = function(productId, targetIndex) {
-            const carousel = document.getElementById('imageCarousel-' + productId);
-            if (!carousel) return;
+        // Enhanced carousel functions for new image system
+        window.navigateCarousel = function(productId, direction) {
+            const carouselImages = document.getElementById(`carouselImages-${productId}`);
+            const thumbnailStrip = document.getElementById(`thumbnailStrip-${productId}`);
             
-            const images = carousel.querySelectorAll('.carousel-image');
-            const indicators = carousel.parentElement.querySelectorAll('.carousel-indicator');
+            if (!carouselImages || !thumbnailStrip) return;
             
-            // Update images
-            images.forEach((img, index) => {
-                img.style.opacity = index === targetIndex ? '1' : '0';
-            });
+            const slides = carouselImages.querySelectorAll('.carousel-slide');
+            const thumbnails = thumbnailStrip.querySelectorAll('.thumbnail');
             
-            // Update indicators
-            indicators.forEach((indicator, index) => {
-                indicator.style.background = index === targetIndex ? 'white' : 'rgba(255,255,255,0.5)';
+            // Find current active slide
+            let currentIndex = 0;
+            const currentTransform = carouselImages.style.transform;
+            if (currentTransform) {
+                const match = currentTransform.match(/translateX\((-?\d+)%\)/);
+                if (match) {
+                    currentIndex = Math.abs(parseInt(match[1])) / 100;
+                }
+            }
+            
+            // Calculate new index
+            let newIndex = currentIndex + direction;
+            if (newIndex >= slides.length) newIndex = 0;
+            if (newIndex < 0) newIndex = slides.length - 1;
+            
+            // Update carousel position
+            carouselImages.style.transform = `translateX(-${newIndex * 100}%)`;
+            
+            // Update thumbnail active state
+            thumbnails.forEach((thumb, index) => {
+                thumb.classList.toggle('active', index === newIndex);
             });
         };
+        
+        window.goToSlide = function(productId, targetIndex) {
+            const carouselImages = document.getElementById(`carouselImages-${productId}`);
+            const thumbnailStrip = document.getElementById(`thumbnailStrip-${productId}`);
+            
+            if (!carouselImages || !thumbnailStrip) return;
+            
+            const thumbnails = thumbnailStrip.querySelectorAll('.thumbnail');
+            
+            // Update carousel position
+            carouselImages.style.transform = `translateX(-${targetIndex * 100}%)`;
+            
+            // Update thumbnail active state
+            thumbnails.forEach((thumb, index) => {
+                thumb.classList.toggle('active', index === targetIndex);
+            });
+        };
+        
+        // Description toggle function
+        window.toggleDescription = function(productId) {
+            const descriptionText = document.getElementById(`description-${productId}`);
+            const readMoreBtn = document.getElementById(`readMoreBtn-${productId}`);
+            
+            if (!descriptionText || !readMoreBtn) return;
+            
+            if (descriptionText.classList.contains('truncated')) {
+                // Expand description
+                descriptionText.classList.remove('truncated');
+                readMoreBtn.textContent = 'Read Less';
+            } else {
+                // Collapse description
+                descriptionText.classList.add('truncated');
+                readMoreBtn.textContent = 'Read More';
+            }
+        };
 
-        // Product detail modal functions
+        // Enhanced product modal functions with new features
         window.openProductModal = function(productId) {
             const product = productsData.find(p => p.id === productId);
             if (!product) return;
             
             // Add to navigation stack
             pushToNavigationStack('product-modal', { productId: productId });
-            
             
             const modal = document.getElementById('productModal');
             const modalBody = document.getElementById('productModalBody');
@@ -8913,27 +9395,38 @@
                 allImages.push(...product.subImages);
             }
             
-            // Create carousel HTML
+            // Create enhanced image carousel with thumbnails
             let carouselHTML = '';
             if (allImages.length > 1) {
-                // Multiple images - show carousel
-                let imagesHTML = '';
-                let indicatorsHTML = '';
+                // Multiple images - show carousel with thumbnails
+                let slidesHTML = '';
+                let thumbnailsHTML = '';
                 
                 allImages.forEach((imgUrl, index) => {
-                    imagesHTML += `<img src="${imgUrl}" alt="${product.name}" class="carousel-image" data-index="${index}" style="width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; transition: opacity 0.3s ease; ${index === 0 ? 'opacity: 1;' : 'opacity: 0;'}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">`;
-                    indicatorsHTML += `<div onclick="goToCarouselImage('${product.id}', ${index})" class="carousel-indicator" data-index="${index}" style="width: 8px; height: 8px; border-radius: 50%; background: ${index === 0 ? 'white' : 'rgba(255,255,255,0.5)'}; cursor: pointer; transition: background 0.3s ease;"></div>`;
+                    slidesHTML += `
+                        <div class="carousel-slide" data-index="${index}">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
+                    
+                    thumbnailsHTML += `
+                        <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="goToSlide('${product.id}', ${index})">
+                            <img src="${imgUrl}" alt="${product.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik03NSA3NUgxMjVWMTI1SDc1Vjc1WiIgZmlsbD0iI0RERERERCIvPgo8L3N2Zz4K'">
+                        </div>
+                    `;
                 });
                 
                 carouselHTML = `
-                    <div style="position: relative; margin-bottom: 20px;">
-                        <div id="imageCarousel-${product.id}" style="width: 100%; height: 400px; overflow: hidden; border-radius: 8px; background: #f8f9fa; position: relative;">
-                            ${imagesHTML}
+                    <div class="image-carousel-container">
+                        <div class="image-carousel" id="imageCarousel-${product.id}">
+                            <div class="carousel-images" id="carouselImages-${product.id}">
+                                ${slidesHTML}
+                            </div>
+                            <button class="carousel-nav prev" onclick="navigateCarousel('${product.id}', -1)">‹</button>
+                            <button class="carousel-nav next" onclick="navigateCarousel('${product.id}', 1)">›</button>
                         </div>
-                        <button onclick="changeCarouselImage('${product.id}', -1)" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10;">‹</button>
-                        <button onclick="changeCarouselImage('${product.id}', 1)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; z-index: 10;">›</button>
-                        <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10;">
-                            ${indicatorsHTML}
+                        <div class="thumbnail-strip" id="thumbnailStrip-${product.id}">
+                            ${thumbnailsHTML}
                         </div>
                     </div>
                 `;
@@ -8960,7 +9453,10 @@
                         <div class="product-modal-price" style="color: #27ae60; font-size: 24px; font-weight: 700;">₹${product.price}</div>
                     `}
                 </div>
-                <p class="product-modal-description">${product.description}</p>
+                <div class="description-container">
+                    <div class="description-text truncated" id="description-${product.id}">${product.description}</div>
+                    <button class="read-more-btn" id="readMoreBtn-${product.id}" onclick="toggleDescription('${product.id}')">Read More</button>
+                </div>
                 ${product.category ? `<p><strong>Category:</strong> ${product.category}</p>` : ''}
                 ${product.deliveryCharge ? `<p style="color: #27ae60; font-weight: 600;">Delivery Charge: ₹${product.deliveryCharge}</p>` : ''}
                 
@@ -9122,7 +9618,10 @@
                 <div class="product-rating" style="color: #fbbf24; font-size: 16px; margin: 8px 0;">
                     ${'⭐'.repeat(product.rating || 0)} ${product.rating ? `(${product.rating}/5)` : 'No rating'}
                 </div>
-                <p class="product-modal-description">${product.description}</p>
+                <div class="description-container">
+                    <div class="description-text truncated" id="description-${product.id}">${product.description}</div>
+                    <button class="read-more-btn" id="readMoreBtn-${product.id}" onclick="toggleDescription('${product.id}')">Read More</button>
+                </div>
                 ${product.category ? `<p><strong>Category:</strong> ${product.category}</p>` : ''}
                 
                 <!-- Cart Item Details -->
@@ -11124,7 +11623,6 @@
                 closeCategoryModal();
             }
             
-            
             // Remove active class from all tabs
             document.querySelectorAll('.app-nav-item').forEach(item => {
                 item.classList.remove('active');
@@ -11139,10 +11637,19 @@
                 }
             });
             
-            // Hide all sections
+            // Hide all sections and IMMEDIATELY reset scroll positions
             document.querySelectorAll('.app-section').forEach(section => {
                 section.classList.remove('active');
+                section.scrollTop = 0;
+                const scrollableContainers = section.querySelectorAll('.products-grid, .categories-grid, .event-products, .orders-container, .cart-items, .search-results');
+                scrollableContainers.forEach(container => {
+                    container.scrollTop = 0;
+                });
             });
+            
+            // IMMEDIATE scroll reset for body and document
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
             
             // Close all modals after section switching
             setTimeout(() => {
@@ -11152,35 +11659,58 @@
                 closeCartModal();
             }, 50);
             
-            // Show selected section
+            // Show selected section and ensure scroll is at top
             switch(tab) {
                 case 'home':
-                    document.getElementById('homeSection').classList.add('active');
+                    const homeSection = document.getElementById('homeSection');
+                    homeSection.classList.add('active');
+                    homeSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     break;
                 case 'search':
-                    document.getElementById('searchSection').classList.add('active');
+                    const searchSection = document.getElementById('searchSection');
+                    searchSection.classList.add('active');
+                    searchSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     loadAllProductsInSearch();
                     break;
                 case 'cart':
-                    document.getElementById('cartSection').classList.add('active');
+                    const cartSection = document.getElementById('cartSection');
+                    cartSection.classList.add('active');
+                    cartSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     // Add delay to ensure DOM is ready
                     setTimeout(() => {
                         loadCartFromFirebase();
-                    }, 100);
+                        cartSection.querySelectorAll('.cart-items, .cart-content').forEach(container => {
+                            container.scrollTop = 0;
+                        });
+                    }, 50);
                     break;
                 case 'orders':
-                    document.getElementById('ordersSection').classList.add('active');
+                    const ordersSection = document.getElementById('ordersSection');
+                    ordersSection.classList.add('active');
+                    ordersSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     loadOrdersDataFromFirebase();
                     break;
                 case 'profile':
-                    document.getElementById('profileSection').classList.add('active');
+                    const profileSection = document.getElementById('profileSection');
+                    profileSection.classList.add('active');
+                    profileSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     updateProfileInfo();
                     loadAddressInProfileSection();
                     break;
             }
         };
 
-        // Make showSection globally accessible
+        // Enhanced showSection with scroll reset functionality
         window.showSection = function(tab) {
             // Update bottom navbar active states
             document.querySelectorAll('.app-nav-item').forEach(item => {
@@ -11193,9 +11723,17 @@
                 activeItem.classList.add('active');
             }
             
-            // Hide all sections
+            // Hide all sections and reset their scroll positions
             document.querySelectorAll('.app-section').forEach(section => {
                 section.classList.remove('active');
+                // Reset scroll position to top when hiding section
+                section.scrollTop = 0;
+                
+                // Also reset any scrollable containers within the section
+                const scrollableContainers = section.querySelectorAll('.products-grid, .categories-grid, .event-products, .orders-container, .cart-items, .search-results');
+                scrollableContainers.forEach(container => {
+                    container.scrollTop = 0;
+                });
             });
             
             // Close all modals after section switching
@@ -11206,46 +11744,87 @@
                 closeCartModal();
             }, 50);
             
-            // Show selected section
+            // Show selected section and force scroll to top
             switch(tab) {
                 case 'home':
-                    document.getElementById('homeSection').classList.add('active');
+                    const homeSection = document.getElementById('homeSection');
+                    homeSection.classList.add('active');
+                    // Immediate scroll reset
+                    homeSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                    // Reset scroll for all scrollable containers in home section
+                    homeSection.querySelectorAll('.products-grid, .categories-grid, .event-products').forEach(container => {
+                        container.scrollTop = 0;
+                    });
                     // Add to navigation history
                     if (window.history && window.history.pushState) {
                         window.history.pushState({section: 'home'}, 'Home', '#home');
                     }
                     break;
                 case 'search':
-                    document.getElementById('searchSection').classList.add('active');
+                    const searchSection = document.getElementById('searchSection');
+                    searchSection.classList.add('active');
                     loadAllProductsInSearch();
+                    // Immediate scroll reset
+                    searchSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                    // Reset scroll for search results
+                    searchSection.querySelectorAll('.search-results, .products-grid').forEach(container => {
+                        container.scrollTop = 0;
+                    });
                     // Add to navigation history
                     if (window.history && window.history.pushState) {
                         window.history.pushState({section: 'search'}, 'Search', '#search');
                     }
                     break;
                 case 'cart':
-                    document.getElementById('cartSection').classList.add('active');
-                    // Add delay to ensure DOM is ready
+                    const cartSection = document.getElementById('cartSection');
+                    cartSection.classList.add('active');
+                    // Immediate scroll reset
+                    cartSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                    // Load cart data with delay
                     setTimeout(() => {
                         loadCartFromFirebase();
-                    }, 100);
+                        // Reset scroll for cart items after loading
+                        cartSection.querySelectorAll('.cart-items, .cart-content').forEach(container => {
+                            container.scrollTop = 0;
+                        });
+                    }, 50);
                     // Add to navigation history
                     if (window.history && window.history.pushState) {
                         window.history.pushState({section: 'cart'}, 'Cart', '#cart');
                     }
                     break;
                 case 'orders':
-                    document.getElementById('ordersSection').classList.add('active');
+                    const ordersSection = document.getElementById('ordersSection');
+                    ordersSection.classList.add('active');
                     loadOrdersDataFromFirebase();
+                    // Immediate scroll reset
+                    ordersSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
+                    // Reset scroll for orders container
+                    ordersSection.querySelectorAll('.orders-container').forEach(container => {
+                        container.scrollTop = 0;
+                    });
                     // Add to navigation history
                     if (window.history && window.history.pushState) {
                         window.history.pushState({section: 'orders'}, 'Orders', '#orders');
                     }
                     break;
                 case 'profile':
-                    document.getElementById('profileSection').classList.add('active');
+                    const profileSection = document.getElementById('profileSection');
+                    profileSection.classList.add('active');
                     updateProfileInfo();
                     loadAddressInProfileSection();
+                    // Immediate scroll reset
+                    profileSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     // Add to navigation history
                     if (window.history && window.history.pushState) {
                         window.history.pushState({section: 'profile'}, 'Profile', '#profile');
@@ -11267,9 +11846,14 @@
                 activeItem.classList.add('active');
             }
             
-            // Hide all sections
+            // Hide all sections and reset their scroll positions
             document.querySelectorAll('.app-section').forEach(section => {
                 section.classList.remove('active');
+                section.scrollTop = 0;
+                const scrollableContainers = section.querySelectorAll('.products-grid, .categories-grid, .event-products, .orders-container, .cart-items, .search-results');
+                scrollableContainers.forEach(container => {
+                    container.scrollTop = 0;
+                });
             });
             
             // Close all modals after section switching
@@ -11280,34 +11864,105 @@
                 closeCartModal();
             }, 50);
             
-            // Show selected section without adding to history
+            // Show selected section and force scroll to top
             switch(tab) {
                 case 'home':
-                    document.getElementById('homeSection').classList.add('active');
+                    const homeSection = document.getElementById('homeSection');
+                    homeSection.classList.add('active');
+                    setTimeout(() => {
+                        homeSection.scrollTop = 0;
+                        document.body.scrollTop = 0;
+                        document.documentElement.scrollTop = 0;
+                        homeSection.querySelectorAll('.products-grid, .categories-grid, .event-products').forEach(container => {
+                            container.scrollTop = 0;
+                        });
+                    }, 10);
                     break;
                 case 'search':
-                    document.getElementById('searchSection').classList.add('active');
+                    const searchSection = document.getElementById('searchSection');
+                    searchSection.classList.add('active');
                     loadAllProductsInSearch();
+                    setTimeout(() => {
+                        searchSection.scrollTop = 0;
+                        document.body.scrollTop = 0;
+                        document.documentElement.scrollTop = 0;
+                        searchSection.querySelectorAll('.search-results, .products-grid').forEach(container => {
+                            container.scrollTop = 0;
+                        });
+                    }, 10);
                     break;
                 case 'cart':
-                    document.getElementById('cartSection').classList.add('active');
+                    const cartSection = document.getElementById('cartSection');
+                    cartSection.classList.add('active');
                     setTimeout(() => {
                         loadCartFromFirebase();
+                        cartSection.scrollTop = 0;
+                        document.body.scrollTop = 0;
+                        document.documentElement.scrollTop = 0;
+                        cartSection.querySelectorAll('.cart-items, .cart-content').forEach(container => {
+                            container.scrollTop = 0;
+                        });
                     }, 100);
                     break;
                 case 'orders':
-                    document.getElementById('ordersSection').classList.add('active');
+                    const ordersSection = document.getElementById('ordersSection');
+                    ordersSection.classList.add('active');
                     loadOrdersDataFromFirebase();
+                    setTimeout(() => {
+                        ordersSection.scrollTop = 0;
+                        document.body.scrollTop = 0;
+                        document.documentElement.scrollTop = 0;
+                        ordersSection.querySelectorAll('.orders-container').forEach(container => {
+                            container.scrollTop = 0;
+                        });
+                    }, 10);
                     break;
                 case 'profile':
-                    document.getElementById('profileSection').classList.add('active');
+                    const profileSection = document.getElementById('profileSection');
+                    profileSection.classList.add('active');
                     updateProfileInfo();
                     loadAddressInProfileSection();
+                    setTimeout(() => {
+                        profileSection.scrollTop = 0;
+                        document.body.scrollTop = 0;
+                        document.documentElement.scrollTop = 0;
+                    }, 10);
                     break;
             }
         };
 
-        // Handle profile click with authentication check
+// Handle profile click with authentication check
+window.handleProfileClick = function() {
+    console.log('Profile icon clicked, currentUser:', currentUser);
+    
+    // Check authentication state using the correct Firebase auth reference
+    let user = null;
+    try {
+        if (typeof auth !== 'undefined' && auth) {
+            user = auth.currentUser;
+        }
+    } catch (error) {
+        console.log('Firebase auth not available, using currentUser variable');
+    }
+    
+    console.log('Auth user:', user);
+    
+    if (!user && !currentUser) {
+        console.log('User not logged in, showing login modal');
+        // User not logged in, show login modal
+        document.getElementById('loginModal').style.display = 'flex';
+        return;
+    }
+    
+    console.log('User is logged in, opening profile section');
+    // User is logged in, show profile section without adding to history
+    showSectionWithoutHistory('profile');
+    
+    // Add a specific history entry that we can handle
+    if (window.history && window.history.pushState) {
+        window.history.pushState({section: 'profile', fromProfile: true}, 'Profile', '#profile');
+    }
+};
         window.handleProfileClick = function() {
             console.log('Profile icon clicked, currentUser:', currentUser);
             
@@ -13147,8 +13802,11 @@
         }
 
         function closeCartModalInternal() {
-            document.getElementById('cartModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                cartModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
         }
 
         function closeInvoiceModalInternal() {
@@ -13195,33 +13853,65 @@
                 }
             });
             
-            // Hide all sections
+            // Hide all sections and IMMEDIATELY reset scroll positions
             document.querySelectorAll('.app-section').forEach(section => {
                 section.classList.remove('active');
+                section.scrollTop = 0;
+                const scrollableContainers = section.querySelectorAll('.products-grid, .categories-grid, .event-products, .orders-container, .cart-items, .search-results');
+                scrollableContainers.forEach(container => {
+                    container.scrollTop = 0;
+                });
             });
             
-            // Show selected section
+            // IMMEDIATE scroll reset for body and document
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            
+            // Show selected section and ensure scroll is at top
             switch(tab) {
                 case 'home':
-                    document.getElementById('homeSection').classList.add('active');
+                    const homeSection = document.getElementById('homeSection');
+                    homeSection.classList.add('active');
+                    homeSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     break;
                 case 'search':
-                    document.getElementById('searchSection').classList.add('active');
+                    const searchSection = document.getElementById('searchSection');
+                    searchSection.classList.add('active');
+                    searchSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     loadAllProductsInSearch();
                     break;
                 case 'cart':
-                    document.getElementById('cartSection').classList.add('active');
+                    const cartSection = document.getElementById('cartSection');
+                    cartSection.classList.add('active');
+                    cartSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     // Add delay to ensure DOM is ready
                     setTimeout(() => {
                         loadCartFromFirebase();
-                    }, 100);
+                        cartSection.querySelectorAll('.cart-items, .cart-content').forEach(container => {
+                            container.scrollTop = 0;
+                        });
+                    }, 50);
                     break;
                 case 'orders':
-                    document.getElementById('ordersSection').classList.add('active');
+                    const ordersSection = document.getElementById('ordersSection');
+                    ordersSection.classList.add('active');
+                    ordersSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     loadOrdersDataFromFirebase();
                     break;
                 case 'profile':
-                    document.getElementById('profileSection').classList.add('active');
+                    const profileSection = document.getElementById('profileSection');
+                    profileSection.classList.add('active');
+                    profileSection.scrollTop = 0;
+                    document.body.scrollTop = 0;
+                    document.documentElement.scrollTop = 0;
                     updateProfileInfo();
                     loadAddressInProfileSection();
                     break;
@@ -13413,7 +14103,10 @@
         };
 
         window.closeCartModal = function() {
-            closeCartModalInternal();
+            const cartModal = document.getElementById('cartModal');
+            if (cartModal) {
+                closeCartModalInternal();
+            }
         };
 
         window.closeLocationModal = function() {
