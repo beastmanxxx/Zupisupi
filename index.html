@@ -5701,6 +5701,185 @@
         </div>
     </div>
 
+    <!-- Edit Product Modal -->
+    <div id="editProductModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 15px; padding: 30px; max-width: 800px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; color: #1a202c; font-size: 20px;">Edit Product</h3>
+                <button onclick="closeEditProductModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+            </div>
+            
+            <form onsubmit="event.preventDefault(); updateEditedProduct();">
+                <input type="text" id="editProductName" placeholder="Product Name" required>
+                
+                <!-- Main Product Image -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50;">Main Product Image:</label>
+                    <input type="url" id="editProductImageUrl" placeholder="Main Product Image URL" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                
+                <!-- Additional Product Images -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50;">Additional Product Images:</label>
+                    <div id="editAdditionalImagesContainer">
+                        <!-- Additional image inputs will be added here -->
+                    </div>
+                    <button type="button" onclick="addEditImageInput()" style="background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-top: 5px;">+ Add More Images</button>
+                </div>
+                
+                <textarea id="editProductDescription" placeholder="Product Description" required></textarea>
+                
+                <!-- Pricing Section -->
+                <div style="margin-bottom: 15px; padding: 15px; border: 2px solid #f39c12; border-radius: 8px; background: #fef9e7;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #e67e22; font-size: 16px;">💰 Pricing & Discount</label>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 14px;">Original Price (₹):</label>
+                            <input type="number" id="editProductOriginalPrice" placeholder="Original/Cut Price" step="0.01" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" oninput="calculateEditProductFinalPrice()">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 14px;">Discount (%):</label>
+                            <input type="number" id="editProductDiscount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" oninput="calculateEditProductFinalPrice()">
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #27ae60; font-size: 14px;">Final Price (₹):</label>
+                        <div id="editProductFinalPrice" style="width: 100%; padding: 10px; border: 1px solid #27ae60; border-radius: 5px; background: #e8f5e8; color: #27ae60; font-weight: 600; text-align: center; font-size: 18px;">₹0.00</div>
+                        <input type="hidden" id="editProductFinalPriceValue" value="0">
+                    </div>
+                </div>
+                
+                <input type="number" id="editDeliveryCharge" placeholder="Delivery Charge (₹)" step="0.01" value="0">
+                
+                <!-- Star Rating Field -->
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50;">Product Rating:</label>
+                    <select id="editProductRating" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" required>
+                        <option value="">Select Rating</option>
+                        <option value="1">⭐ 1 Star</option>
+                        <option value="2">⭐⭐ 2 Stars</option>
+                        <option value="3">⭐⭐⭐ 3 Stars</option>
+                        <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                        <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                    </select>
+                </div>
+                
+                <!-- Main Categories Selection Section -->
+                <div id="editProductCategoriesSection" style="margin: 15px 0; padding: 15px; border: 2px solid #e67e22; border-radius: 8px; background: #fef5e7;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #d35400; font-size: 16px;">🏪 Select Main Categories (Multiple Selection Allowed)</label>
+                    <div id="editCategoriesContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                        <!-- Category checkboxes will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Subcategories Selection Section -->
+                <div id="editSubcategoriesSection" style="margin: 15px 0; padding: 15px; border: 2px solid #9b59b6; border-radius: 8px; background: #f8f4ff; display: none;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #8e44ad; font-size: 16px;">🏷️ Select Subcategories (Multiple Selection Allowed)</label>
+                    <div id="editSubcategoriesContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                        <!-- Subcategory checkboxes will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Size & Weight Based Pricing Section -->
+                <div style="margin: 15px 0; padding: 15px; border: 2px solid #3498db; border-radius: 8px; background: #f8f9fa;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #2980b9; font-size: 16px;">📏 Available Sizes & Weight-Based Pricing</label>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Regular Sizes -->
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="S" class="edit-size-checkbox"> S</label>
+                            <input type="number" id="editPriceS" placeholder="Original Price for S" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateEditFinalPrice('S')">
+                            <input type="number" id="editDiscountS" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditFinalPrice('S')">
+                            <div id="editFinalPriceS" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="M" class="edit-size-checkbox"> M</label>
+                            <input type="number" id="editPriceM" placeholder="Original Price for M" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateEditFinalPrice('M')">
+                            <input type="number" id="editDiscountM" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditFinalPrice('M')">
+                            <div id="editFinalPriceM" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="L" class="edit-size-checkbox"> L</label>
+                            <input type="number" id="editPriceL" placeholder="Original Price for L" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateEditFinalPrice('L')">
+                            <input type="number" id="editDiscountL" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditFinalPrice('L')">
+                            <div id="editFinalPriceL" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="XL" class="edit-size-checkbox"> XL</label>
+                            <input type="number" id="editPriceXL" placeholder="Original Price for XL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateEditFinalPrice('XL')">
+                            <input type="number" id="editDiscountXL" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditFinalPrice('XL')">
+                            <div id="editFinalPriceXL" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: white;">
+                            <label style="display: flex; align-items: center; gap: 5px; min-width: 70px; font-weight: 600;"><input type="checkbox" value="XXL" class="edit-size-checkbox"> XXL</label>
+                            <input type="number" id="editPriceXXL" placeholder="Original Price for XXL" step="0.01" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" oninput="calculateEditFinalPrice('XXL')">
+                            <input type="number" id="editDiscountXXL" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditFinalPrice('XXL')">
+                            <div id="editFinalPriceXXL" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                        </div>
+                        
+                        <!-- Weight-Based Options -->
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #e74c3c;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: 700; color: #c0392b; font-size: 14px;">⚖️ Weight-Based Pricing Options</label>
+                            
+                            <!-- ML Options -->
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Milliliters (ml):</label>
+                                <div id="editMlContainer">
+                                    <div class="edit-weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                                        <input type="number" class="edit-weight-quantity" placeholder="Quantity (ml)" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                        <input type="number" class="edit-weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateEditWeightFinalPrice(this)">
+                                        <input type="number" class="edit-weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditWeightFinalPrice(this)">
+                                        <div class="edit-weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                                        <button type="button" onclick="removeEditWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="addEditWeightInput('editMlContainer', 'ml')" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">+ Add ML Option</button>
+                            </div>
+                            
+                            <!-- Grams Options -->
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Grams (g):</label>
+                                <div id="editGContainer">
+                                    <div class="edit-weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                                        <input type="number" class="edit-weight-quantity" placeholder="Quantity (g)" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                        <input type="number" class="edit-weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateEditWeightFinalPrice(this)">
+                                        <input type="number" class="edit-weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditWeightFinalPrice(this)">
+                                        <div class="edit-weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                                        <button type="button" onclick="removeEditWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="addEditWeightInput('editGContainer', 'g')" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">+ Add Gram Option</button>
+                            </div>
+                            
+                            <!-- Kilograms Options -->
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #c0392b;">Kilograms (kg):</label>
+                                <div id="editKgContainer">
+                                    <div class="edit-weight-input-group" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                                        <input type="number" class="edit-weight-quantity" placeholder="Quantity (kg)" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                                        <input type="number" class="edit-weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateEditWeightFinalPrice(this)">
+                                        <input type="number" class="edit-weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditWeightFinalPrice(this)">
+                                        <div class="edit-weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                                        <button type="button" onclick="removeEditWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="addEditWeightInput('editKgContainer', 'kg')" style="background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">+ Add KG Option</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Update Button -->
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" onclick="closeEditProductModal()" style="background: #6b7280; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
+                    <button type="button" onclick="updateEditedProduct()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Update Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Firebase SDK -->
     <script type="module">
         // Import Firebase modules
@@ -7286,6 +7465,20 @@
             modal.style.display = 'flex';
             modal.classList.add('open');
             
+            // IMMEDIATE scroll reset for category modal
+            modal.scrollTop = 0;
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            
+            // Reset scroll for all scrollable containers in modal
+            const modalBody = modal.querySelector('.category-modal-body');
+            const productsArea = modal.querySelector('.category-products-area');
+            const productsGrid = modal.querySelector('.category-products-grid');
+            
+            if (modalBody) modalBody.scrollTop = 0;
+            if (productsArea) productsArea.scrollTop = 0;
+            if (productsGrid) productsGrid.scrollTop = 0;
+            
             // Load and display category banner image
             loadCategoryBanner(categoryName);
             
@@ -8596,7 +8789,6 @@
                     <img src="${product.imageUrl}" class="product-image" 
                          onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
                     <div class="product-info">
-                        <button class="product-add-button" onclick="event.stopPropagation(); editProduct('${product.id}')">EDIT</button>
                         <h3 class="product-name">${product.name}</h3>
                         <div class="product-rating">
                             <span class="stars">${'⭐'.repeat(Math.floor(product.rating || 4))}</span>
@@ -8609,7 +8801,7 @@
                         ${product.sizes && product.sizes.length > 0 ? `<div style="font-size: 10px; color: #666; margin-bottom: 8px;">Sizes: ${product.sizes.join(', ')}</div>` : '<div style="margin-bottom: 8px;"></div>'}
                     </div>
                         <div style="display: flex; gap: 5px; margin-top: 8px;">
-                            <button onclick="editProduct('${product.id}')" style="flex: 1; background: #10b981; color: white; border: none; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600;">Edit Product</button>
+                            <button onclick="openEditProductModal('${product.id}')" style="flex: 1; background: #10b981; color: white; border: none; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600;">Edit Product</button>
                             <button onclick="removeProduct('${product.id}')" style="flex: 1; background: #dc3545; color: white; border: none; padding: 6px 8px; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600;">Remove</button>
                         </div>
                     </div>
@@ -8645,187 +8837,513 @@
             loadProductsAdminData();
         };
         
-        // Global variable to track editing state
-        let isEditingProduct = false;
-        let editingProductId = null;
+        // Edit Product Modal Functions
+        let currentEditProductId = null;
         
-        // Edit product function - opens add product form with existing data
-        window.editProduct = function(productId) {
+        window.openEditProductModal = function(productId) {
+            currentEditProductId = productId;
             const product = productsData.find(p => p.id === productId);
             if (!product) {
                 showNotification('Product not found', 'error');
                 return;
             }
             
-            // Set editing state
-            isEditingProduct = true;
-            editingProductId = productId;
+            // Show modal
+            const modal = document.getElementById('editProductModal');
+            modal.style.display = 'flex';
             
-            // Switch to products tab and open add product form
-            showTab('products');
+            // Populate form with existing data
+            document.getElementById('editProductName').value = product.name || '';
+            document.getElementById('editProductImageUrl').value = product.imageUrl || '';
+            document.getElementById('editProductDescription').value = product.description || '';
+            document.getElementById('editProductOriginalPrice').value = product.originalPrice || '';
+            document.getElementById('editProductDiscount').value = product.discount || '';
+            document.getElementById('editDeliveryCharge').value = product.deliveryCharge || '';
+            document.getElementById('editProductRating').value = product.rating || '';
             
-            // Pre-fill the form with existing product data
+            // Calculate final price
+            calculateEditProductFinalPrice();
+            
+            // Clear and populate additional images
+            const additionalImagesContainer = document.getElementById('editAdditionalImagesContainer');
+            additionalImagesContainer.innerHTML = '';
+            
+            if (product.subImages && product.subImages.length > 0) {
+                product.subImages.forEach((imageUrl) => {
+                    addEditImageInput();
+                    const inputs = additionalImagesContainer.querySelectorAll('input[type="url"]');
+                    const lastInput = inputs[inputs.length - 1];
+                    if (lastInput) {
+                        lastInput.value = imageUrl;
+                    }
+                });
+            } else {
+                // Add one empty input if no additional images
+                addEditImageInput();
+            }
+            
+            // Load categories and populate existing selections
             setTimeout(() => {
-                populateEditForm(product);
+                loadEditCategories(product.categories || [], product.subcategories || []);
+            }, 100);
+            
+            // Load and populate sizes
+            loadEditSizes(product.sizes || [], product.sizePricing || {}, product.sizeDiscounts || {});
+            
+            // Load weight-based pricing data
+            loadEditWeightData(product.weightPricing || {});
+            
+            // Load rating
+            if (product.rating) {
+                document.getElementById('editProductRating').value = product.rating;
+                updateEditRatingDisplay();
+            }
+        };
+        
+        window.closeEditProductModal = function() {
+            document.getElementById('editProductModal').style.display = 'none';
+            currentEditProductId = null;
+        };
+        
+        // Functions for managing additional images in edit modal
+        window.addEditImageInput = function() {
+            const container = document.getElementById('editAdditionalImagesContainer');
+            const newImageGroup = document.createElement('div');
+            newImageGroup.className = 'image-input-group';
+            newImageGroup.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: center;';
+            
+            newImageGroup.innerHTML = `
+                <input type="url" class="additional-image-url" placeholder="Additional Image URL" style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                <button type="button" onclick="removeEditImageInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 12px;">Remove</button>
+            `;
+            
+            container.appendChild(newImageGroup);
+        };
+        
+        window.removeEditImageInput = function(button) {
+            const container = document.getElementById('editAdditionalImagesContainer');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                // Clear the input instead of removing if it's the last one
+                const input = button.parentElement.querySelector('input');
+                if (input) input.value = '';
+            }
+        };
+        
+        // Calculate final price for edit modal
+        window.calculateEditProductFinalPrice = function() {
+            const originalPrice = parseFloat(document.getElementById('editProductOriginalPrice').value) || 0;
+            const discount = parseFloat(document.getElementById('editProductDiscount').value) || 0;
+            
+            const finalPrice = originalPrice * (1 - discount / 100);
+            
+            document.getElementById('editProductFinalPrice').textContent = `₹${finalPrice.toFixed(2)}`;
+            document.getElementById('editProductFinalPriceValue').value = finalPrice.toFixed(2);
+        };
+        
+        // Load categories for edit modal
+        window.loadEditCategories = async function(selectedCategories = [], selectedSubcategories = []) {
+            const container = document.getElementById('editCategoriesContainer');
+            container.innerHTML = '';
+            
+            categoriesData.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; background: white;';
                 
-                // Update form title and button text
-                const formTitle = document.querySelector('#addProductForm h3');
-                if (formTitle) {
-                    formTitle.textContent = 'Edit Product';
-                }
+                const isSelected = selectedCategories.includes(category.name);
+                categoryDiv.innerHTML = `
+                    <input type="checkbox" id="editCategory${category.name}" class="edit-category-checkbox" value="${category.name}" ${isSelected ? 'checked' : ''} onchange="loadEditSubcategories()">
+                    <label for="editCategory${category.name}" style="font-weight: 600; color: #2c3e50; cursor: pointer;">${category.name}</label>
+                `;
                 
-                const submitButton = document.querySelector('#addProductForm button[type="button"][onclick="addProduct()"]');
-                if (submitButton) {
-                    submitButton.textContent = 'Update Product';
-                    submitButton.onclick = function() { updateProduct(); };
+                container.appendChild(categoryDiv);
+            });
+            
+            // Load subcategories if categories are selected
+            if (selectedCategories.length > 0) {
+                setTimeout(() => {
+                    loadEditSubcategories(selectedSubcategories);
+                }, 50);
+            }
+        };
+        
+        // Load subcategories for edit modal
+        window.loadEditSubcategories = function(selectedSubcategories = []) {
+            const selectedCategories = Array.from(document.querySelectorAll('.edit-category-checkbox:checked')).map(cb => cb.value);
+            const subcategoriesSection = document.getElementById('editSubcategoriesSection');
+            const subcategoriesContainer = document.getElementById('editSubcategoriesContainer');
+            
+            if (selectedCategories.length === 0) {
+                subcategoriesSection.style.display = 'none';
+                return;
+            }
+            
+            subcategoriesSection.style.display = 'block';
+            subcategoriesContainer.innerHTML = '';
+            
+            const allSubcategories = new Set();
+            selectedCategories.forEach(categoryName => {
+                const category = categoriesData.find(cat => cat.name === categoryName);
+                if (category && category.subcategories) {
+                    category.subcategories.forEach(sub => allSubcategories.add(sub));
                 }
+            });
+            
+            Array.from(allSubcategories).forEach(subcategory => {
+                const subcategoryDiv = document.createElement('div');
+                subcategoryDiv.style.cssText = 'display: flex; align-items: center; gap: 8px; padding: 10px; border: 1px solid #9b59b6; border-radius: 5px; background: white;';
                 
-                // Scroll to form
-                const form = document.getElementById('addProductForm');
-                if (form) {
-                    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Handle both string subcategories and object subcategories
+                const subcategoryName = typeof subcategory === 'string' ? subcategory : subcategory.name;
+                const isSelected = selectedSubcategories.includes(subcategoryName);
+                
+                subcategoryDiv.innerHTML = `
+                    <input type="checkbox" id="editSubcategory${subcategoryName}" class="edit-subcategory-checkbox" value="${subcategoryName}" ${isSelected ? 'checked' : ''}>
+                    <label for="editSubcategory${subcategoryName}" style="font-weight: 600; color: #8e44ad; cursor: pointer;">${subcategoryName}</label>
+                `;
+                
+                subcategoriesContainer.appendChild(subcategoryDiv);
+            });
+        };
+        
+        // Load sizes for edit modal
+        window.loadEditSizes = function(selectedSizes = [], sizePricing = {}, sizeDiscounts = {}) {
+            // Check selected sizes and populate pricing
+            selectedSizes.forEach(size => {
+                const checkbox = document.querySelector(`.edit-size-checkbox[value="${size}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    
+                    // Populate pricing data
+                    const priceInput = document.getElementById(`editPrice${size}`);
+                    const discountInput = document.getElementById(`editDiscount${size}`);
+                    
+                    if (priceInput && sizePricing[size]) {
+                        priceInput.value = sizePricing[size];
+                    }
+                    if (discountInput && sizeDiscounts[size]) {
+                        discountInput.value = sizeDiscounts[size];
+                    }
+                    
+                    // Calculate final price
+                    calculateEditFinalPrice(size);
                 }
+            });
+        };
+        
+        // Load weight-based pricing data for edit modal
+        window.loadEditWeightData = function(weightPricing = {}) {
+            // Clear existing weight inputs
+            document.getElementById('editMlContainer').innerHTML = '';
+            document.getElementById('editGContainer').innerHTML = '';
+            document.getElementById('editKgContainer').innerHTML = '';
+            
+            // Load ML options
+            if (weightPricing.ml && weightPricing.ml.length > 0) {
+                weightPricing.ml.forEach(option => {
+                    addEditWeightInput('editMlContainer', 'ml');
+                    const container = document.getElementById('editMlContainer');
+                    const lastGroup = container.lastElementChild;
+                    
+                    lastGroup.querySelector('.edit-weight-quantity').value = option.quantity;
+                    lastGroup.querySelector('.edit-weight-price').value = option.originalPrice || option.price;
+                    lastGroup.querySelector('.edit-weight-discount').value = option.discount || 0;
+                    calculateEditWeightFinalPrice(lastGroup.querySelector('.edit-weight-price'));
+                });
+            } else {
+                addEditWeightInput('editMlContainer', 'ml');
+            }
+            
+            // Load G options
+            if (weightPricing.g && weightPricing.g.length > 0) {
+                weightPricing.g.forEach(option => {
+                    addEditWeightInput('editGContainer', 'g');
+                    const container = document.getElementById('editGContainer');
+                    const lastGroup = container.lastElementChild;
+                    
+                    lastGroup.querySelector('.edit-weight-quantity').value = option.quantity;
+                    lastGroup.querySelector('.edit-weight-price').value = option.originalPrice || option.price;
+                    lastGroup.querySelector('.edit-weight-discount').value = option.discount || 0;
+                    calculateEditWeightFinalPrice(lastGroup.querySelector('.edit-weight-price'));
+                });
+            } else {
+                addEditWeightInput('editGContainer', 'g');
+            }
+            
+            // Load KG options
+            if (weightPricing.kg && weightPricing.kg.length > 0) {
+                weightPricing.kg.forEach(option => {
+                    addEditWeightInput('editKgContainer', 'kg');
+                    const container = document.getElementById('editKgContainer');
+                    const lastGroup = container.lastElementChild;
+                    
+                    lastGroup.querySelector('.edit-weight-quantity').value = option.quantity;
+                    lastGroup.querySelector('.edit-weight-price').value = option.originalPrice || option.price;
+                    lastGroup.querySelector('.edit-weight-discount').value = option.discount || 0;
+                    calculateEditWeightFinalPrice(lastGroup.querySelector('.edit-weight-price'));
+                });
+            } else {
+                addEditWeightInput('editKgContainer', 'kg');
+            }
+        };
+        
+        // Updated loadEditSizes function
+        window.loadEditSizes = function(selectedSizes = [], sizePricing = {}, sizeDiscounts = {}) {
+            // Check selected sizes and populate pricing
+            selectedSizes.forEach(size => {
+                const checkbox = document.querySelector(`.edit-size-checkbox[value="${size}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    
+                    // Populate pricing data
+                    const priceInput = document.getElementById(`editPrice${size}`);
+                    const discountInput = document.getElementById(`editDiscount${size}`);
+                    
+                    if (priceInput && sizePricing[size]) {
+                        priceInput.value = sizePricing[size];
+                    }
+                    if (discountInput && sizeDiscounts[size]) {
+                        discountInput.value = sizeDiscounts[size];
+                    }
+                    
+                    // Calculate final price
+                    setTimeout(() => {
+                        calculateEditFinalPrice(size);
+                    }, 50);
+                }
+            });
+            
+            // Populate size pricing
+            setTimeout(() => {
+                Object.keys(sizePricing).forEach(size => {
+                    const priceInput = document.getElementById(`editSizePrice${size}`);
+                    if (priceInput) {
+                        priceInput.value = sizePricing[size] || '';
+                    }
+                });
+                
+                Object.keys(sizeDiscounts).forEach(size => {
+                    const discountInput = document.getElementById(`editSizeDiscount${size}`);
+                    if (discountInput) {
+                        discountInput.value = sizeDiscounts[size] || '';
+                    }
+                });
             }, 100);
         };
         
-        // Populate form with existing product data
-        function populateEditForm(product) {
-            // Basic fields
-            document.getElementById('productName').value = product.name || '';
-            document.getElementById('productPrice').value = product.price || '';
-            document.getElementById('productDescription').value = product.description || '';
-            document.getElementById('productImageUrl').value = product.imageUrl || '';
-            document.getElementById('productRating').value = product.rating || '';
-            document.getElementById('productDeliveryCharge').value = product.deliveryCharge || '';
+        // Toggle size pricing inputs for edit modal
+        window.toggleEditSizePricing = function(size) {
+            const checkbox = document.getElementById(`editSize${size}`);
+            const container = document.getElementById('editSizePricingContainer');
+            const existingInput = document.getElementById(`editSizePricing${size}`);
             
-            // Pricing fields
-            document.getElementById('originalPrice').value = product.originalPrice || '';
-            document.getElementById('discountPercentage').value = product.discount || '';
-            
-            // Additional images
-            if (product.subImages && product.subImages.length > 0) {
-                const additionalImagesContainer = document.getElementById('additionalImages');
-                additionalImagesContainer.innerHTML = '';
+            if (checkbox.checked && !existingInput) {
+                const pricingDiv = document.createElement('div');
+                pricingDiv.id = `editSizePricing${size}`;
+                pricingDiv.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; padding: 10px; border: 1px solid #e74c3c; border-radius: 5px; background: #fff5f5;';
                 
-                product.subImages.forEach((imageUrl, index) => {
-                    addImageInput();
-                    const inputs = additionalImagesContainer.querySelectorAll('input[type="url"]');
-                    if (inputs[index]) {
-                        inputs[index].value = imageUrl;
-                    }
-                });
+                pricingDiv.innerHTML = `
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: #c0392b; margin-bottom: 3px;">Size ${size} Price (₹):</label>
+                        <input type="number" id="editSizePrice${size}" placeholder="Price for ${size}" step="0.01" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: #c0392b; margin-bottom: 3px;">Discount (%):</label>
+                        <input type="number" id="editSizeDiscount${size}" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 600; color: #27ae60; margin-bottom: 3px;">Final Price (₹):</label>
+                        <div id="editSizeFinalPrice${size}" style="width: 100%; padding: 6px; border: 1px solid #27ae60; border-radius: 4px; background: #e8f5e8; color: #27ae60; font-weight: 600; text-align: center; font-size: 12px;">₹0.00</div>
+                    </div>
+                `;
+                
+                container.appendChild(pricingDiv);
+                
+                // Add event listeners for price calculation
+                const priceInput = document.getElementById(`editSizePrice${size}`);
+                const discountInput = document.getElementById(`editSizeDiscount${size}`);
+                
+                const calculateSizePrice = () => {
+                    const price = parseFloat(priceInput.value) || 0;
+                    const discount = parseFloat(discountInput.value) || 0;
+                    const finalPrice = price * (1 - discount / 100);
+                    document.getElementById(`editSizeFinalPrice${size}`).textContent = `₹${finalPrice.toFixed(2)}`;
+                };
+                
+                priceInput.addEventListener('input', calculateSizePrice);
+                discountInput.addEventListener('input', calculateSizePrice);
+                
+            } else if (!checkbox.checked && existingInput) {
+                existingInput.remove();
             }
-            
-            // Categories
-            if (product.categories && product.categories.length > 0) {
-                product.categories.forEach(categoryName => {
-                    const checkbox = document.querySelector(`.category-checkbox[value="${categoryName}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                    }
-                });
+        };
+        
+        // Weight-based pricing functions for edit modal
+        window.loadEditWeightPricing = function(weightPricing = {}, weightOptions = []) {
+            if (weightPricing.enabled) {
+                document.getElementById('editEnableWeightPricing').checked = true;
+                toggleEditWeightPricing();
                 
-                // Load subcategories after categories are selected
                 setTimeout(() => {
-                    loadSubcategoriesForProduct();
-                    
-                    // Select subcategories
-                    if (product.subcategories && product.subcategories.length > 0) {
-                        setTimeout(() => {
-                            product.subcategories.forEach(subcategoryName => {
-                                const checkbox = document.querySelector(`.subcategory-checkbox[value="${subcategoryName}"]`);
-                                if (checkbox) {
-                                    checkbox.checked = true;
-                                }
-                            });
-                        }, 200);
+                    if (weightPricing.baseWeight) {
+                        document.getElementById('editBaseWeight').value = weightPricing.baseWeight;
                     }
+                    if (weightPricing.pricePerGram) {
+                        document.getElementById('editPricePerGram').value = weightPricing.pricePerGram;
+                    }
+                    
+                    // Load weight options
+                    weightOptions.forEach(option => {
+                        addEditWeightOption(option.weight, option.label);
+                    });
                 }, 100);
             }
-            
-            // Sizes
-            if (product.sizes && product.sizes.length > 0) {
-                const sizesContainer = document.getElementById('sizesContainer');
-                sizesContainer.innerHTML = '';
-                
-                product.sizes.forEach(size => {
-                    addSizeInput();
-                    const inputs = sizesContainer.querySelectorAll('input[type="text"]');
-                    const lastInput = inputs[inputs.length - 1];
-                    if (lastInput) {
-                        lastInput.value = size;
-                    }
-                });
-            }
-            
-            // Weight-based pricing
-            if (product.weightPricing) {
-                // ML weights
-                if (product.weightPricing.ml && product.weightPricing.ml.length > 0) {
-                    product.weightPricing.ml.forEach(item => {
-                        addWeightInput('mlContainer', 'ml');
-                        const container = document.getElementById('mlContainer');
-                        const weightInputs = container.querySelectorAll('.weight-input-group');
-                        const lastGroup = weightInputs[weightInputs.length - 1];
-                        if (lastGroup) {
-                            lastGroup.querySelector('input[placeholder*="quantity"]').value = item.quantity;
-                            lastGroup.querySelector('input[placeholder*="price"]').value = item.price;
-                        }
-                    });
-                }
-                
-                // G weights
-                if (product.weightPricing.g && product.weightPricing.g.length > 0) {
-                    product.weightPricing.g.forEach(item => {
-                        addWeightInput('gContainer', 'g');
-                        const container = document.getElementById('gContainer');
-                        const weightInputs = container.querySelectorAll('.weight-input-group');
-                        const lastGroup = weightInputs[weightInputs.length - 1];
-                        if (lastGroup) {
-                            lastGroup.querySelector('input[placeholder*="quantity"]').value = item.quantity;
-                            lastGroup.querySelector('input[placeholder*="price"]').value = item.price;
-                        }
-                    });
-                }
-                
-                // KG weights
-                if (product.weightPricing.kg && product.weightPricing.kg.length > 0) {
-                    product.weightPricing.kg.forEach(item => {
-                        addWeightInput('kgContainer', 'kg');
-                        const container = document.getElementById('kgContainer');
-                        const weightInputs = container.querySelectorAll('.weight-input-group');
-                        const lastGroup = weightInputs[weightInputs.length - 1];
-                        if (lastGroup) {
-                            lastGroup.querySelector('input[placeholder*="quantity"]').value = item.quantity;
-                            lastGroup.querySelector('input[placeholder*="price"]').value = item.price;
-                        }
-                    });
-                }
-            }
-            
-            // Trigger price calculation
-            setTimeout(() => {
-                calculateFinalPrice();
-            }, 300);
-        }
+        };
         
-        // Update product function
-        window.updateProduct = async function() {
-            if (!isEditingProduct || !editingProductId) {
+        window.toggleEditWeightPricing = function() {
+            const checkbox = document.getElementById('editEnableWeightPricing');
+            const container = document.getElementById('editWeightPricingContainer');
+            
+            if (checkbox.checked) {
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+                // Clear weight options when disabled
+                document.getElementById('editWeightOptionsContainer').innerHTML = '';
+            }
+        };
+        
+        window.addEditWeightOption = function(weight = '', label = '') {
+            const container = document.getElementById('editWeightOptionsContainer');
+            const optionId = 'editWeightOption' + Date.now();
+            
+            const optionDiv = document.createElement('div');
+            optionDiv.id = optionId;
+            optionDiv.style.cssText = 'display: flex; gap: 8px; align-items: center; padding: 8px; border: 1px solid #f39c12; border-radius: 5px; background: white;';
+            
+            optionDiv.innerHTML = `
+                <input type="number" placeholder="Weight (g)" value="${weight}" min="1" style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                <input type="text" placeholder="Label (e.g., 500g)" value="${label}" style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px; font-size: 12px;">
+                <button type="button" onclick="document.getElementById('${optionId}').remove()" style="background: #e74c3c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px;">×</button>
+            `;
+            
+            container.appendChild(optionDiv);
+        };
+        
+        // Calculate final price for edit modal main pricing
+        window.calculateEditProductFinalPrice = function() {
+            const originalPrice = parseFloat(document.getElementById('editProductOriginalPrice').value) || 0;
+            const discount = parseFloat(document.getElementById('editProductDiscount').value) || 0;
+            
+            const finalPrice = originalPrice - (originalPrice * discount / 100);
+            
+            document.getElementById('editProductFinalPrice').textContent = `₹${finalPrice.toFixed(2)}`;
+            document.getElementById('editProductFinalPriceValue').value = finalPrice;
+        };
+        
+        // Calculate final price for individual sizes in edit modal
+        window.calculateEditFinalPrice = function(size) {
+            const priceInput = document.getElementById(`editPrice${size}`);
+            const discountInput = document.getElementById(`editDiscount${size}`);
+            const finalPriceDiv = document.getElementById(`editFinalPrice${size}`);
+            
+            if (priceInput && discountInput && finalPriceDiv) {
+                const originalPrice = parseFloat(priceInput.value) || 0;
+                const discount = parseFloat(discountInput.value) || 0;
+                
+                const finalPrice = originalPrice - (originalPrice * discount / 100);
+                finalPriceDiv.textContent = `₹${finalPrice.toFixed(0)}`;
+            }
+        };
+        
+        // Calculate final price for weight-based pricing in edit modal
+        window.calculateEditWeightFinalPrice = function(element) {
+            const group = element.closest('.edit-weight-input-group');
+            const priceInput = group.querySelector('.edit-weight-price');
+            const discountInput = group.querySelector('.edit-weight-discount');
+            const finalPriceDiv = group.querySelector('.edit-weight-final-price');
+            
+            if (priceInput && discountInput && finalPriceDiv) {
+                const originalPrice = parseFloat(priceInput.value) || 0;
+                const discount = parseFloat(discountInput.value) || 0;
+                
+                const finalPrice = originalPrice - (originalPrice * discount / 100);
+                finalPriceDiv.textContent = `₹${finalPrice.toFixed(0)}`;
+            }
+        };
+        
+        // Add weight input functions for edit modal
+        window.addEditWeightInput = function(containerId, unit) {
+            const container = document.getElementById(containerId);
+            const newGroup = document.createElement('div');
+            newGroup.className = 'edit-weight-input-group';
+            newGroup.style.cssText = 'display: flex; gap: 8px; margin-bottom: 8px; align-items: center;';
+            
+            newGroup.innerHTML = `
+                <input type="number" class="edit-weight-quantity" placeholder="Quantity (${unit})" min="1" style="width: 100px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;">
+                <input type="number" class="edit-weight-price" placeholder="Original Price (₹)" step="0.01" min="0" style="width: 120px; padding: 8px; border: 1px solid #e74c3c; border-radius: 4px;" oninput="calculateEditWeightFinalPrice(this)">
+                <input type="number" class="edit-weight-discount" placeholder="Discount %" min="0" max="99" step="1" value="0" style="width: 90px; padding: 8px; border: 1px solid #f39c12; border-radius: 4px; background: #fef9e7;" oninput="calculateEditWeightFinalPrice(this)">
+                <div class="edit-weight-final-price" style="min-width: 80px; padding: 8px; background: #e8f5e8; border: 1px solid #27ae60; border-radius: 4px; font-weight: 600; color: #27ae60; text-align: center;">₹0</div>
+                <button type="button" onclick="removeEditWeightInput(this)" style="background: #e74c3c; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">Remove</button>
+            `;
+            
+            container.appendChild(newGroup);
+        };
+        
+        // Remove weight input function for edit modal
+        window.removeEditWeightInput = function(button) {
+            const group = button.closest('.edit-weight-input-group');
+            const container = group.parentElement;
+            
+            // Only remove if there's more than one group in the container
+            if (container.children.length > 1) {
+                group.remove();
+            } else {
+                // Clear inputs instead of removing the last one
+                const inputs = group.querySelectorAll('input');
+                inputs.forEach(input => input.value = input.type === 'number' && input.classList.contains('edit-weight-discount') ? '0' : '');
+                const finalPriceDiv = group.querySelector('.edit-weight-final-price');
+                if (finalPriceDiv) finalPriceDiv.textContent = '₹0';
+            }
+        };
+        
+        // Rating display function for edit modal
+        window.updateEditRatingDisplay = function() {
+            const rating = parseFloat(document.getElementById('editProductRating').value) || 0;
+            const starsContainer = document.getElementById('editRatingStars');
+            
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) {
+                    starsHtml += '⭐';
+                } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+                    starsHtml += '⭐';
+                } else {
+                    starsHtml += '☆';
+                }
+            }
+            
+            starsContainer.innerHTML = starsHtml;
+        };
+
+        // Update edited product
+        window.updateEditedProduct = async function() {
+            if (!currentEditProductId) {
                 showNotification('No product selected for editing', 'error');
                 return;
             }
             
-            // Collect form data (reuse existing collection logic)
+            // Collect form data
             const productData = {
-                name: document.getElementById('productName').value.trim(),
-                price: parseFloat(document.getElementById('productPrice').value) || 0,
-                description: document.getElementById('productDescription').value.trim(),
-                imageUrl: document.getElementById('productImageUrl').value.trim(),
-                rating: parseFloat(document.getElementById('productRating').value) || 4.0,
-                deliveryCharge: parseFloat(document.getElementById('productDeliveryCharge').value) || 0,
-                originalPrice: parseFloat(document.getElementById('originalPrice').value) || 0,
-                discount: parseFloat(document.getElementById('discountPercentage').value) || 0
+                name: document.getElementById('editProductName').value.trim(),
+                description: document.getElementById('editProductDescription').value.trim(),
+                imageUrl: document.getElementById('editProductImageUrl').value.trim(),
+                rating: parseFloat(document.getElementById('editProductRating').value) || 4.0,
+                deliveryCharge: parseFloat(document.getElementById('editDeliveryCharge').value) || 0,
+                originalPrice: parseFloat(document.getElementById('editProductOriginalPrice').value) || 0,
+                discount: parseFloat(document.getElementById('editProductDiscount').value) || 0,
+                price: parseFloat(document.getElementById('editProductFinalPriceValue').value) || 0
             };
             
             // Validation
@@ -8835,47 +9353,117 @@
             }
             
             // Collect additional images
-            const additionalImageInputs = document.querySelectorAll('#additionalImages input[type="url"]');
+            const additionalImageInputs = document.querySelectorAll('#editAdditionalImagesContainer input[type="url"]');
             productData.subImages = Array.from(additionalImageInputs)
                 .map(input => input.value.trim())
                 .filter(url => url !== '');
             
-            // Collect categories
-            const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
-            const selectedSubcategories = Array.from(document.querySelectorAll('.subcategory-checkbox:checked')).map(cb => cb.value);
+            // Collect categories and subcategories
+            const selectedCategories = Array.from(document.querySelectorAll('.edit-category-checkbox:checked')).map(cb => cb.value);
+            const selectedSubcategories = Array.from(document.querySelectorAll('.edit-subcategory-checkbox:checked')).map(cb => cb.value);
             
             productData.categories = selectedCategories;
             productData.subcategories = selectedSubcategories;
             productData.category = selectedCategories[0] || ''; // Backward compatibility
             
-            // Collect sizes
-            const sizeInputs = document.querySelectorAll('#sizesContainer input[type="text"]');
-            productData.sizes = Array.from(sizeInputs)
-                .map(input => input.value.trim())
-                .filter(size => size !== '');
+            // Collect sizes and size pricing
+            const selectedSizes = Array.from(document.querySelectorAll('.edit-size-checkbox:checked')).map(cb => cb.value);
+            productData.sizes = selectedSizes;
             
-            // Collect weight pricing
-            productData.weightPricing = collectWeightPricing();
+            // Collect size pricing and discounts
+            const sizePricing = {};
+            const sizeDiscounts = {};
+            selectedSizes.forEach(size => {
+                const priceInput = document.getElementById(`editPrice${size}`);
+                const discountInput = document.getElementById(`editDiscount${size}`);
+                
+                if (priceInput && priceInput.value) {
+                    sizePricing[size] = parseFloat(priceInput.value);
+                }
+                if (discountInput && discountInput.value) {
+                    sizeDiscounts[size] = parseFloat(discountInput.value);
+                }
+            });
+            
+            productData.sizePricing = sizePricing;
+            productData.sizeDiscounts = sizeDiscounts;
+            
+            // Collect weight-based pricing (new format)
+            const collectEditWeightPricing = () => {
+                const weightPricing = { ml: [], g: [], kg: [] };
+                
+                // Collect ML options
+                const mlGroups = document.querySelectorAll('#editMlContainer .edit-weight-input-group');
+                mlGroups.forEach(group => {
+                    const quantity = group.querySelector('.edit-weight-quantity').value;
+                    const price = group.querySelector('.edit-weight-price').value;
+                    const discount = group.querySelector('.edit-weight-discount').value || 0;
+                    
+                    if (quantity && price) {
+                        const finalPrice = price - (price * discount / 100);
+                        weightPricing.ml.push({
+                            quantity: parseFloat(quantity),
+                            originalPrice: parseFloat(price),
+                            discount: parseFloat(discount),
+                            price: finalPrice
+                        });
+                    }
+                });
+                
+                // Collect G options
+                const gGroups = document.querySelectorAll('#editGContainer .edit-weight-input-group');
+                gGroups.forEach(group => {
+                    const quantity = group.querySelector('.edit-weight-quantity').value;
+                    const price = group.querySelector('.edit-weight-price').value;
+                    const discount = group.querySelector('.edit-weight-discount').value || 0;
+                    
+                    if (quantity && price) {
+                        const finalPrice = price - (price * discount / 100);
+                        weightPricing.g.push({
+                            quantity: parseFloat(quantity),
+                            originalPrice: parseFloat(price),
+                            discount: parseFloat(discount),
+                            price: finalPrice
+                        });
+                    }
+                });
+                
+                // Collect KG options
+                const kgGroups = document.querySelectorAll('#editKgContainer .edit-weight-input-group');
+                kgGroups.forEach(group => {
+                    const quantity = group.querySelector('.edit-weight-quantity').value;
+                    const price = group.querySelector('.edit-weight-price').value;
+                    const discount = group.querySelector('.edit-weight-discount').value || 0;
+                    
+                    if (quantity && price) {
+                        const finalPrice = price - (price * discount / 100);
+                        weightPricing.kg.push({
+                            quantity: parseFloat(quantity),
+                            originalPrice: parseFloat(price),
+                            discount: parseFloat(discount),
+                            price: finalPrice
+                        });
+                    }
+                });
+                
+                return weightPricing;
+            };
+            
+            productData.weightPricing = collectEditWeightPricing();
             
             try {
                 // Update in Firebase
-                const productRef = doc(db, 'products', editingProductId);
+                const productRef = doc(db, 'products', currentEditProductId);
                 await updateDoc(productRef, productData);
                 
                 // Update local data
-                const productIndex = productsData.findIndex(p => p.id === editingProductId);
+                const productIndex = productsData.findIndex(p => p.id === currentEditProductId);
                 if (productIndex !== -1) {
                     productsData[productIndex] = { ...productsData[productIndex], ...productData };
                 }
                 
-                // Reset editing state
-                isEditingProduct = false;
-                editingProductId = null;
-                
-                // Reset form
-                resetProductForm();
-                
-                // Refresh displays
+                // Close modal and refresh displays
+                closeEditProductModal();
                 loadProductsAdminData();
                 updateProductsDisplay();
                 loadEventsOnHomePage();
@@ -8887,42 +9475,6 @@
                 showNotification('Error updating product. Please try again.', 'error');
             }
         };
-        
-        // Reset product form to add mode
-        function resetProductForm() {
-            // Reset form title and button
-            const formTitle = document.querySelector('#addProductForm h3');
-            if (formTitle) {
-                formTitle.textContent = 'Add New Product';
-            }
-            
-            const submitButton = document.querySelector('#addProductForm button[onclick="updateProduct()"]');
-            if (submitButton) {
-                submitButton.textContent = 'Add Product';
-                submitButton.onclick = function() { addProduct(); };
-            }
-            
-            // Clear form fields
-            document.getElementById('addProductForm').reset();
-            
-            // Clear dynamic containers
-            document.getElementById('additionalImages').innerHTML = '';
-            document.getElementById('sizesContainer').innerHTML = '';
-            document.getElementById('mlContainer').innerHTML = '';
-            document.getElementById('gContainer').innerHTML = '';
-            document.getElementById('kgContainer').innerHTML = '';
-            
-            // Uncheck all checkboxes
-            document.querySelectorAll('.category-checkbox, .subcategory-checkbox').forEach(cb => {
-                cb.checked = false;
-            });
-            
-            // Clear subcategories section
-            const subcategoriesSection = document.getElementById('subcategoriesSection');
-            if (subcategoriesSection) {
-                subcategoriesSection.style.display = 'none';
-            }
-        }
 
         // Update Categories Modal Functions
         let currentUpdateProductId = null;
@@ -9088,10 +9640,10 @@
         };
 
         // Edit Product Category Modal Functions
-        let currentEditProductId = null;
+        let currentEditCategoryProductId = null;
 
         window.openEditCategoryModal = function(productId, currentCategory, currentSubcategory) {
-            currentEditProductId = productId;
+            currentEditCategoryProductId = productId;
             const modal = document.getElementById('editCategoryModal');
             
             // Get current product data to load existing categories and subcategories
@@ -9228,11 +9780,11 @@
             const modal = document.getElementById('editCategoryModal');
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
-            currentEditProductId = null;
+            currentEditCategoryProductId = null;
         };
 
         window.updateProductCategory = async function() {
-            if (!currentEditProductId) return;
+            if (!currentEditCategoryProductId) return;
             
             // Get selected categories and subcategories
             const selectedCategories = Array.from(document.querySelectorAll('.edit-category-checkbox:checked')).map(cb => cb.value);
@@ -9245,15 +9797,15 @@
             
             try {
                 // Update in Firebase
-                const productRef = doc(db, 'products', currentEditProductId);
+                const productRef = doc(db, 'products', currentEditCategoryProductId);
                 await updateDoc(productRef, {
                     categories: selectedCategories,
                     subcategories: selectedSubcategories,
-                    category: selectedCategories[0] // Keep first category as primary for backward compatibility
+                    category: selectedCategories[0] || '' // Backward compatibility
                 });
                 
                 // Update local data
-                const productIndex = productsData.findIndex(p => p.id === currentEditProductId);
+                const productIndex = productsData.findIndex(p => p.id === currentEditCategoryProductId);
                 if (productIndex !== -1) {
                     productsData[productIndex].categories = selectedCategories;
                     productsData[productIndex].subcategories = selectedSubcategories;
