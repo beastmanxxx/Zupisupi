@@ -7852,27 +7852,22 @@
                 return;
             }
             
-            const searchTerm = searchInput.value.toLowerCase();
+            const searchTerm = searchInput.value.trim();
             console.log('Search term:', searchTerm);
             console.log('Current category products:', currentCategoryProducts.length);
             
-            if (!searchTerm || searchTerm.trim() === '') {
+            if (!searchTerm || searchTerm === '') {
                 displayCategoryProducts(currentCategoryProducts);
                 return;
             }
             
-            const filteredProducts = currentCategoryProducts.filter(product =>
-                product.name.toLowerCase().includes(searchTerm) ||
-                (product.description && product.description.toLowerCase().includes(searchTerm))
-            );
+            // Use fuzzy search for better results with spelling mistakes
+            const filteredProducts = fuzzySearchProducts(currentCategoryProducts, searchTerm, 0.6);
             
             console.log('Filtered products:', filteredProducts.length);
             displayCategoryProducts(filteredProducts);
         }
 
-        window.searchCategoryProducts = function() {
-            filterCategoryProducts();
-        }
 
         // Close modal when clicking outside
         document.addEventListener('click', function(event) {
@@ -8080,13 +8075,22 @@
         }
 
         function filterCategoriesAdmin() {
-            const searchTerm = document.getElementById('adminCategorySearchInput').value.toLowerCase();
+            const searchTerm = document.getElementById('adminCategorySearchInput').value.trim();
             const categoriesAdminList = document.getElementById('categoriesAdminList');
             const categoryCards = categoriesAdminList.querySelectorAll('.admin-category-card');
             
+            if (!searchTerm) {
+                // Show all categories if search is empty
+                categoryCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+            
             categoryCards.forEach(card => {
-                const categoryName = card.querySelector('h4').textContent.toLowerCase();
-                if (categoryName.includes(searchTerm)) {
+                const categoryName = card.querySelector('h4').textContent;
+                // Use fuzzy search for better matching with spelling mistakes
+                if (fuzzyMatch(searchTerm, categoryName, 0.6)) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
@@ -8757,13 +8761,12 @@
             
             // Get search term
             const searchInput = document.getElementById('productSearchInput');
-            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            const searchTerm = searchInput ? searchInput.value.trim() : '';
             
-            // Filter products based on search term
-            const filteredProducts = productsData.filter(product => 
-                product.name.toLowerCase().includes(searchTerm) ||
-                (product.category && product.category.toLowerCase().includes(searchTerm))
-            );
+            // Filter products based on search term using fuzzy search
+            const filteredProducts = searchTerm ? 
+                fuzzySearchProducts(productsData, searchTerm, 0.6) : 
+                productsData;
             
             // Create grid container
             const gridContainer = document.createElement('div');
@@ -12916,6 +12919,162 @@ window.handleProfileClick = function() {
             }
         };
 
+        // Fuzzy Search Utility Functions
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            const len1 = str1.length;
+            const len2 = str2.length;
+
+            if (len1 === 0) return len2;
+            if (len2 === 0) return len1;
+
+            // Initialize matrix
+            for (let i = 0; i <= len2; i++) {
+                matrix[i] = [i];
+            }
+            for (let j = 0; j <= len1; j++) {
+                matrix[0][j] = j;
+            }
+
+            // Fill matrix
+            for (let i = 1; i <= len2; i++) {
+                for (let j = 1; j <= len1; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1, // substitution
+                            matrix[i][j - 1] + 1,     // insertion
+                            matrix[i - 1][j] + 1      // deletion
+                        );
+                    }
+                }
+            }
+            return matrix[len2][len1];
+        }
+
+        function calculateSimilarity(str1, str2) {
+            const maxLength = Math.max(str1.length, str2.length);
+            if (maxLength === 0) return 1;
+            const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
+            return (maxLength - distance) / maxLength;
+        }
+
+        function soundex(str) {
+            // Simple soundex implementation for phonetic matching
+            str = str.toLowerCase().replace(/[^a-z]/g, '');
+            if (!str) return '';
+            
+            const firstLetter = str[0];
+            str = str.replace(/[hw]/g, '');
+            str = str.replace(/[bfpv]/g, '1');
+            str = str.replace(/[cgjkqsxz]/g, '2');
+            str = str.replace(/[dt]/g, '3');
+            str = str.replace(/[l]/g, '4');
+            str = str.replace(/[mn]/g, '5');
+            str = str.replace(/[r]/g, '6');
+            str = str.replace(/[aeiouy]/g, '0');
+            str = str.replace(/(.)\1+/g, '$1');
+            str = str.replace(/0/g, '');
+            
+            return (firstLetter + str + '000').substring(0, 4);
+        }
+
+        function fuzzyMatch(searchTerm, targetText, threshold = 0.6) {
+            if (!searchTerm || !targetText) return false;
+            
+            const search = searchTerm.toLowerCase().trim();
+            const target = targetText.toLowerCase().trim();
+            
+            // Exact match
+            if (target.includes(search)) return true;
+            
+            // Split search term into words for better matching
+            const searchWords = search.split(/\s+/);
+            const targetWords = target.split(/\s+/);
+            
+            // Check if any search word has good similarity with any target word
+            for (const searchWord of searchWords) {
+                for (const targetWord of targetWords) {
+                    // Direct similarity check
+                    if (calculateSimilarity(searchWord, targetWord) >= threshold) {
+                        return true;
+                    }
+                    
+                    // Phonetic matching for sound-alike words
+                    if (searchWord.length > 2 && targetWord.length > 2) {
+                        if (soundex(searchWord) === soundex(targetWord)) {
+                            return true;
+                        }
+                    }
+                    
+                    // Partial matching for longer words
+                    if (searchWord.length >= 3 && targetWord.length >= 3) {
+                        if (targetWord.includes(searchWord) || searchWord.includes(targetWord)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            
+            // Check overall similarity for short search terms
+            if (search.length <= 4 && calculateSimilarity(search, target) >= 0.7) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        function fuzzySearchProducts(products, searchTerm, threshold = 0.6) {
+            if (!searchTerm || searchTerm.trim() === '') return products;
+            
+            const results = [];
+            const search = searchTerm.toLowerCase().trim();
+            
+            // Score products based on relevance
+            products.forEach(product => {
+                let score = 0;
+                let matched = false;
+                
+                // Check product name
+                if (fuzzyMatch(search, product.name, threshold)) {
+                    score += 10;
+                    matched = true;
+                }
+                
+                // Check description
+                if (product.description && fuzzyMatch(search, product.description, threshold)) {
+                    score += 5;
+                    matched = true;
+                }
+                
+                // Check category
+                if (product.category && fuzzyMatch(search, product.category, threshold)) {
+                    score += 3;
+                    matched = true;
+                }
+                
+                // Check subcategories
+                if (product.subcategories && Array.isArray(product.subcategories)) {
+                    product.subcategories.forEach(subcat => {
+                        if (fuzzyMatch(search, subcat, threshold)) {
+                            score += 2;
+                            matched = true;
+                        }
+                    });
+                }
+                
+                if (matched) {
+                    results.push({ product, score });
+                }
+            });
+            
+            // Sort by score (highest first) and return products
+            return results
+                .sort((a, b) => b.score - a.score)
+                .map(result => result.product);
+        }
+
         // Search functionality
         window.performSearch = function() {
             const searchInput = document.getElementById('searchInput');
@@ -12966,11 +13125,8 @@ window.handleProfileClick = function() {
             // Use allProducts if productsData is not available
             const products = window.allProducts || productsData || [];
             
-            const filteredProducts = products.filter(product => 
-                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (product.category && product.category.toLowerCase().includes(searchTerm.toLowerCase()))
-            );
+            // Use fuzzy search for better results with spelling mistakes
+            const filteredProducts = fuzzySearchProducts(products, searchTerm, 0.6);
             
             const searchProductsGrid = document.getElementById('searchProductsGrid');
             if (!searchProductsGrid) return;
@@ -13711,11 +13867,10 @@ window.handleProfileClick = function() {
             const container = document.getElementById('eventProductSelection');
             container.innerHTML = '';
             
-            // Filter products based on search term
-            const filteredProducts = productsData.filter(product => 
-                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                product.category.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            // Filter products based on search term using fuzzy search
+            const filteredProducts = searchTerm ? 
+                fuzzySearchProducts(productsData, searchTerm, 0.6) : 
+                productsData;
             
             // Create grid container
             const gridContainer = document.createElement('div');
