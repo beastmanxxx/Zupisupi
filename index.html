@@ -7824,7 +7824,7 @@
                 }
                 
                 return `
-                    <div class="category-product-card" onclick="openProductModal('${product.id}')">
+                    <div class="category-product-card" onclick="openProductModalFromCategory('${product.id}')">
                         <div class="category-product-image-container">
                             <img src="${product.imageUrl}" alt="${product.name}" class="category-product-image" 
                                  onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iNzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OWFhMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pgo8L3N2Zz4K'">
@@ -10592,12 +10592,29 @@
             loadRelatedProducts(product.id, product.category);
         };
 
+        // Track modal navigation context
+        let modalContext = null; // 'category' if opened from category modal, null otherwise
+        
         window.closeProductModal = function() {
-            closeProductModalInternal();
+            if (modalContext === 'category') {
+                // If opened from category modal, just close product modal and keep category modal open
+                closeProductModalInternal();
+                modalContext = null; // Reset context
+            } else {
+                // Normal close behavior - close everything
+                closeProductModalInternal();
+            }
         };
 
         window.closeCategoryModal = function() {
             closeCategoryModalInternal();
+            modalContext = null; // Reset context when category modal is closed
+        };
+        
+        // Function to open product modal from category modal
+        window.openProductModalFromCategory = function(productId) {
+            modalContext = 'category'; // Set context to track that it was opened from category
+            openProductModal(productId); // Use the existing openProductModal function
         };
 
         // Load related products for product modal
