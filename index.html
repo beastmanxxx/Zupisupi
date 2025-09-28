@@ -8332,7 +8332,8 @@
         async function addProductToFirebase(name, imageUrl, description, finalPrice, subImages, categories, sizes, sizePricing, deliveryCharge, rating, originalPrice, discount, weightPricing, subcategories = [], sizeDiscounts = {}) {
             try {
                 const convertedUrl = convertGoogleDriveUrl(imageUrl);
-                const subImagesArray = subImages ? subImages.split(',').map(url => convertGoogleDriveUrl(url.trim())) : [];
+                // Create a fresh array copy to prevent reference leaking between products
+                const subImagesArray = subImages ? [...subImages.split(',')].map(url => convertGoogleDriveUrl(url.trim())).filter(url => url) : [];
                 
                 const productData = {
                     name: name,
@@ -8344,7 +8345,7 @@
                     basePrice: parseFloat(finalPrice), // Keep for compatibility
                     deliveryCharge: parseFloat(deliveryCharge),
                     rating: parseFloat(rating),
-                    subImages: subImagesArray,
+                    subImages: [...subImagesArray], // Create fresh array copy for this product
                     categories: categories || [], // Multiple categories
                     category: categories && categories.length > 0 ? categories[0] : '', // Primary category for backward compatibility
                     subcategories: subcategories || [],
@@ -8491,10 +8492,12 @@
             const imageUrls = [];
             additionalImageInputs.forEach(input => {
                 if (input.value.trim()) {
-                    imageUrls.push(input.value.trim());
+                    // Create a fresh copy of the trimmed value to avoid any reference issues
+                    imageUrls.push(String(input.value.trim()));
                 }
             });
-            return imageUrls.join(',');
+            // Return a fresh array copy as comma-separated string
+            return [...imageUrls].join(',');
         }
 
         // Function to clear additional image inputs
@@ -9355,11 +9358,16 @@
                 return;
             }
             
-            // Collect additional images
+            // Collect additional images - create fresh array copy to prevent reference leaking
             const additionalImageInputs = document.querySelectorAll('#editAdditionalImagesContainer input[type="url"]');
-            productData.subImages = Array.from(additionalImageInputs)
-                .map(input => input.value.trim())
-                .filter(url => url !== '');
+            const imageUrls = [];
+            additionalImageInputs.forEach(input => {
+                if (input.value.trim()) {
+                    // Create fresh copy of each URL string
+                    imageUrls.push(String(input.value.trim()));
+                }
+            });
+            productData.subImages = [...imageUrls]; // Fresh array copy
             
             // Collect categories and subcategories
             const selectedCategories = Array.from(document.querySelectorAll('.edit-category-checkbox:checked')).map(cb => cb.value);
