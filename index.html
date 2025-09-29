@@ -4906,6 +4906,23 @@
                                     <div class="form-group" style="margin-bottom: 8px;">
                                         <textarea id="userAddress" placeholder="Full Address (House no, Street, Area)" rows="2" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; resize: none; min-height: 40px;"></textarea>
                                     </div>
+                                    
+                                    <!-- Location Auto-fill Section -->
+                                    <div class="form-group" style="margin-bottom: 8px;">
+                                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 5px;">
+                                            <button type="button" id="getLocationBtn" onclick="getCurrentLocation()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                                📍 Get Location
+                                            </button>
+                                            <span id="locationStatus" style="font-size: 10px; color: #666;"></span>
+                                        </div>
+                                        <input type="text" id="autoFilledAddress" placeholder="Auto-filled address will appear here..." readonly style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; background: #f8f9fa; color: #495057; display: none;">
+                                        <div id="googleMapsLinkContainer" style="margin-top: 5px; display: none;">
+                                            <button type="button" id="openGoogleMapsBtn" onclick="openGoogleMapsLocation()" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 4px;">
+                                                🌍 Open in Google Maps
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
                                     <div class="form-group" style="margin-bottom: 8px;">
                                         <input type="url" id="userGoogleMapsLink" placeholder="Google Maps Location Link (Required)" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" title="Please paste your Google Maps location link here">
                                         <div style="font-size: 10px; color: #666; margin-top: 3px;">📍 Open Google Maps → Share → Copy link → Paste here</div>
@@ -16143,6 +16160,193 @@ window.handleProfileClick = function() {
                 </div>
             `;
         }
+
+        // Location Auto-fill Functions
+        let currentLocationData = {
+            latitude: null,
+            longitude: null,
+            address: '',
+            googleMapsLink: ''
+        };
+
+        // Get current location using geolocation API
+        window.getCurrentLocation = async function() {
+            const getLocationBtn = document.getElementById('getLocationBtn');
+            const locationStatus = document.getElementById('locationStatus');
+            const autoFilledAddress = document.getElementById('autoFilledAddress');
+            const googleMapsLinkContainer = document.getElementById('googleMapsLinkContainer');
+
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by this browser.');
+                return;
+            }
+
+            // Update button state
+            getLocationBtn.disabled = true;
+            getLocationBtn.innerHTML = '📍 Getting Location...';
+            locationStatus.textContent = 'Requesting location permission...';
+            locationStatus.style.color = '#f59e0b';
+
+            try {
+                // Get current position
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 60000
+                    });
+                });
+
+                const { latitude, longitude } = position.coords;
+                currentLocationData.latitude = latitude;
+                currentLocationData.longitude = longitude;
+
+                locationStatus.textContent = 'Location found! Fetching address...';
+                locationStatus.style.color = '#28a745';
+
+                // Fetch address using Nominatim API
+                await fetchAddressFromCoordinates(latitude, longitude);
+
+            } catch (error) {
+                console.error('Geolocation error:', error);
+                let errorMessage = 'Failed to get location. ';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += 'Location access denied by user.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += 'Location information unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += 'Location request timed out.';
+                        break;
+                    default:
+                        errorMessage += 'Unknown error occurred.';
+                        break;
+                }
+                
+                alert(errorMessage);
+                locationStatus.textContent = 'Location access failed';
+                locationStatus.style.color = '#e74c3c';
+            } finally {
+                // Reset button state
+                getLocationBtn.disabled = false;
+                getLocationBtn.innerHTML = '📍 Get Location';
+            }
+        };
+
+        // Fetch address from coordinates using Nominatim API
+        async function fetchAddressFromCoordinates(latitude, longitude) {
+            const locationStatus = document.getElementById('locationStatus');
+            const autoFilledAddress = document.getElementById('autoFilledAddress');
+            const googleMapsLinkContainer = document.getElementById('googleMapsLinkContainer');
+
+            try {
+                const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1&email=zupisupi@example.com`;
+                
+                const response = await fetch(nominatimUrl, {
+                    headers: {
+                        'User-Agent': 'Zupisupi E-commerce App'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data && data.display_name) {
+                    // Format the address
+                    const address = data.display_name;
+                    currentLocationData.address = address;
+                    
+                    // Generate Google Maps link
+                    const googleMapsLink = `https://www.google.com/maps?q=${latitude},${longitude}`;
+                    currentLocationData.googleMapsLink = googleMapsLink;
+
+                    // Display the address
+                    autoFilledAddress.value = address;
+                    autoFilledAddress.style.display = 'block';
+                    
+                    // Show Google Maps button
+                    googleMapsLinkContainer.style.display = 'block';
+                    
+                    // Update status
+                    locationStatus.textContent = 'Address found successfully!';
+                    locationStatus.style.color = '#28a745';
+
+                    // Auto-fill the main address field if it's empty
+                    const userAddressField = document.getElementById('userAddress');
+                    if (userAddressField && !userAddressField.value.trim()) {
+                        userAddressField.value = address;
+                    }
+
+                    // Auto-fill Google Maps link field if it's empty
+                    const googleMapsLinkField = document.getElementById('userGoogleMapsLink');
+                    if (googleMapsLinkField && !googleMapsLinkField.value.trim()) {
+                        googleMapsLinkField.value = googleMapsLink;
+                    }
+
+                    // Try to extract city, state, pincode from the address data
+                    if (data.address) {
+                        const addressComponents = data.address;
+                        
+                        // Auto-fill city
+                        const cityField = document.getElementById('userCity');
+                        if (cityField && !cityField.value && (addressComponents.city || addressComponents.town || addressComponents.village)) {
+                            const cityValue = addressComponents.city || addressComponents.town || addressComponents.village;
+                            // Check if city option exists in dropdown
+                            const cityOption = Array.from(cityField.options).find(option => 
+                                option.text.toLowerCase().includes(cityValue.toLowerCase())
+                            );
+                            if (cityOption) {
+                                cityField.value = cityOption.value;
+                            }
+                        }
+
+                        // Auto-fill state
+                        const stateField = document.getElementById('userState');
+                        if (stateField && !stateField.value && addressComponents.state) {
+                            // Check if state option exists in dropdown
+                            const stateOption = Array.from(stateField.options).find(option => 
+                                option.text.toLowerCase().includes(addressComponents.state.toLowerCase())
+                            );
+                            if (stateOption) {
+                                stateField.value = stateOption.value;
+                            }
+                        }
+
+                        // Auto-fill pincode
+                        const pincodeField = document.getElementById('userPincode');
+                        if (pincodeField && !pincodeField.value && addressComponents.postcode) {
+                            pincodeField.value = addressComponents.postcode;
+                        }
+                    }
+
+                } else {
+                    throw new Error('No address found for the given coordinates');
+                }
+
+            } catch (error) {
+                console.error('Address fetch error:', error);
+                alert('Failed to fetch address from location. Please try again or enter address manually.');
+                locationStatus.textContent = 'Address fetch failed';
+                locationStatus.style.color = '#e74c3c';
+            }
+        }
+
+        // Open Google Maps with current location
+        window.openGoogleMapsLocation = function() {
+            if (currentLocationData.googleMapsLink) {
+                window.open(currentLocationData.googleMapsLink, '_blank');
+            } else {
+                alert('No location data available. Please get your location first.');
+            }
+        };
+
     </script>
     
     <!-- Invoice Modal -->
