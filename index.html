@@ -8,6 +8,10 @@
 
     <title>Zupisupi</title>
     <link href="https://fonts.googleapis.com/css2?family=Geologica:wght@100..900&family=Honk:SHLN@44.1&family=Lexend:wght@100..900&family=Macondo&family=Mrs+Sheppards&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS & JS for Address Management -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
         * {
             margin: 0;
@@ -2728,25 +2732,215 @@
             margin: 0 0 0 0;
             min-height: 120px;
         }
-
         .search-bar-container {
             position: relative;
             width: 100%;
             max-width: 95%;
-            margin: 0 auto 20px;
+            margin: 0 auto 20px auto;
             height: 50px;
         }
 
-        .search-input-wrapper {
+        .address-section-container {
             position: relative;
+            width: 100%;
+            max-width: 95%;
+            margin: 0 auto 15px auto;
+        }
+
+        .address-display {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            gap: 12px;
+            cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
-            height: 60px;
+            border: 2px solid transparent;
+        }
+
+        .address-display:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: #fbbf24;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .address-icon {
+            font-size: 18px;
+            color: #ef4444;
+        }
+
+        .address-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .address-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .address-text {
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .address-text.not-set {
+            color: #999;
+            font-style: italic;
+        }
+
+        .address-arrow {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* Address Bottom Popup Modal */
+        .address-popup-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .address-popup-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .address-popup-header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .address-popup-handle {
+            width: 40px;
+            height: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            margin: 0 auto 15px auto;
+        }
+
+        .address-popup-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .address-popup-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .address-popup-btn {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .address-popup-btn.primary {
+            background: #fbbf24;
+            color: #000;
+        }
+
+        .address-popup-btn.primary:hover {
+            background: #f59e0b;
+            transform: translateY(-1px);
+        }
+
+        .address-popup-btn.secondary {
+            background: #f3f4f6;
+            color: #333;
+            border: 2px solid #e5e7eb;
+        }
+
+        .address-popup-btn.secondary:hover {
+            background: #e5e7eb;
+            border-color: #d1d5db;
+        }
+
+        .address-popup-btn.login {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .address-popup-btn.login:hover {
+            background: #7c3aed;
+        }
+
+        /* Phone Input Modal */
+        .phone-input-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10001;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .phone-input-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            animation: slideUp 0.3s ease;
+        }
+
+        .phone-input-field {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .phone-input-field:focus {
+            outline: none;
+            border-color: #fbbf24;
         }
 
         .search-input-wrapper:hover {
@@ -2822,10 +3016,56 @@
             box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
         }
 
-        .search-btn:hover {
-            background: linear-gradient(135deg, #2563eb, #1e40af);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        .address-save-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .address-map-container {
+                height: 50vh;
+                min-height: 300px;
+            }
+            
+            .address-form-container {
+                padding: 16px;
+                gap: 12px;
+            }
+            
+            .current-location-btn {
+                top: 10px;
+                right: 10px;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+            
+            .address-modal-header {
+                padding: 16px 20px;
+            }
+            
+            .address-modal-title {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .address-map-container {
+                height: 40vh;
+                min-height: 250px;
+            }
+        }
+
+        /* Modal Address Item Styles */
+        .modal-address-item:hover {
+            border-color: #10b981 !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .modal-address-item:active {
+            transform: translateY(0) !important;
         }
 
         /* Modern Page Sections */
@@ -4448,6 +4688,344 @@
                 width: 100%;
             }
         }
+
+        /* Address Management System Styles */
+        .saved-addresses-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .saved-addresses-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .saved-addresses-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+
+        .address-item {
+            background: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .address-item:hover {
+            border-color: #fbbf24;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+        }
+
+        .address-phone {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .address-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .address-coordinates {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        .address-maps-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #4285f4;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .address-maps-link:hover {
+            background: #3367d6;
+            transform: translateY(-1px);
+        }
+
+        .add-address-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .add-address-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Address Map Modal Styles */
+        .address-map-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 9999;
+            backdrop-filter: blur(8px);
+            overflow-y: auto;
+        }
+
+        .address-map-modal.active {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .address-modal-header {
+            background: white;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 5001;
+        }
+
+        .address-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .address-modal-close {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .address-modal-close:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .address-map-container {
+            flex: 1;
+            position: relative;
+            height: 50vh;
+            min-height: 350px;
+        }
+
+        .address-map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-center-pin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%);
+            z-index: 1000;
+            font-size: 30px;
+            color: #10b981;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            pointer-events: none;
+        }
+
+        .current-location-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .current-location-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .current-location-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(156, 163, 175, 0.2);
+        }
+
+        .temp-location-marker {
+            background: none !important;
+            border: none !important;
+            font-size: 25px;
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .address-form-container {
+            background: white;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex-shrink: 0;
+            min-height: auto;
+        }
+
+        .address-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .address-input-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .address-input {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .address-input:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .address-form-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .address-save-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .address-save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .address-cancel-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .address-cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .address-modal-header {
+                padding: 16px 20px;
+            }
+
+            .address-modal-title {
+                font-size: 18px;
+            }
+
+            .address-form-container {
+                padding: 20px;
+            }
+
+            .address-form-buttons {
+                flex-direction: column;
+            }
+
+            .map-center-pin {
+                font-size: 25px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -4560,6 +5138,18 @@
                             <div class="search-input-wrapper" onclick="redirectToSearch()" style="cursor: pointer;">
                                 <input type="text" id="mainSearchInput" placeholder="Search products..." class="search-input" style="height: 50px; padding: 16px 60px 16px 24px;" onclick="redirectToSearch()" onfocus="redirectToSearch()" onkeyup="handleMainSearchKeyup(event)">
                                 <button class="search-icon-btn" onclick="redirectToSearch()">🔍</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Address Section -->
+                        <div class="address-section-container">
+                            <div class="address-display" onclick="openAddressPopup()" id="homeAddressDisplay">
+                                <div class="address-icon">📍</div>
+                                <div class="address-content">
+                                    <div class="address-label">Deliver to</div>
+                                    <div class="address-text not-set" id="homeAddressText">Not Set</div>
+                                </div>
+                                <div class="address-arrow">▼</div>
                             </div>
                         </div>
                         
@@ -4698,15 +5288,15 @@
                         
                         <!-- Profile Menu -->
                         <div class="profile-menu">
-                            <div class="profile-menu-item" onclick="showAddressForm()">
+                            <div class="profile-menu-item" onclick="openAddressMapModal()">
                                 <div class="menu-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
                                     </svg>
                                 </div>
                                 <div class="menu-content">
-                                    <div class="menu-title">Address</div>
-                                    <div class="menu-subtitle">Manage delivery address</div>
+                                    <div class="menu-title">Add New Address</div>
+                                    <div class="menu-subtitle">Select location on map</div>
                                 </div>
                                 <div class="menu-arrow">›</div>
                             </div>
@@ -4808,7 +5398,7 @@
                             <h3 style="margin: 0; color: #2c3e50; display: flex; align-items: center; gap: 8px;">
                                 <span style="color: #28a745;">📍</span> Your Delivery Address
                             </h3>
-                            <button onclick="openAddressModal()" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <button onclick="openAddressMapModal()" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                                 ✏️ Edit Address
                             </button>
                         </div>
@@ -4842,141 +5432,6 @@
                         </div>
                     </div>
                     
-                    <!-- Address Form Modal -->
-                    <div id="addressModal" class="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 3000; justify-content: center; align-items: center;">
-                        <div class="login-container" style="display: flex; position: relative; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; background: white; border-radius: 12px;">
-                            <button onclick="closeAddressModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; z-index: 10;">×</button>
-                            
-                            <div style="padding: 20px 20px 10px 20px; text-align: center;">
-                                <h2 style="margin: 0; color: #2c3e50; font-size: 20px;">Address</h2>
-                            </div>
-                            
-                            <form class="auth-form" id="addressForm" onsubmit="event.preventDefault(); saveUserAddress();" style="display: block !important; padding: 0 20px 20px 20px;">
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <input type="tel" id="userPhone" placeholder="Phone Number (10 digits)" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;">
-                                </div>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                                    <div class="form-group">
-                                        <select id="userState" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" required>
-                                            <option value="">Select State</option>
-                                                <option value="Andhra Pradesh">Andhra Pradesh</option>
-                                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                                                <option value="Assam">Assam</option>
-                                                <option value="Bihar">Bihar</option>
-                                                <option value="Chhattisgarh">Chhattisgarh</option>
-                                                <option value="Goa">Goa</option>
-                                                <option value="Gujarat">Gujarat</option>
-                                                <option value="Haryana">Haryana</option>
-                                                <option value="Himachal Pradesh">Himachal Pradesh</option>
-                                                <option value="Jharkhand">Jharkhand</option>
-                                                <option value="Karnataka">Karnataka</option>
-                                                <option value="Kerala">Kerala</option>
-                                                <option value="Madhya Pradesh">Madhya Pradesh</option>
-                                                <option value="Maharashtra">Maharashtra</option>
-                                                <option value="Manipur">Manipur</option>
-                                                <option value="Meghalaya">Meghalaya</option>
-                                                <option value="Mizoram">Mizoram</option>
-                                                <option value="Nagaland">Nagaland</option>
-                                                <option value="Odisha">Odisha</option>
-                                                <option value="Punjab">Punjab</option>
-                                                <option value="Rajasthan">Rajasthan</option>
-                                                <option value="Sikkim">Sikkim</option>
-                                                <option value="Tamil Nadu">Tamil Nadu</option>
-                                                <option value="Telangana">Telangana</option>
-                                                <option value="Tripura">Tripura</option>
-                                                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                                                <option value="Uttarakhand">Uttarakhand</option>
-                                                <option value="West Bengal">West Bengal</option>
-                                                <option value="Delhi">Delhi</option>
-                                                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                                                <option value="Ladakh">Ladakh</option>
-                                                <option value="Puducherry">Puducherry</option>
-                                                <option value="Chandigarh">Chandigarh</option>
-                                                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-                                                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
-                                                <option value="Lakshadweep">Lakshadweep</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group">
-                                            <select id="userCity" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" required>
-                                                <option value="">Select City</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group" style="margin-bottom: 8px;">
-                                        <textarea id="userAddress" placeholder="Full Address (House no, Street, Area)" rows="2" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; resize: none; min-height: 40px;"></textarea>
-                                    </div>
-                                    
-                                    <!-- Location Auto-fill Section -->
-                                    <div class="form-group" style="margin-bottom: 8px;">
-                                        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 5px;">
-                                            <button type="button" id="getLocationBtn" onclick="getCurrentLocation()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 8px 12px; border-radius: 5px; font-size: 11px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
-                                                📍 Get Location
-                                            </button>
-                                            <span id="locationStatus" style="font-size: 10px; color: #666;"></span>
-                                        </div>
-                                        <input type="text" id="autoFilledAddress" placeholder="Auto-filled address will appear here..." readonly style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; background: #f8f9fa; color: #495057; display: none;">
-                                        <div id="googleMapsLinkContainer" style="margin-top: 5px; display: none;">
-                                            <button type="button" id="openGoogleMapsBtn" onclick="openGoogleMapsLocation()" style="background: linear-gradient(135deg, #28a745, #20c997); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 4px;">
-                                                🌍 Open in Google Maps
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="form-group" style="margin-bottom: 8px;">
-                                        <input type="url" id="userGoogleMapsLink" placeholder="Google Maps Location Link (Required)" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;" title="Please paste your Google Maps location link here">
-                                        <div style="font-size: 10px; color: #666; margin-top: 3px;">📍 Open Google Maps → Share → Copy link → Paste here</div>
-                                    </div>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-                                        <div class="form-group">
-                                            <input type="text" id="userPincode" placeholder="Pincode (6 digits)" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;">
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="text" id="userNearby" placeholder="Nearby Landmark" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px;">
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="auth-btn" style="padding: 8px 16px; font-size: 12px; width: 100%;">Save Address</button>
-                                </form>
-                                <div id="currentAddressDisplay" style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #e8f5e8, #f0f8ff); border-radius: 10px; border: 1px solid #d4edda; display: none;">
-                                    <h4 style="margin: 0 0 12px 0; color: #2c3e50; display: flex; align-items: center; gap: 8px;">
-                                        <span style="color: #28a745;">📍</span> Your Current Saved Address
-                                    </h4>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                        <div style="background: white; padding: 8px; border-radius: 6px; border-left: 3px solid #f59e0b;">
-                                            <div style="font-size: 10px; color: #666; margin-bottom: 2px;">STATE</div>
-                                            <div id="displayState" style="font-weight: 600; color: #2c3e50; font-size: 12px;"></div>
-                                        </div>
-                                        <div style="background: white; padding: 8px; border-radius: 6px; border-left: 3px solid #e74c3c;">
-                                            <div style="font-size: 10px; color: #666; margin-bottom: 2px;">CITY</div>
-                                            <div id="displayCity" style="font-weight: 600; color: #2c3e50; font-size: 12px;"></div>
-                                        </div>
-                                        <div style="background: white; padding: 8px; border-radius: 6px; border-left: 3px solid #f39c12;">
-                                            <div style="font-size: 10px; color: #666; margin-bottom: 2px;">PINCODE</div>
-                                            <div id="displayPincode" style="font-weight: 600; color: #2c3e50; font-size: 12px;"></div>
-                                        </div>
-                                        <div style="background: white; padding: 8px; border-radius: 6px; border-left: 3px solid #27ae60;">
-                                            <div style="font-size: 10px; color: #666; margin-bottom: 2px;">PHONE</div>
-                                            <div id="displayPhone" style="font-weight: 600; color: #2c3e50; font-size: 12px;"></div>
-                                        </div>
-                                        <div style="background: white; padding: 8px; border-radius: 6px; border-left: 3px solid #1abc9c;">
-                                            <div style="font-size: 10px; color: #666; margin-bottom: 2px;">NEARBY</div>
-                                            <div id="displayNearby" style="font-weight: 600; color: #2c3e50; font-size: 12px;"></div>
-                                        </div>
-                                    </div>
-                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 3px solid #9b59b6;">
-                                        <div style="font-size: 10px; color: #666; margin-bottom: 2px;">FULL ADDRESS</div>
-                                        <div id="displayAddress" style="font-weight: 600; color: #2c3e50; font-size: 12px; line-height: 1.3;"></div>
-                                    </div>
-                                    <div id="displayGoogleMapsContainer" style="margin-top: 10px;">
-                                        <!-- Google Maps link will be populated here -->
-                                    </div>
-                                    <div style="margin-top: 10px; padding: 8px; background: rgba(40, 167, 69, 0.1); border-radius: 6px; text-align: center;">
-                                        <div style="font-size: 11px; color: #28a745; font-weight: 500;">✓ You can edit any field above to update your address</div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                     
                     <!-- Terms & Conditions Modal -->
                     <div id="termsModal" class="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 3000; justify-content: center; align-items: center;">
@@ -5190,6 +5645,21 @@
                         </div>
                     </div>
                     
+                    <!-- Saved Addresses Section -->
+                    <div class="container">
+                        <div class="saved-addresses-section">
+                            <h2 class="saved-addresses-title">
+                                📍 Saved Addresses
+                            </h2>
+                            <ul class="saved-addresses-list" id="savedAddresses">
+                                <!-- Saved addresses will be populated here -->
+                            </ul>
+                            <button class="add-address-btn" onclick="openAddressMapModal()">
+                                ➕ Add New Address
+                            </button>
+                        </div>
+                    </div>
+                    
                     <!-- Zupisupi Footer -->
                     <div class="zupisupi-footer">
                         <div class="container">
@@ -5201,6 +5671,34 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Address Map Modal -->
+    <div class="address-map-modal" id="addressMapModal">
+        <div class="address-modal-header">
+            <h2 class="address-modal-title">📍 Add New Address</h2>
+            <button class="address-modal-close" onclick="closeAddressMapModal()">×</button>
+        </div>
+        
+        <div class="address-map-container">
+            <div class="address-map" id="addressMap"></div>
+            <div class="map-center-pin">📍</div>
+            <button class="current-location-btn" id="currentLocationBtn" onclick="useCurrentLocation()">
+                📍 Use Current Location
+            </button>
+        </div>
+        
+        <div class="address-form-container">
+            <div class="address-input-group">
+                <label class="address-input-label">Phone Number</label>
+                <input type="tel" class="address-input" id="addressPhoneInput" placeholder="Enter your phone number" maxlength="10">
+            </div>
+            
+            <div class="address-form-buttons">
+                <button class="address-cancel-btn" onclick="closeAddressMapModal()">Cancel</button>
+                <button class="address-save-btn" onclick="saveNewAddress()">Save Address</button>
             </div>
         </div>
     </div>
@@ -6288,6 +6786,9 @@
             // Load data from Firebase
             loadSlidesFromFirebase();
             loadCategoriesFromFirebase();
+            
+            // Load user addresses
+            loadSavedAddresses();
             loadProductsFromFirebase();
             
             // Check and schedule existing completed/rejected orders for deletion
@@ -6340,10 +6841,14 @@
                 // User is signed in
                 console.log('User details:', user.displayName, user.email);
                 showMainApp(user);
+                // Update address display after login
+                setTimeout(() => updateHomeAddressDisplay(), 1000);
             } else {
                 // User is signed out - but don't show login screen, show main app for guest browsing
                 console.log('Guest mode - showing main app without login');
                 currentUser = null;
+                // Update address display for guest mode
+                setTimeout(() => updateHomeAddressDisplay(), 500);
                 document.body.style.background = 'white';
                 
                 const loginContainer = document.getElementById('loginContainer');
@@ -6600,6 +7105,25 @@
                 
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
+                    
+                    // Check if user has selected address from new addresses array
+                    if (userData.addresses && userData.addresses.length > 0 && userData.selectedAddressId) {
+                        const selectedAddress = userData.addresses.find(addr => addr.id === userData.selectedAddressId);
+                        if (selectedAddress) {
+                            userAddressData = {
+                                phone: selectedAddress.phone || '',
+                                state: '',
+                                city: '',
+                                address: selectedAddress.address || '',
+                                pincode: '',
+                                nearby: '',
+                                googleMapsLink: selectedAddress.googleMapsLink || ''
+                            };
+                            return userAddressData;
+                        }
+                    }
+                    
+                    // Fallback to old address format
                     userAddressData = {
                         phone: userData.phone || '',
                         state: userData.state || '',
@@ -11203,104 +11727,22 @@
                 ${getWalletSectionHTML(totalAmount)}
                 
                 <div style="margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 15px 0; color: #2c3e50;">Delivery Address</h4>
+                    <h4 style="margin: 0 0 15px 0; color: #2c3e50;">Select Delivery Address</h4>
                     
-                    ${userAddressData && userAddressData.address ? `
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: flex; align-items: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: #f8f9fa;">
-                                <input type="radio" name="addressOption" value="saved" checked onchange="toggleAddressForm()" style="margin-right: 10px;">
-                                <div>
-                                    <div style="font-weight: 600; color: #2c3e50;">Use Saved Address</div>
-                                    <div style="font-size: 12px; color: #666; margin-top: 3px; word-break: break-word;">
-                                        📱 ${userAddressData.phone}<br>
-                                        📍 ${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}
-                                        ${userAddressData.nearby ? `<br>Near: ${userAddressData.nearby}` : ''}
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    ` : ''}
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: flex; align-items: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;">
-                            <input type="radio" name="addressOption" value="custom" ${!userAddressData || !userAddressData.address ? 'checked' : ''} onchange="toggleAddressForm()" style="margin-right: 10px;">
-                            <div style="font-weight: 600; color: #2c3e50;">Use Different Address</div>
-                        </label>
+                    <div id="savedAddressesContainer">
+                        <!-- Saved addresses will be populated here -->
                     </div>
                     
-                    <div id="customAddressForm" style="display: ${!userAddressData || !userAddressData.address ? 'block' : 'none'}; padding: 20px; background: #f8f9fa; border-radius: 12px; border: 1px solid #e0e0e0;">
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Phone Number *</label>
-                            <input type="tel" id="customPhone" placeholder="Enter your phone number" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.phone || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                        </div>
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Full Address *</label>
-                            <textarea id="customAddress" placeholder="Enter complete address with house/flat number, street, area" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; min-height: 70px; resize: vertical; box-sizing: border-box; transition: border-color 0.3s;" rows="3" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">${userAddressData?.address || ''}</textarea>
-                        </div>
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Google Maps Location Link (Optional)</label>
-                            <input type="url" id="customGoogleMapsLink" placeholder="Paste your Google Maps location link here (optional)" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.googleMapsLink || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                            <div style="font-size: 12px; color: #666; margin-top: 5px; padding: 8px; background: #f0f8ff; border-radius: 6px;">📍 How to get link: Open Google Maps → Find your location → Share → Copy link → Paste here</div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                            <div>
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">State *</label>
-                                <select id="customState" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: white; transition: border-color 0.3s;" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                                    <option value="">Select State</option>
-                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
-                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                                    <option value="Assam">Assam</option>
-                                    <option value="Bihar">Bihar</option>
-                                    <option value="Chhattisgarh">Chhattisgarh</option>
-                                    <option value="Goa">Goa</option>
-                                    <option value="Gujarat">Gujarat</option>
-                                    <option value="Haryana">Haryana</option>
-                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
-                                    <option value="Jharkhand">Jharkhand</option>
-                                    <option value="Karnataka">Karnataka</option>
-                                    <option value="Kerala">Kerala</option>
-                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
-                                    <option value="Maharashtra">Maharashtra</option>
-                                    <option value="Manipur">Manipur</option>
-                                    <option value="Meghalaya">Meghalaya</option>
-                                    <option value="Mizoram">Mizoram</option>
-                                    <option value="Nagaland">Nagaland</option>
-                                    <option value="Odisha">Odisha</option>
-                                    <option value="Punjab">Punjab</option>
-                                    <option value="Rajasthan">Rajasthan</option>
-                                    <option value="Sikkim">Sikkim</option>
-                                    <option value="Tamil Nadu">Tamil Nadu</option>
-                                    <option value="Telangana">Telangana</option>
-                                    <option value="Tripura">Tripura</option>
-                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
-                                    <option value="Uttarakhand">Uttarakhand</option>
-                                    <option value="West Bengal">West Bengal</option>
-                                    <option value="Delhi">Delhi</option>
-                                    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                                    <option value="Ladakh">Ladakh</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">City *</label>
-                                <input type="text" id="customCity" placeholder="Enter your city" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.city || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                            </div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <div>
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Pincode *</label>
-                                <input type="text" id="customPincode" placeholder="Enter pincode" maxlength="6" pattern="[0-9]{6}" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.pincode || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                            </div>
-                            <div>
-                                <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #2c3e50; font-size: 13px;">Nearby Landmark</label>
-                                <input type="text" id="customNearby" placeholder="Optional landmark" style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;" value="${userAddressData?.nearby || ''}" onfocus="this.style.borderColor='#3498db'" onblur="this.style.borderColor='#ddd'">
-                            </div>
-                        </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button onclick="openAddressMapModal()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            📍 Add New Address
+                        </button>
                     </div>
                 </div>
                 
                 <div class="product-modal-buttons">
                     <button class="btn-order" onclick="confirmOrderWithAddress('${productId}', ${quantity}, '${selectedSize}', ${currentPrice}, ${deliveryCharge}, ${totalAmount})" style="width: 100%; padding: 15px; font-size: 16px; font-weight: 600;">
-                        Confirm Order - ₹${totalAmount}
+                        Confirm Order
                     </button>
                 </div>
             `;
@@ -11309,6 +11751,9 @@
             
             // Load wallet balance after modal is displayed
             loadWalletBalanceInModal();
+            
+            // Load saved addresses in confirm order modal
+            loadSavedAddressesInConfirmModal();
         };
 
         // Close confirm order modal
@@ -11316,17 +11761,6 @@
             closeConfirmOrderModalInternal();
         };
 
-        // Toggle address form visibility
-        window.toggleAddressForm = function() {
-            const customOption = document.querySelector('input[name="addressOption"][value="custom"]');
-            const customForm = document.getElementById('customAddressForm');
-            
-            if (customOption.checked) {
-                customForm.style.display = 'block';
-            } else {
-                customForm.style.display = 'none';
-            }
-        };
 
         // Load cities based on selected state
         window.loadCitiesForState = function() {
@@ -11449,30 +11883,18 @@
                 ${getWalletSectionHTML(total)}
                 
                 <div style="margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 15px 0; color: #2c3e50;">Delivery Address</h4>
+                    <h4 style="margin: 0 0 15px 0; color: #2c3e50;">Select Delivery Address</h4>
                     
-                    ${userAddressData && userAddressData.address ? `
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: flex; align-items: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: #f8f9fa;">
-                                <input type="radio" name="addressOption" value="saved" checked onchange="toggleAddressForm()" style="margin-right: 10px;">
-                                <div>
-                                    <div style="font-weight: 600; color: #2c3e50;">Use Saved Address</div>
-                                    <div style="font-size: 12px; color: #666; margin-top: 3px; word-break: break-word;">
-                                        📱 ${userAddressData.phone}<br>
-                                        📍 ${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}
-                                        ${userAddressData.nearby ? `<br>Near: ${userAddressData.nearby}` : ''}
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    ` : ''}
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: flex; align-items: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;">
-                            <input type="radio" name="addressOption" value="custom" ${!userAddressData || !userAddressData.address ? 'checked' : ''} onchange="toggleAddressForm()" style="margin-right: 10px;">
-                            <div style="font-weight: 600; color: #2c3e50;">Use Different Address</div>
-                        </label>
+                    <div id="savedAddressesContainer">
+                        <!-- Saved addresses will be populated here -->
                     </div>
+                    
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button onclick="openAddressMapModal()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            📍 Add New Address
+                        </button>
+                    </div>
+                </div>
                     
                     <div id="customAddressForm" style="display: ${!userAddressData || !userAddressData.address ? 'block' : 'none'}; padding: 20px; background: #f8f9fa; border-radius: 12px; border: 1px solid #e0e0e0;">
                         <div style="margin-bottom: 15px;">
@@ -11546,7 +11968,7 @@
                 
                 <div class="product-modal-buttons">
                     <button class="btn-order" onclick="confirmOrderForAllCartItems(${total})" style="width: 100%; padding: 15px; font-size: 16px; font-weight: 600;" id="confirmAllOrdersBtn">
-                        Confirm All Orders - ₹${total}
+                        Confirm All Orders
                     </button>
                 </div>
                 
@@ -11563,66 +11985,54 @@
             // Load wallet balance after modal is displayed
             loadWalletBalanceInModal();
             
+            // Load saved addresses in confirm order modal
+            loadSavedAddressesInConfirmModal();
+            
             // Load related products for cart modal
             loadCartModalRelatedProducts();
         };
 
         // Confirm order for all cart items with selected address
         window.confirmOrderForAllCartItems = async function(totalAmount) {
-            // Get selected address option
-            const savedAddressOption = document.querySelector('input[name="addressOption"][value="saved"]');
-            const customAddressOption = document.querySelector('input[name="addressOption"][value="custom"]');
-            
-            let finalAddress = '';
-            let finalPhone = '';
-            let finalGoogleMapsLink = '';
-            
-            if (savedAddressOption && savedAddressOption.checked) {
-                // Use saved address
-                if (!userAddressData || !userAddressData.phone || !userAddressData.address) {
-                    showNotification('❌ Saved address is incomplete. Please use custom address option.', 'error');
-                    return;
-                }
-                finalPhone = userAddressData.phone;
-                finalAddress = `${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}${userAddressData.nearby ? ', Near ' + userAddressData.nearby : ''}`;
-                finalGoogleMapsLink = userAddressData.googleMapsLink || '';
-            } else if (customAddressOption && customAddressOption.checked) {
-                // Use custom address
-                const customPhone = document.getElementById('customPhone').value.trim();
-                const customAddress = document.getElementById('customAddress').value.trim();
-                const customCity = document.getElementById('customCity').value.trim();
-                const customState = document.getElementById('customState').value.trim();
-                const customPincode = document.getElementById('customPincode').value.trim();
-                const customNearby = document.getElementById('customNearby').value.trim();
-                const customGoogleMapsLink = document.getElementById('customGoogleMapsLink').value.trim();
-                
-                // Validate custom address
-                if (!customPhone || !customAddress || !customCity || !customState || !customPincode) {
-                    showNotification('❌ Please fill all required fields', 'error');
+            try {
+                // Get selected address from Firebase
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (!userDoc.exists()) {
+                    showNotification('❌ User data not found!', 'error', 4000);
                     return;
                 }
                 
-                // Validate Google Maps link (flexible validation for all Google Maps formats)
-                if (customGoogleMapsLink) {
-                    const isValidGoogleMapsLink = customGoogleMapsLink.includes('maps.google.com') || 
-                                                customGoogleMapsLink.includes('google.com/maps') || 
-                                                customGoogleMapsLink.includes('goo.gl') || 
-                                                customGoogleMapsLink.includes('maps.app.goo.gl') ||
-                                                customGoogleMapsLink.includes('maps.app');
-                    
-                    if (!isValidGoogleMapsLink) {
-                        showNotification('❌ Please enter a valid Google Maps link', 'error');
-                        return;
-                    }
+                const userData = userDoc.data();
+                const selectedAddressId = userData.selectedAddressId;
+                const userAddresses = userData.addresses || [];
+                
+                console.log('confirmOrderForAllCartItems - Address validation check:', selectedAddressId);
+                if (!selectedAddressId) {
+                    console.log('confirmOrderForAllCartItems - No address selected - blocking order');
+                    showNotification('Please select address to place order', 'error');
+                    return;
                 }
                 
-                finalPhone = customPhone;
-                finalAddress = `${customAddress}, ${customCity}, ${customState} - ${customPincode}${customNearby ? ', Near ' + customNearby : ''}`;
-                finalGoogleMapsLink = customGoogleMapsLink;
-            } else {
-                showNotification('❌ Please select an address option.', 'error');
+                const selectedAddress = userAddresses.find(addr => addr.id === selectedAddressId);
+                if (!selectedAddress) {
+                    showNotification('❌ Selected address not found!', 'error');
+                    return;
+                }
+                
+                // Validate selected address
+                if (!selectedAddress.phone || !selectedAddress.address) {
+                    showNotification('❌ Selected address is incomplete. Please choose another address.', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error fetching address data:', error);
+                showNotification('❌ Error loading address data!', 'error');
                 return;
             }
+            
+            const finalPhone = selectedAddress.phone;
+            const finalAddress = selectedAddress.address;
+            const finalGoogleMapsLink = selectedAddress.googleMapsLink || '';
             
             try {
                 // Create order for each cart item
@@ -11835,7 +12245,7 @@
                 
                 <div class="product-modal-buttons">
                     <button class="btn-order" onclick="confirmOrderWithAddressFromCart('${productId}', ${quantity}, '${selectedSize}', ${currentPrice}, ${deliveryCharge}, ${totalAmount})" style="width: 100%; padding: 15px; font-size: 16px; font-weight: 600;">
-                        Confirm Order - ₹${totalAmount}
+                        Confirm Order
                     </button>
                 </div>
             `;
@@ -11851,59 +12261,47 @@
             const product = productsData.find(p => p.id === productId);
             if (!product) return;
             
-            let finalPhone = '';
-            let finalAddress = '';
-            let finalGoogleMapsLink = '';
+            let selectedAddress;
             
-            const savedAddressOption = document.querySelector('input[name="addressOption"][value="saved"]');
-            const customAddressOption = document.querySelector('input[name="addressOption"][value="custom"]');
-            
-            if (savedAddressOption && savedAddressOption.checked) {
-                // Use saved address
-                if (!userAddressData || !userAddressData.phone || !userAddressData.address) {
-                    showNotification('❌ Saved address is incomplete. Please use custom address option.', 'error');
-                    return;
-                }
-                finalPhone = userAddressData.phone;
-                finalAddress = `${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}${userAddressData.nearby ? ', Near ' + userAddressData.nearby : ''}`;
-                finalGoogleMapsLink = userAddressData.googleMapsLink || '';
-            } else if (customAddressOption && customAddressOption.checked) {
-                // Use custom address
-                const customPhone = document.getElementById('customPhone').value.trim();
-                const customAddress = document.getElementById('customAddress').value.trim();
-                const customCity = document.getElementById('customCity').value.trim();
-                const customState = document.getElementById('customState').value.trim();
-                const customPincode = document.getElementById('customPincode').value.trim();
-                const customNearby = document.getElementById('customNearby').value.trim();
-                const customGoogleMapsLink = document.getElementById('customGoogleMapsLink').value.trim();
-                
-                // Validate custom address
-                if (!customPhone || !customAddress || !customCity || !customState || !customPincode) {
-                    showNotification('❌ Please fill all required fields', 'error');
+            try {
+                // Get selected address from Firebase
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (!userDoc.exists()) {
+                    showNotification('❌ User data not found!', 'error');
                     return;
                 }
                 
-                // Validate Google Maps link (flexible validation for all Google Maps formats)
-                if (customGoogleMapsLink) {
-                    const isValidGoogleMapsLink = customGoogleMapsLink.includes('maps.google.com') || 
-                                                customGoogleMapsLink.includes('google.com/maps') || 
-                                                customGoogleMapsLink.includes('goo.gl') || 
-                                                customGoogleMapsLink.includes('maps.app.goo.gl') ||
-                                                customGoogleMapsLink.includes('maps.app');
-                    
-                    if (!isValidGoogleMapsLink) {
-                        showNotification('❌ Please enter a valid Google Maps link', 'error');
-                        return;
-                    }
+                const userData = userDoc.data();
+                const selectedAddressId = userData.selectedAddressId;
+                const userAddresses = userData.addresses || [];
+                
+                console.log('confirmOrderWithAddress - Address validation check:', selectedAddressId);
+                if (!selectedAddressId) {
+                    console.log('confirmOrderWithAddress - No address selected - blocking order');
+                    showNotification('Please select address to place order', 'error');
+                    return;
                 }
                 
-                finalPhone = customPhone;
-                finalAddress = `${customAddress}, ${customCity}, ${customState} - ${customPincode}${customNearby ? ', Near ' + customNearby : ''}`;
-                finalGoogleMapsLink = customGoogleMapsLink;
-            } else {
-                showNotification('❌ Please select an address option', 'error');
+                selectedAddress = userAddresses.find(addr => addr.id === selectedAddressId);
+                if (!selectedAddress) {
+                    showNotification('❌ Selected address not found!', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error fetching address data:', error);
+                showNotification('❌ Error loading address data!', 'error');
                 return;
             }
+            
+            // Validate selected address
+            if (!selectedAddress.phone || !selectedAddress.address) {
+                showNotification('❌ Selected address is incomplete. Please choose another address.', 'error');
+                return;
+            }
+            
+            const finalPhone = selectedAddress.phone;
+            const finalAddress = selectedAddress.address;
+            const finalGoogleMapsLink = selectedAddress.googleMapsLink || '';
             
             // Calculate discount information
             const originalPrice = product.originalPrice || product.price;
@@ -11949,59 +12347,47 @@
                 return;
             }
             
-            let finalPhone = '';
-            let finalAddress = '';
-            let finalGoogleMapsLink = '';
+            let selectedAddress;
             
-            const savedAddressOption = document.querySelector('input[name="addressOption"][value="saved"]');
-            const customAddressOption = document.querySelector('input[name="addressOption"][value="custom"]');
-            
-            if (savedAddressOption && savedAddressOption.checked) {
-                // Use saved address
-                if (!userAddressData || !userAddressData.phone || !userAddressData.address) {
-                    showNotification('❌ Saved address is incomplete. Please use custom address option.', 'error');
-                    return;
-                }
-                finalPhone = userAddressData.phone;
-                finalAddress = `${userAddressData.address}, ${userAddressData.city}, ${userAddressData.state} - ${userAddressData.pincode}${userAddressData.nearby ? ', Near ' + userAddressData.nearby : ''}`;
-                finalGoogleMapsLink = userAddressData.googleMapsLink || '';
-            } else if (customAddressOption && customAddressOption.checked) {
-                // Use custom address
-                const customPhone = document.getElementById('customPhone').value.trim();
-                const customAddress = document.getElementById('customAddress').value.trim();
-                const customCity = document.getElementById('customCity').value.trim();
-                const customState = document.getElementById('customState').value.trim();
-                const customPincode = document.getElementById('customPincode').value.trim();
-                const customNearby = document.getElementById('customNearby').value.trim();
-                const customGoogleMapsLink = document.getElementById('customGoogleMapsLink').value.trim();
-                
-                // Validate custom address
-                if (!customPhone || !customAddress || !customCity || !customState || !customPincode) {
-                    showNotification('❌ Please fill all required fields', 'error');
+            try {
+                // Get selected address from Firebase
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (!userDoc.exists()) {
+                    showNotification('❌ User data not found!', 'error');
                     return;
                 }
                 
-                // Validate Google Maps link (flexible validation for all Google Maps formats)
-                if (customGoogleMapsLink) {
-                    const isValidGoogleMapsLink = customGoogleMapsLink.includes('maps.google.com') || 
-                                                customGoogleMapsLink.includes('google.com/maps') || 
-                                                customGoogleMapsLink.includes('goo.gl') || 
-                                                customGoogleMapsLink.includes('maps.app.goo.gl') ||
-                                                customGoogleMapsLink.includes('maps.app');
-                    
-                    if (!isValidGoogleMapsLink) {
-                        showNotification('❌ Please enter a valid Google Maps link', 'error');
-                        return;
-                    }
+                const userData = userDoc.data();
+                const selectedAddressId = userData.selectedAddressId;
+                const userAddresses = userData.addresses || [];
+                
+                console.log('confirmOrderWithAddressFromCart - Address validation check:', selectedAddressId);
+                if (!selectedAddressId) {
+                    console.log('confirmOrderWithAddressFromCart - No address selected - blocking order');
+                    showNotification('Please select address to place order', 'error');
+                    return;
                 }
                 
-                finalPhone = customPhone;
-                finalAddress = `${customAddress}, ${customCity}, ${customState} - ${customPincode}${customNearby ? ', Near ' + customNearby : ''}`;
-                finalGoogleMapsLink = customGoogleMapsLink;
-            } else {
-                showNotification('❌ Please select an address option', 'error');
+                selectedAddress = userAddresses.find(addr => addr.id === selectedAddressId);
+                if (!selectedAddress) {
+                    showNotification('❌ Selected address not found!', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error fetching address data:', error);
+                showNotification('❌ Error loading address data!', 'error');
                 return;
             }
+            
+            // Validate selected address
+            if (!selectedAddress.phone || !selectedAddress.address) {
+                showNotification('❌ Selected address is incomplete. Please choose another address.', 'error');
+                return;
+            }
+            
+            const finalPhone = selectedAddress.phone;
+            const finalAddress = selectedAddress.address;
+            const finalGoogleMapsLink = selectedAddress.googleMapsLink || '';
             
             // Calculate discount information
             const originalPrice = product.originalPrice || product.price;
@@ -12615,18 +13001,7 @@
             }
         };
 
-        // Address Form Functions
-        window.showAddressForm = async function() {
-            const modal = document.getElementById('addressModal');
-            modal.style.display = 'flex';
-            
-            // Load user address data in modal
-            await loadUserAddressInModal();
-        };
 
-        window.closeAddressModal = function() {
-            document.getElementById('addressModal').style.display = 'none';
-        };
 
 
         function updateCartCount() {
@@ -14863,15 +15238,7 @@ window.handleProfileClick = function() {
             "Lakshadweep": ["Kavaratti", "Agatti", "Minicoy", "Amini", "Andrott", "Kalpeni", "Kadmat", "Kiltan", "Chetlat", "Bitra"]
         };
 
-        // Address Management Functions
-        window.openAddressModal = function() {
-            document.getElementById('addressModal').style.display = 'flex';
-            loadUserAddressInModal();
-        }
 
-        window.closeAddressModal = function() {
-            document.getElementById('addressModal').style.display = 'none';
-        }
 
         window.openTermsModal = function() {
             console.log('Opening Terms Modal');
@@ -14987,6 +15354,9 @@ window.handleProfileClick = function() {
             try {
                 await loadUserAddressFromFirebase();
                 
+                // Also load saved addresses from Firebase
+                await loadSavedAddresses();
+                
                 // Check if elements exist before updating
                 const stateEl = document.getElementById('profileDisplayState');
                 const cityEl = document.getElementById('profileDisplayCity');
@@ -15082,7 +15452,6 @@ window.handleProfileClick = function() {
             if (success) {
                 userAddressData = addressData;
                 showNotification('Address saved successfully! 📍', 'success');
-                closeAddressModal();
                 displayCurrentAddress();
                 // Update profile section address display only if profile is active
                 setTimeout(() => {
@@ -15303,6 +15672,9 @@ window.handleProfileClick = function() {
                 case 'login-modal':
                     closeLoginModalInternal();
                     break;
+                case 'address-map-modal':
+                    closeAddressMapModalInternal();
+                    break;
                 case 'section':
                     // Navigate back to previous section by checking navigation stack
                     let previousSection = 'home'; // default fallback
@@ -15358,6 +15730,22 @@ window.handleProfileClick = function() {
         function closeLoginModalInternal() {
             document.getElementById('loginModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+        }
+
+        function closeAddressMapModalInternal() {
+            const modal = document.getElementById('addressMapModal');
+            if (modal) {
+                modal.classList.remove('active');
+                
+                // Clear phone input
+                document.getElementById('addressPhoneInput').value = '';
+                
+                // Destroy map to prevent memory leaks
+                if (addressMap) {
+                    addressMap.remove();
+                    addressMap = null;
+                }
+            }
         }
 
         // Set active tab without adding to history (for back navigation)
@@ -15840,7 +16228,7 @@ window.handleProfileClick = function() {
                 const finalAmount = originalOrderAmount - appliedWalletAmount;
                 const buttonText = finalAmount === 0 ? 
                     'Confirm Order - FREE! 🎉' : 
-                    `Confirm Order - ₹${finalAmount}`;
+                    'Confirm Order';
                 confirmButton.innerHTML = buttonText;
             }
             
@@ -15849,7 +16237,7 @@ window.handleProfileClick = function() {
                 const finalAmount = originalOrderAmount - appliedWalletAmount;
                 const buttonText = finalAmount === 0 ? 
                     'Confirm All Orders - FREE! 🎉' : 
-                    `Confirm All Orders - ₹${finalAmount}`;
+                    'Confirm All Orders';
                 confirmAllBtn.innerHTML = buttonText;
             }
         }
@@ -16481,6 +16869,914 @@ window.handleProfileClick = function() {
             }
         };
 
+        // Address Management System
+        let addressMap = null;
+        let savedAddressesList = [];
+        let currentMapCenter = { lat: 28.6139, lng: 77.2090 }; // Default: Delhi
+
+        // Open Address Map Modal
+        window.openAddressMapModal = function() {
+            // Add to navigation stack
+            pushToNavigationStack('address-map-modal');
+            
+            const modal = document.getElementById('addressMapModal');
+            modal.classList.add('active');
+            
+            // Initialize map after modal is visible
+            setTimeout(() => {
+                initializeAddressMap();
+            }, 100);
+        };
+
+        // Close Address Map Modal
+        window.closeAddressMapModal = function() {
+            // Remove from navigation stack
+            popFromNavigationStack();
+            
+            const modal = document.getElementById('addressMapModal');
+            modal.classList.remove('active');
+            
+            // Clear phone input
+            document.getElementById('addressPhoneInput').value = '';
+            
+            // Destroy map to prevent memory leaks
+            if (addressMap) {
+                addressMap.remove();
+                addressMap = null;
+            }
+        };
+
+        // Initialize Leaflet Map
+        function initializeAddressMap() {
+            if (addressMap) {
+                addressMap.remove();
+            }
+
+            // Create map centered on Delhi
+            addressMap = L.map('addressMap').setView([currentMapCenter.lat, currentMapCenter.lng], 13);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(addressMap);
+
+            // Update coordinates when map is moved
+            addressMap.on('moveend', function() {
+                const center = addressMap.getCenter();
+                currentMapCenter = {
+                    lat: center.lat,
+                    lng: center.lng
+                };
+            });
+
+            // Try to get user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        
+                        // Update map center to user's location
+                        addressMap.setView([userLat, userLng], 15);
+                        currentMapCenter = { lat: userLat, lng: userLng };
+                    },
+                    function(error) {
+                        console.log('Geolocation error:', error);
+                        // Keep default Delhi location
+                    }
+                );
+            }
+        }
+
+        // Save New Address
+        window.saveNewAddress = async function() {
+            const phoneInput = document.getElementById('addressPhoneInput');
+            const phone = phoneInput.value.trim();
+
+            // Validate phone number
+            if (!phone) {
+                showNotification('Please enter your phone number', 'warning');
+                return;
+            }
+
+            if (!/^\d{10}$/.test(phone)) {
+                showNotification('Please enter a valid 10-digit phone number', 'warning');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const saveBtn = document.querySelector('.address-save-btn');
+                const originalText = saveBtn.textContent;
+                saveBtn.textContent = 'Saving...';
+                saveBtn.disabled = true;
+
+                // Get address from coordinates using Nominatim
+                const address = await reverseGeocode(currentMapCenter.lat, currentMapCenter.lng);
+                
+                // Generate Google Maps link
+                const googleMapsLink = `https://maps.google.com/?q=${currentMapCenter.lat},${currentMapCenter.lng}`;
+
+                // Create address object
+                const newAddress = {
+                    id: Date.now().toString(),
+                    phone: phone,
+                    address: address,
+                    lat: currentMapCenter.lat,
+                    lng: currentMapCenter.lng,
+                    googleMapsLink: googleMapsLink,
+                    createdAt: new Date().toISOString()
+                };
+
+                // Add to saved addresses list
+                savedAddressesList.push(newAddress);
+                console.log('Address added to list, new length:', savedAddressesList.length);
+                console.log('New address:', newAddress);
+
+                // Save to Firebase
+                if (currentUser) {
+                    try {
+                        // First check if user document exists
+                        const userDocRef = doc(db, 'users', currentUser.uid);
+                        const userDoc = await getDoc(userDocRef);
+                        
+                        if (userDoc.exists()) {
+                            // Update existing document
+                            await updateDoc(userDocRef, {
+                                addresses: savedAddressesList
+                            });
+                        } else {
+                            // Create new document with addresses
+                            await setDoc(userDocRef, {
+                                addresses: savedAddressesList,
+                                email: currentUser.email,
+                                createdAt: new Date().toISOString()
+                            });
+                        }
+                        console.log('Address saved to Firebase successfully');
+                    } catch (firebaseError) {
+                        console.error('Firebase save error:', firebaseError);
+                        throw firebaseError;
+                    }
+                }
+
+                // Update UI
+                displaySavedAddresses();
+                
+                // Also refresh confirm order modal if it's open
+                if (document.getElementById('savedAddressesContainer')) {
+                    loadSavedAddressesInConfirmModal();
+                }
+
+                // Show success message
+                showNotification('Address saved successfully! 📍', 'success');
+
+                // Close modal
+                closeAddressMapModal();
+
+            } catch (error) {
+                console.error('Error saving address:', error);
+                showNotification('Error saving address. Please try again.', 'error');
+            } finally {
+                // Reset button state
+                const saveBtn = document.querySelector('.address-save-btn');
+                saveBtn.textContent = 'Save Address';
+                saveBtn.disabled = false;
+            }
+        };
+
+        // Delete Address Function
+        window.deleteAddress = async function(addressId) {
+            if (!currentUser) {
+                showNotification('Please login to delete addresses', 'warning');
+                return;
+            }
+
+            // Show confirmation dialog
+            if (!confirm('Are you sure you want to delete this address?')) {
+                return;
+            }
+
+            try {
+                // Remove from local array
+                savedAddressesList = savedAddressesList.filter(address => address.id !== addressId);
+
+                // Update Firebase
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    addresses: savedAddressesList
+                });
+
+                // Update UI
+                displaySavedAddresses();
+                
+                // Also update modal if it's open
+                if (document.getElementById('savedAddressesContainer')) {
+                    loadSavedAddressesInConfirmModal();
+                }
+
+                showNotification('Address deleted successfully! 🗑️', 'success');
+            } catch (error) {
+                console.error('Error deleting address:', error);
+                showNotification('Error deleting address. Please try again.', 'error');
+            }
+        };
+
+        // Reverse Geocoding using Nominatim
+        async function reverseGeocode(lat, lng) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+                const data = await response.json();
+                
+                if (data && data.display_name) {
+                    return data.display_name;
+                } else {
+                    return `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                }
+            } catch (error) {
+                console.error('Reverse geocoding error:', error);
+                return `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            }
+        }
+
+        // Display Saved Addresses
+        function displaySavedAddresses() {
+            const addressesList = document.getElementById('savedAddresses');
+            console.log('displaySavedAddresses called, element found:', !!addressesList);
+            console.log('savedAddressesList length:', savedAddressesList.length);
+            
+            if (!addressesList) {
+                console.error('savedAddresses element not found!');
+                return;
+            }
+            
+            if (savedAddressesList.length === 0) {
+                addressesList.innerHTML = '<li style="text-align: center; color: #666; padding: 20px; font-style: italic;">No saved addresses yet. Add your first address!</li>';
+                return;
+            }
+
+            addressesList.innerHTML = savedAddressesList.map((address, index) => `
+                <li class="address-item">
+                    <div class="address-phone">
+                        📱 ${address.phone} ${address.isCurrentLocation ? '<span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 8px;">📍 CURRENT LOCATION</span>' : ''}
+                    </div>
+                    <div class="address-text">
+                        ${address.address}
+                    </div>
+                    <div class="address-coordinates">
+                        📍 ${address.lat.toFixed(6)}, ${address.lng.toFixed(6)}
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
+                        <a href="${address.googleMapsLink}" target="_blank" class="address-maps-link">
+                            🗺️ View on Google Maps
+                        </a>
+                        <button onclick="deleteAddress('${address.id}')" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Load Saved Addresses from Firebase
+        async function loadSavedAddresses() {
+            if (!currentUser) {
+                savedAddressesList = [];
+                displaySavedAddresses();
+                return;
+            }
+
+            try {
+                console.log('Loading addresses for user:', currentUser.uid);
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (userDoc.exists() && userDoc.data().addresses) {
+                    savedAddressesList = userDoc.data().addresses;
+                    console.log('Loaded addresses:', savedAddressesList.length);
+                } else {
+                    savedAddressesList = [];
+                    console.log('No addresses found, initializing empty array');
+                }
+                displaySavedAddresses();
+            } catch (error) {
+                console.error('Error loading saved addresses from Firebase:', error);
+                savedAddressesList = [];
+                displaySavedAddresses();
+            }
+        }
+
+        // Load Saved Addresses in Confirm Order Modal
+        async function loadSavedAddressesInConfirmModal() {
+            const container = document.getElementById('savedAddressesContainer');
+            if (!container) {
+                console.log('savedAddressesContainer not found');
+                return;
+            }
+            
+            // Clear any previously selected address to force fresh selection
+            localStorage.removeItem('selectedDeliveryAddress');
+            console.log('Cleared previously selected address - user must select again');
+            
+            try {
+                let addresses = [];
+                if (currentUser) {
+                    console.log('Loading addresses for confirm modal, user:', currentUser.uid);
+                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                    if (userDoc.exists() && userDoc.data().addresses) {
+                        addresses = userDoc.data().addresses;
+                        console.log('Found addresses for modal:', addresses.length);
+                    } else {
+                        console.log('No addresses found in Firebase for modal');
+                    }
+                } else {
+                    console.log('No current user for modal');
+                }
+                
+                if (addresses.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 30px 20px; color: #666; background: #f8f9fa; border-radius: 12px; border: 2px dashed #ddd;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">📍</div>
+                            <h3 style="margin: 0 0 8px 0; color: #333;">No Saved Addresses</h3>
+                            <p style="margin: 0; font-size: 14px;">Add your first delivery address to get started</p>
+                        </div>
+                        
+                        <!-- Use Current Location Button -->
+                        <div style="margin-top: 16px; text-align: center;">
+                            <button onclick="useCurrentLocationFromConfirmModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.3)'">
+                                🎯 Use Current Location
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = addresses.map((address, index) => `
+                    <div class="confirm-address-item" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease;" onclick="selectAddressForOrder(${index})" onmouseover="this.style.borderColor='#fbbf24'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.transform='translateY(0)'">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 20px; height: 20px; border: 2px solid #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <div style="width: 8px; height: 8px; background: #fbbf24; border-radius: 50%; opacity: 0;" class="address-selector"></div>
+                                </div>
+                                <div style="font-weight: 600; color: #2c3e50; font-size: 16px;">📍 Address ${index + 1} ${address.isCurrentLocation ? '<span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 8px;">📍 CURRENT LOCATION</span>' : ''}</div>
+                            </div>
+                            <div style="font-size: 12px; color: #666;">📱 ${address.phone}</div>
+                        </div>
+                        <div style="color: #666; font-size: 14px; line-height: 1.4; margin-left: 28px;">
+                            ${address.address}
+                        </div>
+                        ${address.googleMapsLink ? `
+                            <div style="margin-top: 8px; margin-left: 28px;">
+                                <a href="${address.googleMapsLink}" target="_blank" style="color: #4285f4; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;">
+                                    🗺️ View on Google Maps
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('') + `
+                
+                <!-- Use Current Location Button -->
+                <div style="margin-top: 16px; text-align: center;">
+                    <button onclick="useCurrentLocationFromConfirmModal()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.3)'">
+                        🎯 Use Current Location
+                    </button>
+                </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error loading saved addresses in confirm modal:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #e74c3c; background: #fef2f2; border-radius: 8px;">
+                        Error loading addresses. Please try again.
+                    </div>
+                `;
+            }
+        }
+
+        // Select Address for Order
+        window.selectAddressForOrder = async function(index) {
+            try {
+                if (!currentUser) return;
+                
+                // Get addresses from Firebase (for confirm modal)
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                let addresses = [];
+                if (userDoc.exists() && userDoc.data().addresses) {
+                    addresses = userDoc.data().addresses;
+                }
+                
+                // Fallback to savedAddressesList if available
+                if (addresses.length === 0 && savedAddressesList && savedAddressesList.length > 0) {
+                    addresses = savedAddressesList;
+                }
+                
+                if (addresses.length === 0 || index >= addresses.length) return;
+                
+                const selectedAddress = addresses[index];
+                
+                // Store selected address ID in Firebase
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    selectedAddressId: selectedAddress.id
+                });
+                
+                // Update visual selection
+                document.querySelectorAll('.address-selector').forEach((selector, i) => {
+                    if (i === index) {
+                        selector.style.opacity = '1';
+                        selector.parentElement.parentElement.parentElement.style.borderColor = '#fbbf24';
+                        selector.parentElement.parentElement.parentElement.style.background = '#fffbeb';
+                    } else {
+                        selector.style.opacity = '0';
+                        selector.parentElement.parentElement.parentElement.style.borderColor = '#e5e7eb';
+                        selector.parentElement.parentElement.parentElement.style.background = 'white';
+                    }
+                });
+                
+                // Update home address display
+                updateHomeAddressDisplay();
+                
+                // Reload user address data to reflect the selected address
+                await loadUserAddressFromFirebase();
+                
+                showNotification('Address selected for delivery! 📍', 'success');
+            } catch (error) {
+                console.error('Error selecting address:', error);
+                showNotification('Error selecting address', 'error');
+            }
+        }
+
+        // Use Current Location Function
+        window.useCurrentLocation = function() {
+            if (!currentUser) {
+                showNotification('Please login first to add address', 'error');
+                return;
+            }
+
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by this browser', 'error');
+                return;
+            }
+
+            // Show loading notification
+            showNotification('🔄 Getting your location...', 'info', 3000);
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    
+                    // Store coordinates temporarily
+                    window.tempLocationCoords = { lat: userLat, lng: userLng };
+                    
+                    // Show phone input modal
+                    showCurrentLocationPhoneModal();
+                    
+                    showNotification('Location found! Please enter your phone number 📱', 'success');
+                },
+                function(error) {
+                    console.error('Geolocation error:', error);
+                    let errorMessage = 'Unable to get your location';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access denied. Please enable location permissions.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out.';
+                            break;
+                    }
+                    
+                    showNotification(errorMessage, 'error');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000
+                }
+            );
+        };
+
+        // Show current location phone input modal
+        window.showCurrentLocationPhoneModal = function() {
+            const modal = document.getElementById('currentLocationPhoneModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                // Clear previous input
+                const phoneInput = document.getElementById('currentLocationPhoneInput');
+                if (phoneInput) {
+                    phoneInput.value = '';
+                    phoneInput.focus();
+                }
+            }
+        };
+
+        // Close current location phone modal
+        window.closeCurrentLocationPhoneModal = function(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('currentLocationPhoneModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            // Clear temp coordinates
+            window.tempLocationCoords = null;
+        };
+
+        // Save current location with phone number
+        window.saveCurrentLocationWithPhone = async function() {
+            // Check both possible input fields
+            let phoneInput = document.getElementById('currentLocationPhoneInput');
+            if (!phoneInput || !phoneInput.offsetParent) {
+                // If current location input is not visible, check the old phone input
+                phoneInput = document.getElementById('phoneInputField');
+            }
+            
+            if (!phoneInput) {
+                showNotification('❌ Phone input field not found', 'error');
+                return;
+            }
+            
+            const phone = phoneInput.value.trim();
+            
+            // Validate phone number
+            if (!phone) {
+                showNotification('❌ Please enter your phone number', 'error');
+                phoneInput.focus();
+                return;
+            }
+            
+            if (!/^\d{10}$/.test(phone)) {
+                showNotification('❌ Please enter a valid 10-digit phone number', 'error');
+                phoneInput.focus();
+                return;
+            }
+
+            if (!window.tempLocationCoords) {
+                showNotification('❌ Location data not found. Please try again.', 'error');
+                
+                // Close appropriate modal
+                const currentLocationModal = document.getElementById('currentLocationPhoneModal');
+                const oldPhoneModal = document.getElementById('phoneInputModal');
+                
+                if (currentLocationModal && currentLocationModal.style.display !== 'none') {
+                    closeCurrentLocationPhoneModal();
+                } else if (oldPhoneModal && oldPhoneModal.style.display !== 'none') {
+                    closePhoneInputModal();
+                }
+                return;
+            }
+
+            try {
+                showNotification('📍 Saving your address...', 'info', 3000);
+                
+                const { lat, lng } = window.tempLocationCoords;
+                
+                // Get address from coordinates using reverse geocoding
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const data = await response.json();
+                
+                const fullAddress = data.display_name || `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                const googleMapsLink = `https://maps.google.com/?q=${lat},${lng}`;
+                
+                // Create new address object
+                const newAddress = {
+                    id: Date.now().toString(),
+                    phone: phone,
+                    address: fullAddress,
+                    lat: lat,
+                    lng: lng,
+                    googleMapsLink: googleMapsLink,
+                    createdAt: new Date().toISOString(),
+                    isCurrentLocation: true  // Mark as current location address
+                };
+
+                // Save to Firebase
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userRef);
+                let addresses = [];
+                
+                if (userDoc.exists() && userDoc.data().addresses) {
+                    addresses = userDoc.data().addresses;
+                }
+                
+                // Remove any previous current location addresses
+                addresses = addresses.filter(addr => !addr.isCurrentLocation);
+                
+                // Add new current location address
+                addresses.push(newAddress);
+                await setDoc(userRef, { 
+                    addresses: addresses,
+                    selectedAddressId: newAddress.id  // Set as selected address
+                }, { merge: true });
+                
+                // Update display
+                updateHomeAddressDisplay();
+                
+                // Refresh saved addresses list if it's open
+                if (typeof loadSavedAddresses === 'function') {
+                    loadSavedAddresses();
+                }
+                
+                // Refresh confirm modal addresses if it's open
+                if (typeof loadSavedAddressesInConfirmModal === 'function') {
+                    loadSavedAddressesInConfirmModal();
+                }
+                
+                // Reload user address data to reflect the new selected address
+                await loadUserAddressFromFirebase();
+                
+                // Close appropriate modals
+                const currentLocationModal = document.getElementById('currentLocationPhoneModal');
+                const oldPhoneModal = document.getElementById('phoneInputModal');
+                
+                if (currentLocationModal && currentLocationModal.style.display !== 'none') {
+                    closeCurrentLocationPhoneModal();
+                } else if (oldPhoneModal && oldPhoneModal.style.display !== 'none') {
+                    closePhoneInputModal();
+                }
+                
+                closeAddressPopup();
+                
+                showNotification('✅ Current location saved as delivery address! 📍', 'success', 4000);
+                
+                // Clear temp coordinates
+                window.tempLocationCoords = null;
+                
+            } catch (error) {
+                console.error('Error saving address:', error);
+                showNotification('❌ Error saving address. Please try again.', 'error');
+            }
+        };
+
+        // Use current location from confirm order modal
+        window.useCurrentLocationFromConfirmModal = function() {
+            if (navigator.geolocation) {
+                showNotification('📍 Getting your current location...', 'info', 3000);
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        // Store coordinates temporarily
+                        window.tempLocationCoords = { lat, lng };
+                        
+                        // Show phone input modal for current location
+                        showCurrentLocationPhoneModal();
+                        
+                        showNotification('✅ Location found! Please enter your phone number.', 'success', 3000);
+                    },
+                    function(error) {
+                        console.error('Geolocation error:', error);
+                        let errorMessage = '❌ Unable to get your location. ';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += 'Please allow location access and try again.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += 'Location information is unavailable.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += 'Location request timed out.';
+                                break;
+                            default:
+                                errorMessage += 'An unknown error occurred.';
+                                break;
+                        }
+                        
+                        showNotification(errorMessage, 'error', 5000);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000
+                    }
+                );
+            } else {
+                showNotification('❌ Geolocation is not supported by this browser.', 'error');
+                return;
+            }
+        };
+
+
+
+        // Function to select an address
+        window.selectAddress = async function(index) {
+            try {
+                if (!currentUser) return;
+                
+                const selectedAddress = savedAddressesList[index];
+                
+                // Store selected address ID in Firebase
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    selectedAddressId: selectedAddress.id
+                });
+                
+                // Update home address display
+                updateHomeAddressDisplay();
+                
+                // Reload user address data to reflect the selected address
+                await loadUserAddressFromFirebase();
+                
+                // Show success message
+                showNotification('Address selected for delivery! 📍', 'success');
+                
+                // Close modal
+            } catch (error) {
+                console.error('Error selecting address:', error);
+                showNotification('Error selecting address', 'error');
+            }
+        };
+
+
+        // Override the existing saveNewAddress function to close map modal and refresh address modal
+        const originalSaveNewAddress = window.saveNewAddress;
+        window.saveNewAddress = function() {
+            originalSaveNewAddress().then(() => {
+                // Close map modal
+                closeAddressMapModal();
+                
+                
+                showNotification('New address added successfully! 📍', 'success');
+            }).catch((error) => {
+                console.error('Error saving address:', error);
+                showNotification('Error saving address. Please try again.', 'error');
+            });
+        };
+
+
+        // Initialize address management when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedAddresses();
+            updateHomeAddressDisplay();
+        });
+
+        // Home Page Address Section Functions
+        function updateHomeAddressDisplay() {
+            const addressText = document.getElementById('homeAddressText');
+            if (!addressText) return;
+
+            if (!currentUser) {
+                // User not logged in
+                addressText.textContent = 'Not Set';
+                addressText.className = 'address-text not-set';
+                return;
+            }
+
+            // Get user data from Firebase
+            getDoc(doc(db, 'users', currentUser.uid)).then(userDoc => {
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const userAddresses = userData.addresses || [];
+                    const selectedAddressId = userData.selectedAddressId;
+                    
+                    if (userAddresses.length > 0) {
+                        // Check if user has selected address
+                        if (selectedAddressId) {
+                            const selectedAddress = userAddresses.find(addr => addr.id === selectedAddressId);
+                            if (selectedAddress) {
+                                // Show truncated address
+                                const shortAddress = selectedAddress.address.length > 30 
+                                    ? selectedAddress.address.substring(0, 30) + '...' 
+                                    : selectedAddress.address;
+                                addressText.textContent = shortAddress;
+                                addressText.className = 'address-text';
+                                return;
+                            }
+                        }
+                        
+                        // User has addresses but none selected
+                        addressText.textContent = 'Select Address';
+                        addressText.className = 'address-text not-set';
+                    } else {
+                        // User has no addresses
+                        addressText.textContent = 'Add Address';
+                        addressText.className = 'address-text not-set';
+                    }
+                } else {
+                    // User document doesn't exist
+                    addressText.textContent = 'Add Address';
+                    addressText.className = 'address-text not-set';
+                }
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+                addressText.textContent = 'Add Address';
+                addressText.className = 'address-text not-set';
+            });
+        }
+
+        // Open address popup modal
+        window.openAddressPopup = function() {
+            const modal = document.getElementById('addressPopupModal');
+            const buttonsContainer = document.getElementById('addressPopupButtons');
+            
+            if (!currentUser) {
+                // Non-login user button
+                buttonsContainer.innerHTML = `
+                    <button class="address-popup-btn login" onclick="openLoginFromAddressPopup()">
+                        🔐 Sign in to add address
+                    </button>
+                `;
+            } else {
+                // Logged-in user buttons
+                buttonsContainer.innerHTML = `
+                    <button class="address-popup-btn primary" onclick="openAddressMapModal()">
+                        📍 Add New Address
+                    </button>
+                    <button class="address-popup-btn secondary" onclick="useCurrentLocation()">
+                        🎯 Use Current Location
+                    </button>
+                `;
+            }
+            
+            modal.style.display = 'flex';
+        };
+
+        // Close address popup modal
+        window.closeAddressPopup = function(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('addressPopupModal');
+            modal.style.display = 'none';
+        };
+
+        // Open login modal from address popup
+        window.openLoginFromAddressPopup = function() {
+            console.log('Opening login modal from address popup');
+            closeAddressPopup();
+            showLoginModal();
+        };
+
+        // Open register modal from address popup  
+        window.openRegisterFromAddressPopup = function() {
+            closeAddressPopup();
+            showRegisterModal();
+        };
+
+
+        // Use current location
+        window.useCurrentLocation = function() {
+            closeAddressPopup();
+            
+            if (!navigator.geolocation) {
+                showNotification('❌ Geolocation is not supported by this browser.', 'error');
+                return;
+            }
+
+            showNotification('📍 Getting your location...', 'info', 3000);
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // Store coordinates temporarily
+                    window.tempLocationCoords = { lat, lng };
+                    
+                    // Open phone input modal
+                    openPhoneInputModal();
+                },
+                function(error) {
+                    console.error('Geolocation error:', error);
+                    let errorMessage = 'Unable to get your location';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access denied. Please enable location permission.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out.';
+                            break;
+                    }
+                    
+                    showNotification(`❌ ${errorMessage}`, 'error', 5000);
+                }
+            );
+        };
+
+        // Open phone input modal
+        window.openPhoneInputModal = function() {
+            const modal = document.getElementById('phoneInputModal');
+            const phoneField = document.getElementById('phoneInputField');
+            phoneField.value = '';
+            modal.style.display = 'flex';
+            
+            // Focus on phone input
+            setTimeout(() => phoneField.focus(), 300);
+        };
+
+        // Close phone input modal
+        window.closePhoneInputModal = function(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('phoneInputModal');
+            modal.style.display = 'none';
+            // Clear temporary coordinates
+            delete window.tempLocationCoords;
+        };
+
+
     </script>
     
     <!-- Invoice Modal -->
@@ -16555,5 +17851,58 @@ window.handleProfileClick = function() {
             </button>
         </div>
     </div>
+
+    <!-- Address Bottom Popup Modal -->
+    <div id="addressPopupModal" class="address-popup-modal" onclick="closeAddressPopup(event)">
+        <div class="address-popup-content" onclick="event.stopPropagation()">
+            <div class="address-popup-header">
+                <div class="address-popup-handle"></div>
+                <h3 class="address-popup-title">Select Delivery Address</h3>
+            </div>
+            <div class="address-popup-buttons" id="addressPopupButtons">
+                <!-- Buttons will be dynamically added based on user login status -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Phone Input Modal -->
+    <div id="phoneInputModal" class="phone-input-modal" onclick="closePhoneInputModal(event)">
+        <div class="phone-input-content" onclick="event.stopPropagation()">
+            <div class="address-popup-header">
+                <div class="address-popup-handle"></div>
+                <h3 class="address-popup-title">Enter Phone Number</h3>
+            </div>
+            <input type="tel" id="phoneInputField" class="phone-input-field" placeholder="Enter your phone number" maxlength="10">
+            <div class="address-popup-buttons">
+                <button class="address-popup-btn primary" onclick="saveCurrentLocationWithPhone()">
+                    📍 Save Address
+                </button>
+                <button class="address-popup-btn secondary" onclick="closePhoneInputModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Location Phone Input Modal -->
+    <div id="currentLocationPhoneModal" class="phone-input-modal" onclick="closeCurrentLocationPhoneModal(event)" style="display: none;">
+        <div class="phone-input-content" onclick="event.stopPropagation()">
+            <div class="address-popup-header">
+                <div class="address-popup-handle"></div>
+                <h3 class="address-popup-title">📍 Add Current Location</h3>
+                <p style="color: #666; font-size: 14px; margin: 10px 0;">Enter your phone number to save this address</p>
+            </div>
+            <input type="tel" id="currentLocationPhoneInput" class="phone-input-field" placeholder="Enter your phone number" maxlength="10" onkeypress="if(event.key==='Enter') saveCurrentLocationWithPhone()">
+            <div class="address-popup-buttons">
+                <button class="address-popup-btn primary" onclick="saveCurrentLocationWithPhone()">
+                    📍 Save Address
+                </button>
+                <button class="address-popup-btn secondary" onclick="closeCurrentLocationPhoneModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
