@@ -4863,6 +4863,71 @@
             height: 100%;
         }
 
+        /* Map Type Control Styles */
+        .map-type-control {
+            z-index: 1000;
+        }
+
+        .map-type-control button {
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            min-width: 80px !important;
+            text-align: center !important;
+        }
+
+        .map-type-control button:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+        }
+
+        .map-type-control button:active {
+            transform: translateY(0) !important;
+        }
+
+        /* Leaflet Layer Control Styling */
+        .leaflet-control-layers {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            border: none !important;
+        }
+
+        .leaflet-control-layers-toggle {
+            background-image: none !important;
+            background: #4285f4 !important;
+            border-radius: 6px !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        .leaflet-control-layers-toggle:after {
+            content: "🗺️" !important;
+            font-size: 16px !important;
+        }
+
+        /* Ultra Zoom Notification */
+        .ultra-zoom-indicator {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .ultra-zoom-indicator.show {
+            opacity: 1;
+        }
+
         .map-center-pin {
             position: absolute;
             top: 50%;
@@ -5685,15 +5750,66 @@
         <div class="address-map-container">
             <div class="address-map" id="addressMap"></div>
             <div class="map-center-pin">📍</div>
-            <button class="current-location-btn" id="currentLocationBtn" onclick="useCurrentLocation()">
+            <div class="ultra-zoom-indicator" id="ultraZoomIndicator">
+                🔍 Ultra Zoom Active - Level <span id="zoomLevel">13</span>
+            </div>
+            <button class="current-location-btn" id="currentLocationBtn" onclick="useCurrentLocationInMap()">
                 📍 Use Current Location
             </button>
         </div>
         
         <div class="address-form-container">
-            <div class="address-input-group">
-                <label class="address-input-label">Phone Number</label>
-                <input type="tel" class="address-input" id="addressPhoneInput" placeholder="Enter your phone number" maxlength="10">
+            <!-- Live Address Preview -->
+            <div class="address-preview-container" style="
+                background: #f8f9fa;
+                border: 1px solid #e9ecef;
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 16px;
+                min-height: 60px;
+                display: flex;
+                align-items: center;
+            ">
+                <div id="liveAddressPreview" style="width: 100%;">
+                    <div style="color: #999; font-style: italic;">📍 Move map to select location</div>
+                </div>
+            </div>
+
+            <!-- Address Name Input (only shown for manual location selection) -->
+            <div class="address-name-container" id="addressNameContainer" style="
+                background: #fff;
+                border: 1px solid #e9ecef;
+                border-radius: 8px;
+                padding: 12px;
+                margin-bottom: 16px;
+                display: none;
+            ">
+                <label for="addressNameInput" style="
+                    display: block;
+                    color: #495057;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                    font-size: 14px;
+                ">📝 Address Name (for easy identification): <span style="color: #dc3545;">*</span></label>
+                <input 
+                    type="text" 
+                    id="addressNameInput" 
+                    placeholder="e.g., Home, Office, Friend's Place" 
+                    maxlength="50"
+                    style="
+                        width: 100%;
+                        padding: 10px 12px;
+                        border: 1px solid #ced4da;
+                        border-radius: 6px;
+                        font-size: 14px;
+                        outline: none;
+                        transition: border-color 0.2s;
+                    "
+                    onkeypress="if(event.key==='Enter') saveNewAddress()"
+                >
+                <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">
+                    <span style="color: #dc3545;">*Required</span> - This name will help you identify this address later
+                </div>
             </div>
             
             <div class="address-form-buttons">
@@ -16876,6 +16992,15 @@ window.handleProfileClick = function() {
 
         // Open Address Map Modal
         window.openAddressMapModal = function() {
+            // Close address popup if it's open
+            closeAddressPopup();
+            
+            // Clear address name input and hide container
+            const addressNameInput = document.getElementById('addressNameInput');
+            const addressNameContainer = document.getElementById('addressNameContainer');
+            if (addressNameInput) addressNameInput.value = '';
+            if (addressNameContainer) addressNameContainer.style.display = 'none';
+            
             // Add to navigation stack
             pushToNavigationStack('address-map-modal');
             
@@ -16885,19 +17010,26 @@ window.handleProfileClick = function() {
             // Initialize map after modal is visible
             setTimeout(() => {
                 initializeAddressMap();
+                // Load initial address preview
+                setTimeout(() => {
+                    updateLiveAddressPreview(currentMapCenter.lat, currentMapCenter.lng);
+                }, 1000);
             }, 100);
         };
 
         // Close Address Map Modal
         window.closeAddressMapModal = function() {
+            // Clear address name input
+            const addressNameInput = document.getElementById('addressNameInput');
+            const addressNameContainer = document.getElementById('addressNameContainer');
+            if (addressNameInput) addressNameInput.value = '';
+            if (addressNameContainer) addressNameContainer.style.display = 'none';
+            
             // Remove from navigation stack
             popFromNavigationStack();
             
             const modal = document.getElementById('addressMapModal');
             modal.classList.remove('active');
-            
-            // Clear phone input
-            document.getElementById('addressPhoneInput').value = '';
             
             // Destroy map to prevent memory leaks
             if (addressMap) {
@@ -16906,27 +17038,155 @@ window.handleProfileClick = function() {
             }
         };
 
-        // Initialize Leaflet Map
+        // Initialize Leaflet Map with Satellite View
         function initializeAddressMap() {
             if (addressMap) {
                 addressMap.remove();
             }
 
-            // Create map centered on Delhi
-            addressMap = L.map('addressMap').setView([currentMapCenter.lat, currentMapCenter.lng], 13);
+            // Create map centered on Delhi with zoom level up to 20
+            addressMap = L.map('addressMap', {
+                maxZoom: 20, // Maximum zoom level 20
+                minZoom: 2
+            }).setView([currentMapCenter.lat, currentMapCenter.lng], 13);
 
-            // Add OpenStreetMap tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
+            // Define different tile layers
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 20
+            });
+
+            const hybridLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                attribution: '© Google',
+                maxZoom: 20,
+                errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+                crossOrigin: true
+            });
+
+            // Add street labels overlay for hybrid view
+            const labelsLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '',
+                maxZoom: 20
+            });
+
+            // Add default street layer
+            streetLayer.addTo(addressMap);
+
+            // Add center pin marker that stays in the center
+            const centerPinIcon = L.divIcon({
+                html: `<div style="
+                    width: 30px; 
+                    height: 30px; 
+                    background: #ff4444; 
+                    border: 3px solid white; 
+                    border-radius: 50%; 
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    position: relative;
+                    animation: pulse 2s infinite;
+                ">
+                    <div style="
+                        position: absolute;
+                        bottom: -8px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        width: 0;
+                        height: 0;
+                        border-left: 8px solid transparent;
+                        border-right: 8px solid transparent;
+                        border-top: 12px solid #ff4444;
+                    "></div>
+                </div>
+                <style>
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                        100% { transform: scale(1); }
+                    }
+                </style>`,
+                className: 'center-pin-marker',
+                iconSize: [30, 42],
+                iconAnchor: [15, 42]
+            });
+
+            // Add center pin to map
+            const centerPin = L.marker([currentMapCenter.lat, currentMapCenter.lng], {
+                icon: centerPinIcon,
+                interactive: false,
+                zIndexOffset: 1000
             }).addTo(addressMap);
 
-            // Update coordinates when map is moved
+            // Create layer control
+            const baseLayers = {
+                "🗺️ Street": streetLayer,
+                "🌍 Hybrid": L.layerGroup([hybridLayer, labelsLayer])
+            };
+
+            // Add layer control to map
+            L.control.layers(baseLayers, null, {
+                position: 'topright',
+                collapsed: false
+            }).addTo(addressMap);
+
+            // Add custom map type buttons at bottom left
+            const mapTypeControl = L.control({ position: 'bottomleft' });
+            mapTypeControl.onAdd = function() {
+                const div = L.DomUtil.create('div', 'map-type-control');
+                div.innerHTML = `
+                    <div style="background: rgba(255, 255, 255, 0.95); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 10px; display: flex; flex-direction: row; gap: 8px; backdrop-filter: blur(10px);">
+                        <button onclick="switchMapType('street')" id="streetBtn" style="background: #4285f4; color: white; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; min-width: 80px;">🗺️ Street</button>
+                        <button onclick="switchMapType('hybrid')" id="hybridBtn" style="background: #ea4335; color: white; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; min-width: 80px;">🌍 Hybrid</button>
+                    </div>
+                `;
+                return div;
+            };
+            mapTypeControl.addTo(addressMap);
+
+            // Store layers globally for switching
+            window.mapLayers = {
+                street: streetLayer,
+                hybrid: L.layerGroup([hybridLayer, labelsLayer])
+            };
+
+            // Store current active layer
+            window.currentMapType = 'street';
+
+            // Update coordinates and center pin when map is moved
             addressMap.on('moveend', function() {
                 const center = addressMap.getCenter();
                 currentMapCenter = {
                     lat: center.lat,
                     lng: center.lng
                 };
+                
+                // Update center pin position
+                centerPin.setLatLng([center.lat, center.lng]);
+                
+                // Update live address preview (debounced)
+                clearTimeout(window.addressUpdateTimeout);
+                window.addressUpdateTimeout = setTimeout(async () => {
+                    await updateLiveAddressPreview(center.lat, center.lng);
+                }, 1000); // Wait 1 second after user stops moving map
+            });
+
+            // Track zoom level and show ultra zoom indicator
+            addressMap.on('zoomend', function() {
+                const zoomLevel = addressMap.getZoom();
+                const zoomLevelSpan = document.getElementById('zoomLevel');
+                const ultraZoomIndicator = document.getElementById('ultraZoomIndicator');
+                
+                if (zoomLevelSpan) {
+                    zoomLevelSpan.textContent = zoomLevel;
+                }
+                
+                // Show ultra zoom indicator for zoom levels 18 and above
+                if (ultraZoomIndicator) {
+                    if (zoomLevel >= 18) {
+                        ultraZoomIndicator.classList.add('show');
+                        setTimeout(() => {
+                            ultraZoomIndicator.classList.remove('show');
+                        }, 3000); // Hide after 3 seconds
+                    }
+                }
             });
 
             // Try to get user's current location
@@ -16936,8 +17196,8 @@ window.handleProfileClick = function() {
                         const userLat = position.coords.latitude;
                         const userLng = position.coords.longitude;
                         
-                        // Update map center to user's location
-                        addressMap.setView([userLat, userLng], 15);
+                        // Update map center to user's location with higher zoom
+                        addressMap.setView([userLat, userLng], 18);
                         currentMapCenter = { lat: userLat, lng: userLng };
                     },
                     function(error) {
@@ -16946,33 +17206,205 @@ window.handleProfileClick = function() {
                     }
                 );
             }
+
+            // Restore opacity
+            if (mapContainer) {
+                mapContainer.style.opacity = '1';
+            }
         }
+
+        // Live Address Preview Function
+        window.updateLiveAddressPreview = async function(lat, lng, isCurrentLocation = false) {
+            const addressPreview = document.getElementById('liveAddressPreview');
+            const addressNameContainer = document.getElementById('addressNameContainer');
+            if (!addressPreview) return;
+
+            try {
+                addressPreview.innerHTML = '<div style="color: #666; font-style: italic;">🔍 Getting address...</div>';
+                
+                const address = await reverseGeocode(lat, lng);
+                addressPreview.innerHTML = `
+                    <div style="color: #333; font-size: 14px; line-height: 1.4;">
+                        <strong>📍 ${isCurrentLocation ? 'Current Location:' : 'Selected Location:'}</strong><br>
+                        ${address}
+                    </div>
+                `;
+                
+                // Show address name input only for manual location selection (not current location)
+                if (addressNameContainer) {
+                    if (isCurrentLocation) {
+                        addressNameContainer.style.display = 'none';
+                        // Clear the input when using current location
+                        const nameInput = document.getElementById('addressNameInput');
+                        if (nameInput) nameInput.value = '';
+                    } else {
+                        addressNameContainer.style.display = 'block';
+                        // Focus on input for better UX
+                        setTimeout(() => {
+                            const nameInput = document.getElementById('addressNameInput');
+                            if (nameInput && !nameInput.value) {
+                                nameInput.focus();
+                            }
+                        }, 500);
+                    }
+                }
+                
+            } catch (error) {
+                addressPreview.innerHTML = '<div style="color: #999; font-style: italic;">📍 Move map to select location</div>';
+                // Hide address name input on error
+                if (addressNameContainer) {
+                    addressNameContainer.style.display = 'none';
+                }
+            }
+        };
+
+        // Improved Switch Map Type Function - No White Screen
+        window.switchMapType = function(type) {
+            if (!window.mapLayers || !window.mapLayers[type] || window.currentMapType === type) return;
+
+            const newLayer = window.mapLayers[type];
+            const oldLayer = window.mapLayers[window.currentMapType];
+
+            // Add new layer first (prevents white screen)
+            newLayer.addTo(addressMap);
+
+            // Wait a moment for tiles to start loading, then remove old layer
+            setTimeout(() => {
+                if (oldLayer && addressMap.hasLayer(oldLayer)) {
+                    addressMap.removeLayer(oldLayer);
+                }
+                
+                // Update current type
+                window.currentMapType = type;
+                
+                // Update button styles
+                document.getElementById('streetBtn').style.background = type === 'street' ? '#1a73e8' : '#4285f4';
+                document.getElementById('hybridBtn').style.background = type === 'hybrid' ? '#c5221f' : '#ea4335';
+
+                // Show notification
+                const typeNames = {
+                    'street': '🗺️ Street View',
+                    'hybrid': '🌍 Hybrid View'
+                };
+                showNotification(`Switched to ${typeNames[type]}`, 'success', 1500);
+            }, 200); // Short delay to ensure tiles start loading
+        };
+
+        // Use Current Location in Map Modal
+        window.useCurrentLocationInMap = function() {
+            if (!navigator.geolocation) {
+                showNotification('❌ Geolocation is not supported by this browser', 'error');
+                return;
+            }
+
+            // Show loading state on button
+            const btn = document.getElementById('currentLocationBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '🔄 Getting Location...';
+            btn.disabled = true;
+
+            showNotification('📍 Getting your current location...', 'info', 3000);
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    
+                    // Update map center and coordinates
+                    currentMapCenter = { lat: userLat, lng: userLng };
+                    
+                    // Move map to user's location
+                    if (addressMap) {
+                        addressMap.setView([userLat, userLng], 16); // Zoom level 16 for better detail
+                        
+                        // Update live address preview (mark as current location)
+                        setTimeout(() => {
+                            updateLiveAddressPreview(userLat, userLng, true);
+                        }, 500);
+                    }
+                    
+                    // Restore button
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    
+                    showNotification('✅ Location updated successfully!', 'success');
+                },
+                function(error) {
+                    console.error('Geolocation error:', error);
+                    let errorMessage = 'Unable to get your location';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access denied. Please enable location permissions in your browser.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out. Please try again.';
+                            break;
+                    }
+                    
+                    // Restore button
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    
+                    showNotification(`❌ ${errorMessage}`, 'error', 5000);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                }
+            );
+        };
 
         // Save New Address
         window.saveNewAddress = async function() {
-            const phoneInput = document.getElementById('addressPhoneInput');
-            const phone = phoneInput.value.trim();
-
-            // Validate phone number
-            if (!phone) {
-                showNotification('Please enter your phone number', 'warning');
-                return;
-            }
-
-            if (!/^\d{10}$/.test(phone)) {
-                showNotification('Please enter a valid 10-digit phone number', 'warning');
-                return;
-            }
-
             try {
+                // Check if address name input is visible and validate
+                const addressNameContainer = document.getElementById('addressNameContainer');
+                const addressNameInput = document.getElementById('addressNameInput');
+                
+                // If address name container is visible, name is required
+                if (addressNameContainer && addressNameContainer.style.display !== 'none') {
+                    const customName = addressNameInput ? addressNameInput.value.trim() : '';
+                    if (!customName) {
+                        showNotification('❌ Please enter an address name for easy identification', 'error', 4000);
+                        if (addressNameInput) {
+                            addressNameInput.focus();
+                            addressNameInput.style.borderColor = '#dc3545';
+                            setTimeout(() => {
+                                addressNameInput.style.borderColor = '#ced4da';
+                            }, 3000);
+                        }
+                        return;
+                    }
+                }
+                
                 // Show loading state
                 const saveBtn = document.querySelector('.address-save-btn');
                 const originalText = saveBtn.textContent;
                 saveBtn.textContent = 'Saving...';
                 saveBtn.disabled = true;
 
+                // Get user's phone number from Firebase
+                let userPhone = '';
+                if (currentUser) {
+                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                    if (userDoc.exists()) {
+                        userPhone = userDoc.data().phone || '';
+                    }
+                }
+
                 // Get address from coordinates using Nominatim
                 const address = await reverseGeocode(currentMapCenter.lat, currentMapCenter.lng);
+                
+                // Get custom address name if provided
+                const customName = addressNameInput ? addressNameInput.value.trim() : '';
+                
+                // Use custom name if provided, otherwise use the geocoded address
+                const finalAddress = customName ? `${customName}: ${address}` : address;
                 
                 // Generate Google Maps link
                 const googleMapsLink = `https://maps.google.com/?q=${currentMapCenter.lat},${currentMapCenter.lng}`;
@@ -16980,8 +17412,10 @@ window.handleProfileClick = function() {
                 // Create address object
                 const newAddress = {
                     id: Date.now().toString(),
-                    phone: phone,
-                    address: address,
+                    phone: userPhone,
+                    address: finalAddress,
+                    customName: customName, // Store custom name separately for future reference
+                    originalAddress: address, // Store original geocoded address
                     lat: currentMapCenter.lat,
                     lng: currentMapCenter.lng,
                     googleMapsLink: googleMapsLink,
@@ -17052,10 +17486,7 @@ window.handleProfileClick = function() {
                 return;
             }
 
-            // Show confirmation dialog
-            if (!confirm('Are you sure you want to delete this address?')) {
-                return;
-            }
+            // Direct delete without confirmation
 
             try {
                 // Remove from local array
@@ -17114,7 +17545,10 @@ window.handleProfileClick = function() {
                 return;
             }
 
-            addressesList.innerHTML = savedAddressesList.map((address, index) => `
+            // Reverse the array to show latest addresses first
+            const reversedAddresses = [...savedAddressesList].reverse();
+            
+            addressesList.innerHTML = reversedAddresses.map((address, index) => `
                 <li class="address-item">
                     <div class="address-phone">
                         📱 ${address.phone} ${address.isCurrentLocation ? '<span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 8px;">📍 CURRENT LOCATION</span>' : ''}
@@ -17208,8 +17642,14 @@ window.handleProfileClick = function() {
                     return;
                 }
                 
-                container.innerHTML = addresses.map((address, index) => `
-                    <div class="confirm-address-item" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease;" onclick="selectAddressForOrder(${index})" onmouseover="this.style.borderColor='#fbbf24'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.transform='translateY(0)'">
+                // Reverse addresses to show latest first
+                const reversedAddresses = [...addresses].reverse();
+                
+                container.innerHTML = reversedAddresses.map((address, index) => {
+                    // Calculate original index (since we reversed the array)
+                    const originalIndex = addresses.length - 1 - index;
+                    return `
+                    <div class="confirm-address-item" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease;" onclick="selectAddressForOrder(${originalIndex})" onmouseover="this.style.borderColor='#fbbf24'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.transform='translateY(0)'">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <div style="width: 20px; height: 20px; border: 2px solid #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
@@ -17230,7 +17670,8 @@ window.handleProfileClick = function() {
                             </div>
                         ` : ''}
                     </div>
-                `).join('') + `
+                `;
+                }).join('') + `
                 
                 <!-- Use Current Location Button -->
                 <div style="margin-top: 16px; text-align: center;">
@@ -17251,7 +17692,7 @@ window.handleProfileClick = function() {
         }
 
         // Select Address for Order
-        window.selectAddressForOrder = async function(index) {
+        window.selectAddressForOrder = async function(originalIndex) {
             try {
                 if (!currentUser) return;
                 
@@ -17267,18 +17708,22 @@ window.handleProfileClick = function() {
                     addresses = savedAddressesList;
                 }
                 
-                if (addresses.length === 0 || index >= addresses.length) return;
+                if (addresses.length === 0 || originalIndex >= addresses.length || originalIndex < 0) return;
                 
-                const selectedAddress = addresses[index];
+                const selectedAddress = addresses[originalIndex];
+                console.log('Selected address:', selectedAddress.address, 'Original Index:', originalIndex, 'Display Index:', addresses.length - 1 - originalIndex);
                 
                 // Store selected address ID in Firebase
                 await updateDoc(doc(db, 'users', currentUser.uid), {
                     selectedAddressId: selectedAddress.id
                 });
                 
+                // Calculate display index (since addresses are shown in reverse order)
+                const displayIndex = addresses.length - 1 - originalIndex;
+                
                 // Update visual selection
                 document.querySelectorAll('.address-selector').forEach((selector, i) => {
-                    if (i === index) {
+                    if (i === displayIndex) {
                         selector.style.opacity = '1';
                         selector.parentElement.parentElement.parentElement.style.borderColor = '#fbbf24';
                         selector.parentElement.parentElement.parentElement.style.background = '#fffbeb';
@@ -17304,31 +17749,45 @@ window.handleProfileClick = function() {
 
         // Use Current Location Function
         window.useCurrentLocation = function() {
+            console.log('useCurrentLocation called');
+            
             if (!currentUser) {
+                console.log('No current user found');
                 showNotification('Please login first to add address', 'error');
                 return;
             }
 
             if (!navigator.geolocation) {
+                console.log('Geolocation not supported');
                 showNotification('Geolocation is not supported by this browser', 'error');
                 return;
             }
 
             // Show loading notification
+            console.log('Starting geolocation...');
             showNotification('🔄 Getting your location...', 'info', 3000);
 
             navigator.geolocation.getCurrentPosition(
-                function(position) {
+                async function(position) {
+                    console.log('Geolocation success:', position);
                     const userLat = position.coords.latitude;
                     const userLng = position.coords.longitude;
                     
                     // Store coordinates temporarily
                     window.tempLocationCoords = { lat: userLat, lng: userLng };
+                    console.log('Temp coords stored:', window.tempLocationCoords);
                     
-                    // Show phone input modal
-                    showCurrentLocationPhoneModal();
-                    
-                    showNotification('Location found! Please enter your phone number 📱', 'success');
+                    try {
+                        // Directly save with registered phone number
+                        console.log('Calling saveCurrentLocationWithRegisteredPhone...');
+                        await saveCurrentLocationWithRegisteredPhone();
+                        console.log('Save function completed successfully');
+                        
+                        showNotification('✅ Current location saved successfully!', 'success');
+                    } catch (error) {
+                        console.error('Error in saveCurrentLocationWithRegisteredPhone:', error);
+                        showNotification('❌ Error saving location: ' + error.message, 'error');
+                    }
                 },
                 function(error) {
                     console.error('Geolocation error:', error);
@@ -17356,29 +17815,116 @@ window.handleProfileClick = function() {
             );
         };
 
-        // Show current location phone input modal
-        window.showCurrentLocationPhoneModal = function() {
-            const modal = document.getElementById('currentLocationPhoneModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                // Clear previous input
-                const phoneInput = document.getElementById('currentLocationPhoneInput');
-                if (phoneInput) {
-                    phoneInput.value = '';
-                    phoneInput.focus();
-                }
+        // Save current location with registered phone number
+        window.saveCurrentLocationWithRegisteredPhone = async function() {
+            console.log('saveCurrentLocationWithRegisteredPhone called');
+            console.log('tempLocationCoords:', window.tempLocationCoords);
+            
+            if (!window.tempLocationCoords) {
+                console.log('No temp location coords found');
+                showNotification('❌ Location data not found. Please try again.', 'error');
+                return;
             }
-        };
 
-        // Close current location phone modal
-        window.closeCurrentLocationPhoneModal = function(event) {
-            if (event && event.target !== event.currentTarget) return;
-            const modal = document.getElementById('currentLocationPhoneModal');
-            if (modal) {
-                modal.style.display = 'none';
+            try {
+                console.log('Getting user phone from Firebase...');
+                // Get user's phone number from Firebase
+                let userPhone = '';
+                if (currentUser) {
+                    console.log('Current user exists:', currentUser.uid);
+                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                    if (userDoc.exists()) {
+                        userPhone = userDoc.data().phone || '';
+                        console.log('User phone retrieved:', userPhone);
+                    } else {
+                        console.log('User document does not exist');
+                    }
+                } else {
+                    console.log('No current user');
+                }
+
+                showNotification('📍 Saving your address...', 'info', 3000);
+                
+                const { lat, lng } = window.tempLocationCoords;
+                
+                // Get address from coordinates using reverse geocoding
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`);
+                const data = await response.json();
+                
+                const fullAddress = data.display_name || `Location: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                const googleMapsLink = `https://maps.google.com/?q=${lat},${lng}`;
+                
+                // Create new address object
+                const newAddress = {
+                    id: Date.now().toString(),
+                    phone: userPhone,
+                    address: fullAddress,
+                    lat: lat,
+                    lng: lng,
+                    googleMapsLink: googleMapsLink,
+                    createdAt: new Date().toISOString(),
+                    isCurrentLocation: true
+                };
+
+                // Get current addresses from Firebase
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userRef);
+                let addresses = [];
+                
+                if (userDoc.exists() && userDoc.data().addresses) {
+                    addresses = userDoc.data().addresses;
+                }
+                
+                // Remove any previous current location addresses
+                addresses = addresses.filter(addr => !addr.isCurrentLocation);
+                
+                // Add new current location address
+                addresses.push(newAddress);
+                
+                // Save to Firebase
+                await setDoc(userRef, { addresses: addresses }, { merge: true });
+                
+                // Update local list
+                savedAddressesList = addresses;
+                
+                // Clear temp coordinates
+                window.tempLocationCoords = null;
+                
+                // Reload address data
+                await loadUserAddressFromFirebase();
+                
+                // **REAL-TIME UPDATE**: Refresh confirm modal immediately
+                if (document.getElementById('savedAddressesContainer')) {
+                    await loadSavedAddressesInConfirmModal();
+                    console.log('✅ Confirm modal updated with new current location');
+                    
+                    // Auto-select the new current location address (it will be at index 0 after reverse)
+                    setTimeout(() => {
+                        const firstAddressSelector = document.querySelector('.address-selector');
+                        if (firstAddressSelector) {
+                            // Since addresses are reversed, the new current location will be at display index 0
+                            // But we need to pass the original index (which is addresses.length - 1)
+                            const originalIndex = addresses.length - 1;
+                            selectAddressForOrder(originalIndex);
+                        }
+                    }, 100);
+                }
+                
+                // Also update profile section if visible
+                displaySavedAddresses();
+                
+                // Close any open modals
+                closeAddressPopup();
+                
+                showNotification('✅ Current location saved successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error saving current location:', error);
+                showNotification('❌ Error saving address. Please try again.', 'error');
+            } finally {
+                // Clear temp coordinates
+                window.tempLocationCoords = null;
             }
-            // Clear temp coordinates
-            window.tempLocationCoords = null;
         };
 
         // Save current location with phone number
@@ -17513,17 +18059,17 @@ window.handleProfileClick = function() {
                 showNotification('📍 Getting your current location...', 'info', 3000);
                 
                 navigator.geolocation.getCurrentPosition(
-                    function(position) {
+                    async function(position) {
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
                         
                         // Store coordinates temporarily
                         window.tempLocationCoords = { lat, lng };
                         
-                        // Show phone input modal for current location
-                        showCurrentLocationPhoneModal();
+                        // Directly save with registered phone number
+                        await saveCurrentLocationWithRegisteredPhone();
                         
-                        showNotification('✅ Location found! Please enter your phone number.', 'success', 3000);
+                        showNotification('✅ Current location saved successfully!', 'success', 3000);
                     },
                     function(error) {
                         console.error('Geolocation error:', error);
@@ -17645,9 +18191,18 @@ window.handleProfileClick = function() {
                             }
                         }
                         
-                        // User has addresses but none selected
-                        addressText.textContent = 'Select Address';
-                        addressText.className = 'address-text not-set';
+                        // User has addresses but none selected - show last saved address
+                        const lastAddress = userAddresses[userAddresses.length - 1]; // Get last added address
+                        const shortAddress = lastAddress.address.length > 30 
+                            ? lastAddress.address.substring(0, 30) + '...' 
+                            : lastAddress.address;
+                        addressText.textContent = shortAddress;
+                        addressText.className = 'address-text';
+                        
+                        // Auto-select this address as default
+                        setDoc(doc(db, 'users', currentUser.uid), { 
+                            selectedAddressId: lastAddress.id 
+                        }, { merge: true });
                     } else {
                         // User has no addresses
                         addressText.textContent = 'Add Address';
@@ -17681,7 +18236,7 @@ window.handleProfileClick = function() {
                 // Logged-in user buttons
                 buttonsContainer.innerHTML = `
                     <button class="address-popup-btn primary" onclick="openAddressMapModal()">
-                        📍 Add New Address
+                        📍 Custom Address
                     </button>
                     <button class="address-popup-btn secondary" onclick="useCurrentLocation()">
                         🎯 Use Current Location
@@ -17713,68 +18268,7 @@ window.handleProfileClick = function() {
         };
 
 
-        // Use current location
-        window.useCurrentLocation = function() {
-            closeAddressPopup();
-            
-            if (!navigator.geolocation) {
-                showNotification('❌ Geolocation is not supported by this browser.', 'error');
-                return;
-            }
 
-            showNotification('📍 Getting your location...', 'info', 3000);
-
-            navigator.geolocation.getCurrentPosition(
-                function(position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
-                    // Store coordinates temporarily
-                    window.tempLocationCoords = { lat, lng };
-                    
-                    // Open phone input modal
-                    openPhoneInputModal();
-                },
-                function(error) {
-                    console.error('Geolocation error:', error);
-                    let errorMessage = 'Unable to get your location';
-                    
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMessage = 'Location access denied. Please enable location permission.';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMessage = 'Location information is unavailable.';
-                            break;
-                        case error.TIMEOUT:
-                            errorMessage = 'Location request timed out.';
-                            break;
-                    }
-                    
-                    showNotification(`❌ ${errorMessage}`, 'error', 5000);
-                }
-            );
-        };
-
-        // Open phone input modal
-        window.openPhoneInputModal = function() {
-            const modal = document.getElementById('phoneInputModal');
-            const phoneField = document.getElementById('phoneInputField');
-            phoneField.value = '';
-            modal.style.display = 'flex';
-            
-            // Focus on phone input
-            setTimeout(() => phoneField.focus(), 300);
-        };
-
-        // Close phone input modal
-        window.closePhoneInputModal = function(event) {
-            if (event && event.target !== event.currentTarget) return;
-            const modal = document.getElementById('phoneInputModal');
-            modal.style.display = 'none';
-            // Clear temporary coordinates
-            delete window.tempLocationCoords;
-        };
 
 
     </script>
@@ -17865,44 +18359,6 @@ window.handleProfileClick = function() {
         </div>
     </div>
 
-    <!-- Phone Input Modal -->
-    <div id="phoneInputModal" class="phone-input-modal" onclick="closePhoneInputModal(event)">
-        <div class="phone-input-content" onclick="event.stopPropagation()">
-            <div class="address-popup-header">
-                <div class="address-popup-handle"></div>
-                <h3 class="address-popup-title">Enter Phone Number</h3>
-            </div>
-            <input type="tel" id="phoneInputField" class="phone-input-field" placeholder="Enter your phone number" maxlength="10">
-            <div class="address-popup-buttons">
-                <button class="address-popup-btn primary" onclick="saveCurrentLocationWithPhone()">
-                    📍 Save Address
-                </button>
-                <button class="address-popup-btn secondary" onclick="closePhoneInputModal()">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Current Location Phone Input Modal -->
-    <div id="currentLocationPhoneModal" class="phone-input-modal" onclick="closeCurrentLocationPhoneModal(event)" style="display: none;">
-        <div class="phone-input-content" onclick="event.stopPropagation()">
-            <div class="address-popup-header">
-                <div class="address-popup-handle"></div>
-                <h3 class="address-popup-title">📍 Add Current Location</h3>
-                <p style="color: #666; font-size: 14px; margin: 10px 0;">Enter your phone number to save this address</p>
-            </div>
-            <input type="tel" id="currentLocationPhoneInput" class="phone-input-field" placeholder="Enter your phone number" maxlength="10" onkeypress="if(event.key==='Enter') saveCurrentLocationWithPhone()">
-            <div class="address-popup-buttons">
-                <button class="address-popup-btn primary" onclick="saveCurrentLocationWithPhone()">
-                    📍 Save Address
-                </button>
-                <button class="address-popup-btn secondary" onclick="closeCurrentLocationPhoneModal()">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
 
 </body>
 </html>
