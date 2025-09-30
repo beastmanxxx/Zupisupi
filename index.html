@@ -7374,14 +7374,14 @@
                 if (appliedWalletAmount > 0) {
                     console.log('Deducting wallet amount:', appliedWalletAmount);
                     
-                    // Deduct from wallet
+                    // Deduct from earned cashback
                     const userRef = doc(db, 'users', currentUser.uid);
                     const userDoc = await getDoc(userRef);
-                    const currentBalance = userDoc.exists() ? (userDoc.data().walletBalance || 0) : 0;
-                    const newBalance = Math.max(0, currentBalance - appliedWalletAmount);
+                    const currentEarned = userDoc.exists() ? (userDoc.data().earnedCashback || 0) : 0;
+                    const newEarned = Math.max(0, currentEarned - appliedWalletAmount);
                     
-                    await setDoc(userRef, { walletBalance: newBalance }, { merge: true });
-                    console.log('Wallet balance updated:', currentBalance, '->', newBalance);
+                    await setDoc(userRef, { earnedCashback: newEarned }, { merge: true });
+                    console.log('Earned cashback updated:', currentEarned, '->', newEarned);
                     
                     // Update order data with wallet info
                     finalOrderData.originalAmount = originalOrderAmount;
@@ -7403,13 +7403,34 @@
                 
                 console.log('Order saved to Firebase with ID:', orderDocRef.id);
                 
-                // Add cashback after successful order (use original amount for cashback calculation)
+                // Calculate and store cashback amount with order (7% of total)
                 const cashbackBaseAmount = finalOrderData.originalAmount || finalOrderData.totalAmount;
-                console.log('Order saved, starting cashback timer for amount:', cashbackBaseAmount);
-                setTimeout(() => {
-                    console.log('Cashback timer triggered, calling addCashbackForOrder');
-                    addCashbackForOrder(cashbackBaseAmount);
-                }, 1000);
+                const cashbackAmount = Math.round((cashbackBaseAmount * 7) / 100);
+                
+                // Update order with cashback info
+                if (cashbackAmount > 0) {
+                    await setDoc(orderDocRef, {
+                        cashbackAmount: cashbackAmount,
+                        cashbackStatus: 'pending'
+                    }, { merge: true });
+                    
+                    console.log(`Order saved with ₹${cashbackAmount} pending cashback`);
+                    
+                    // Add to pending cashback immediately
+                    const userRef = doc(db, 'users', currentUser.uid);
+                    const userDoc = await getDoc(userRef);
+                    const currentPending = userDoc.exists() ? (userDoc.data().pendingCashback || 0) : 0;
+                    
+                    await setDoc(userRef, {
+                        pendingCashback: currentPending + cashbackAmount
+                    }, { merge: true });
+                    
+                    // Show cashback notification
+                    setTimeout(() => {
+                        console.log('Showing cashback reward for amount:', cashbackAmount);
+                        showCashbackReward(cashbackAmount);
+                    }, 1000);
+                }
                 
                 return orderDocRef.id;
             } catch (error) {
@@ -7438,18 +7459,18 @@
                     return { success: false, message: 'Cannot cancel shipped or delivered orders' };
                 }
                 
-                // Calculate cashback to deduct (use original amount if available)
+                // Calculate cashback to deduct (7% of original amount)
                 const baseAmount = orderData.originalAmount || orderData.totalAmount;
-                const cashbackToDeduct = Math.floor(baseAmount / 100) * 7;
+                const cashbackToDeduct = Math.round((baseAmount * 7) / 100);
                 console.log('Cashback to deduct:', cashbackToDeduct);
                 
                 // Check if wallet was used in this order
                 const walletUsed = orderData.walletUsed || 0;
                 console.log('Wallet amount used in order:', walletUsed);
                 
-                // Deduct cashback from wallet if any was earned
-                if (cashbackToDeduct > 0) {
-                    await deductCashbackFromWallet(cashbackToDeduct);
+                // Remove cashback from pending if order had cashback
+                if (orderData.cashbackAmount > 0) {
+                    await cancelCashbackForOrder(orderId, orderData.cashbackAmount);
                 }
                 
                 // Refund wallet amount if it was used
@@ -7473,14 +7494,14 @@
             if (!currentUser || amount <= 0) return;
             
             try {
-                console.log('Refunding wallet amount:', amount);
+                console.log('Refunding earned cashback amount:', amount);
                 const userRef = doc(db, 'users', currentUser.uid);
                 const userDoc = await getDoc(userRef);
-                const currentBalance = userDoc.exists() ? (userDoc.data().walletBalance || 0) : 0;
-                const newBalance = currentBalance + amount;
+                const currentEarned = userDoc.exists() ? (userDoc.data().earnedCashback || 0) : 0;
+                const newEarned = currentEarned + amount;
                 
-                await setDoc(userRef, { walletBalance: newBalance }, { merge: true });
-                console.log('Wallet refund successful. Balance updated:', currentBalance, '->', newBalance);
+                await setDoc(userRef, { earnedCashback: newEarned }, { merge: true });
+                console.log('Cashback refund successful. Earned updated:', currentEarned, '->', newEarned);
                 
                 // Update wallet display if visible
                 loadWalletBalance();
@@ -7745,11 +7766,23 @@
         // Admin: update order status to Completed
         window.adminCompleteOrder = async function(orderId) {
             try {
+                // Get order data first to check for cashback
+                const orderDoc = await getDoc(doc(db, 'orders', orderId));
+                const orderData = orderDoc.data();
+                
                 await updateDoc(doc(db, 'orders', orderId), { 
                     status: 'Completed',
                     completedAt: new Date()
                 });
-                showNotification('Order marked as Completed ✅', 'success');
+                
+                // Transfer cashback from pending to earned if order has cashback
+                if (orderData && orderData.cashbackAmount > 0) {
+                    console.log(`Transferring ₹${orderData.cashbackAmount} from pending to earned cashback`);
+                    await completeCashbackForOrder(orderId, orderData.cashbackAmount);
+                    showNotification(`Order completed! ₹${orderData.cashbackAmount} cashback earned ✅`, 'success');
+                } else {
+                    showNotification('Order marked as Completed ✅', 'success');
+                }
                 
                 // Schedule automatic deletion after 30 minutes
                 scheduleOrderDeletion(orderId, 30 * 60 * 1000); // 30 minutes in milliseconds
@@ -7766,11 +7799,23 @@
         // Admin: update order status to Rejected
         window.adminRejectOrder = async function(orderId) {
             try {
+                // Get order data first to check for cashback
+                const orderDoc = await getDoc(doc(db, 'orders', orderId));
+                const orderData = orderDoc.data();
+                
                 await updateDoc(doc(db, 'orders', orderId), { 
                     status: 'Rejected',
                     rejectedAt: new Date()
                 });
-                showNotification('Order marked as Rejected ❌', 'success');
+                
+                // Cancel pending cashback if order has cashback
+                if (orderData && orderData.cashbackAmount > 0) {
+                    console.log(`Cancelling ₹${orderData.cashbackAmount} pending cashback for rejected order`);
+                    await cancelCashbackForOrder(orderId, orderData.cashbackAmount);
+                    showNotification(`Order rejected! ₹${orderData.cashbackAmount} cashback cancelled ❌`, 'success');
+                } else {
+                    showNotification('Order marked as Rejected ❌', 'success');
+                }
                 
                 // Schedule automatic deletion after 30 minutes
                 scheduleOrderDeletion(orderId, 30 * 60 * 1000); // 30 minutes in milliseconds
@@ -16165,21 +16210,36 @@ window.handleProfileClick = function() {
             try {
                 const userRef = doc(db, 'users', currentUser.uid);
                 const userDoc = await getDoc(userRef);
-                const balance = userDoc.exists() ? (userDoc.data().walletBalance || 0) : 0;
-                console.log('Loaded wallet balance:', balance);
-                const walletElement = document.getElementById('walletBalance');
-                if (walletElement) {
-                    walletElement.textContent = `₹${balance}`;
-                    console.log('Wallet balance updated in UI');
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const earnedCashback = userData.earnedCashback || 0;
+                    const pendingCashback = userData.pendingCashback || 0;
+                    
+                    console.log('Loaded cashback - Earned:', earnedCashback, 'Pending:', pendingCashback);
+                    
+                    // Update Earned cashback
+                    const earnedElement = document.getElementById('earnedCashback');
+                    if (earnedElement) {
+                        earnedElement.textContent = `₹${earnedCashback}`;
+                    }
+                    
+                    // Update Pending cashback
+                    const pendingElement = document.getElementById('pendingCashback');
+                    if (pendingElement) {
+                        pendingElement.textContent = `₹${pendingCashback}`;
+                    }
+                    
+                    console.log('Wallet cashback updated in UI');
                 } else {
-                    console.log('walletBalance element not found');
+                    // Initialize with 0 values
+                    document.getElementById('earnedCashback').textContent = '₹0';
+                    document.getElementById('pendingCashback').textContent = '₹0';
                 }
             } catch (error) {
                 console.error('Error loading wallet balance:', error);
-                const walletElement = document.getElementById('walletBalance');
-                if (walletElement) {
-                    walletElement.textContent = '₹0';
-                }
+                document.getElementById('earnedCashback').textContent = '₹0';
+                document.getElementById('pendingCashback').textContent = '₹0';
             }
         }
 
@@ -16192,7 +16252,7 @@ window.handleProfileClick = function() {
                 return;
             }
             
-            const cashbackAmount = Math.floor(orderAmount / 100) * 7;
+            const cashbackAmount = Math.round((orderAmount * 7) / 100);
             console.log('Calculated cashback amount:', cashbackAmount);
             
             if (cashbackAmount > 0) {
@@ -16244,16 +16304,8 @@ window.handleProfileClick = function() {
             console.log('Collecting cashback amount:', amount);
             
             try {
-                const userRef = doc(db, 'users', currentUser.uid);
-                console.log('Getting user document...');
-                const userDoc = await getDoc(userRef);
-                const currentBalance = userDoc.exists() ? (userDoc.data().walletBalance || 0) : 0;
-                console.log('Current balance:', currentBalance);
-                console.log('New balance will be:', currentBalance + amount);
-                
-                console.log('Updating wallet balance in Firebase...');
-                await setDoc(userRef, { walletBalance: currentBalance + amount }, { merge: true });
-                console.log('Wallet balance updated successfully!');
+                console.log('Cashback already added to pending during order placement');
+                console.log('Collect button just shows celebration animation');
                 
                 // Start flying stars animation
                 startFlyingStarsAnimation();
@@ -16264,7 +16316,7 @@ window.handleProfileClick = function() {
                 
                 // Show success notification
                 setTimeout(() => {
-                    showNotification(`₹${amount} added to your wallet! 💰`, 'success', 3000);
+                    showNotification(`₹${amount} cashback collected! 💰`, 'success', 3000);
                     closeCashbackReward();
                 }, 1500);
                 
@@ -16286,6 +16338,144 @@ window.handleProfileClick = function() {
         // Make collectCashback globally accessible
         window.collectCashback = collectCashback;
 
+        // Move pending cashback to earned when order is completed
+        async function completeCashbackForOrder(orderId, cashbackAmount) {
+            if (!currentUser || !cashbackAmount) return;
+            
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const currentPending = userData.pendingCashback || 0;
+                    const currentEarned = userData.earnedCashback || 0;
+                    
+                    // Move from pending to earned
+                    const newPending = Math.max(0, currentPending - cashbackAmount);
+                    const newEarned = currentEarned + cashbackAmount;
+                    
+                    await setDoc(userRef, {
+                        pendingCashback: newPending,
+                        earnedCashback: newEarned
+                    }, { merge: true });
+                    
+                    console.log(`✅ Cashback completed: ₹${cashbackAmount} moved to earned`);
+                    loadWalletBalance(); // Refresh UI
+                }
+            } catch (error) {
+                console.error('Error completing cashback:', error);
+            }
+        }
+
+        // Remove pending cashback when order is cancelled
+        async function cancelCashbackForOrder(orderId, cashbackAmount) {
+            if (!currentUser || !cashbackAmount) return;
+            
+            try {
+                const userRef = doc(db, 'users', currentUser.uid);
+                const userDoc = await getDoc(userRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const currentPending = userData.pendingCashback || 0;
+                    
+                    // Remove from pending
+                    const newPending = Math.max(0, currentPending - cashbackAmount);
+                    
+                    await setDoc(userRef, {
+                        pendingCashback: newPending
+                    }, { merge: true });
+                    
+                    console.log(`❌ Cashback cancelled: ₹${cashbackAmount} removed from pending`);
+                    loadWalletBalance(); // Refresh UI
+                }
+            } catch (error) {
+                console.error('Error cancelling cashback:', error);
+            }
+        }
+
+        // Make functions globally accessible
+        window.completeCashbackForOrder = completeCashbackForOrder;
+        window.cancelCashbackForOrder = cancelCashbackForOrder;
+
+        // Test cashback calculations (for debugging)
+        window.testCashbackCalculation = function(amount) {
+            const cashback = Math.round((amount * 7) / 100);
+            console.log(`Order Amount: ₹${amount} → Cashback: ₹${cashback} (7%)`);
+            console.log(`Examples:`);
+            console.log(`₹100 → ₹${Math.round((100 * 7) / 100)}`);
+            console.log(`₹500 → ₹${Math.round((500 * 7) / 100)}`);
+            console.log(`₹1000 → ₹${Math.round((1000 * 7) / 100)}`);
+            console.log(`₹1500 → ₹${Math.round((1500 * 7) / 100)}`);
+            return cashback;
+        };
+
+        // Test cashback flow (for debugging)
+        window.testCashbackFlow = async function() {
+            if (!currentUser) {
+                console.log('❌ Please login first');
+                return;
+            }
+            
+            console.log('🧪 Testing Cashback Flow:');
+            console.log('1. Order placement → Cashback added to pending');
+            console.log('2. Collect button → Only animation, no duplicate addition');
+            console.log('3. Check wallet → Should show correct pending amount');
+            
+            const userRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                console.log('✅ Current Pending Cashback:', data.pendingCashback || 0);
+                console.log('✅ Current Earned Cashback:', data.earnedCashback || 0);
+                console.log('❌ Old Wallet Balance (should be ignored):', data.walletBalance || 0);
+            }
+        };
+
+        // Test Firebase field usage (for debugging)
+        window.testFirebaseFields = async function() {
+            if (!currentUser) {
+                console.log('❌ Please login first');
+                return;
+            }
+            
+            console.log('🔍 Checking Firebase Field Usage:');
+            console.log('✅ pendingCashback - Used for pending rewards');
+            console.log('✅ earnedCashback - Used for available wallet balance');
+            console.log('❌ walletBalance - Old field, should not be used');
+            
+            const userRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                console.log('\n📊 Current Values:');
+                console.log('pendingCashback:', data.pendingCashback || 0);
+                console.log('earnedCashback:', data.earnedCashback || 0);
+                if (data.walletBalance) {
+                    console.log('⚠️ walletBalance (old):', data.walletBalance);
+                }
+            }
+        };
+
+        // Test cashback transfer manually (for debugging)
+        window.testCashbackTransfer = async function(amount = 35) {
+            if (!currentUser) {
+                console.log('❌ Please login first');
+                return;
+            }
+            
+            console.log(`🧪 Testing Cashback Transfer: ₹${amount}`);
+            console.log('Before transfer:');
+            await testFirebaseFields();
+            
+            console.log('\n🔄 Transferring cashback...');
+            await completeCashbackForOrder('test-order-id', amount);
+            
+            console.log('\nAfter transfer:');
+            await testFirebaseFields();
+        };
+
         // Global variables for wallet application
         let appliedWalletAmount = 0;
         let originalOrderAmount = 0;
@@ -16298,18 +16488,18 @@ window.handleProfileClick = function() {
             }
 
             try {
-                // Get current wallet balance
+                // Get current earned cashback (available to use)
                 const userRef = doc(db, 'users', currentUser.uid);
                 const userDoc = await getDoc(userRef);
-                const walletBalance = userDoc.exists() ? (userDoc.data().walletBalance || 0) : 0;
+                const earnedCashback = userDoc.exists() ? (userDoc.data().earnedCashback || 0) : 0;
 
-                if (walletBalance <= 0) {
-                    showNotification('No wallet balance available', 'warning');
+                if (earnedCashback <= 0) {
+                    showNotification('No earned cashback available to use', 'warning');
                     return;
                 }
 
                 // Calculate amount to apply
-                const amountToApply = Math.min(walletBalance, orderAmount);
+                const amountToApply = Math.min(earnedCashback, orderAmount);
                 appliedWalletAmount = amountToApply;
                 originalOrderAmount = orderAmount;
 
@@ -16392,21 +16582,23 @@ window.handleProfileClick = function() {
             }
         }
 
-        // Load and display wallet balance in modal
+        // Load and display earned cashback balance in modal
         async function loadWalletBalanceInModal() {
             if (!currentUser) return;
             
             try {
                 const userRef = doc(db, 'users', currentUser.uid);
                 const userDoc = await getDoc(userRef);
-                const balance = userDoc.exists() ? (userDoc.data().walletBalance || 0) : 0;
+                const earnedCashback = userDoc.exists() ? (userDoc.data().earnedCashback || 0) : 0;
                 
                 const balanceElement = document.getElementById('availableWalletBalance');
                 if (balanceElement) {
-                    balanceElement.textContent = `₹${balance}`;
+                    balanceElement.textContent = `₹${earnedCashback}`;
                 }
+                
+                console.log('Available earned cashback for wallet use:', earnedCashback);
             } catch (error) {
-                console.error('Error loading wallet balance:', error);
+                console.error('Error loading earned cashback balance:', error);
             }
         }
 
@@ -18328,9 +18520,24 @@ window.handleProfileClick = function() {
                 <p style="color: rgba(255,255,255,0.8); margin: 5px 0 0 0;">Your cashback balance</p>
             </div>
             
-            <div style="background: rgba(255,255,255,0.15); border-radius: 15px; padding: 25px; margin-bottom: 25px; text-align: center;">
-                <div style="color: rgba(255,255,255,0.7); font-size: 14px;">Current Balance</div>
-                <div id="walletBalance" style="color: white; font-size: 36px; font-weight: 800;">₹0</div>
+            <!-- Earned Cashback (Available to use) -->
+            <div style="background: rgba(255,255,255,0.15); border-radius: 15px; padding: 20px; margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                    <div style="color: rgba(255,255,255,0.7); font-size: 14px;">💰 Earned Cashback</div>
+                    <div style="color: #10b981; font-size: 12px; background: rgba(16,185,129,0.2); padding: 4px 8px; border-radius: 8px;">Available</div>
+                </div>
+                <div id="earnedCashback" style="color: white; font-size: 28px; font-weight: 800;">₹0</div>
+                <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 5px;">Ready to use in next order</div>
+            </div>
+            
+            <!-- Pending Cashback (Waiting for order completion) -->
+            <div style="background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                    <div style="color: rgba(255,255,255,0.7); font-size: 14px;">⏳ Pending Cashback</div>
+                    <div style="color: #f59e0b; font-size: 12px; background: rgba(245,158,11,0.2); padding: 4px 8px; border-radius: 8px;">Processing</div>
+                </div>
+                <div id="pendingCashback" style="color: white; font-size: 24px; font-weight: 700;">₹0</div>
+                <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 5px;">Will be available after order completion</div>
             </div>
             
             <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 20px;">
