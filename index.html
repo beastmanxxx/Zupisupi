@@ -5353,15 +5353,15 @@
                         
                         <!-- Profile Menu -->
                         <div class="profile-menu">
-                            <div class="profile-menu-item" onclick="openAddressMapModal()">
+                            <div class="profile-menu-item" onclick="scrollToSavedAddresses()">
                                 <div class="menu-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
                                     </svg>
                                 </div>
                                 <div class="menu-content">
-                                    <div class="menu-title">Add New Address</div>
-                                    <div class="menu-subtitle">Select location on map</div>
+                                    <div class="menu-title">Address</div>
+                                    <div class="menu-subtitle">Manage your addresses</div>
                                 </div>
                                 <div class="menu-arrow">›</div>
                             </div>
@@ -14160,6 +14160,17 @@ window.handleProfileClick = function() {
             }
         }
 
+        // Scroll to Saved Addresses Section
+        window.scrollToSavedAddresses = function() {
+            const savedAddressesSection = document.querySelector('.saved-addresses-section');
+            if (savedAddressesSection) {
+                savedAddressesSection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }
+
         // Load and display orders from Firebase
         async function loadOrdersDataFromFirebase() {
             const ordersContent = document.getElementById('ordersContent');
@@ -17457,6 +17468,9 @@ window.handleProfileClick = function() {
                 // Update UI
                 displaySavedAddresses();
                 
+                // **REAL-TIME UPDATE**: Update home page address display
+                updateHomeAddressDisplay();
+                
                 // Also refresh confirm order modal if it's open
                 if (document.getElementById('savedAddressesContainer')) {
                     loadSavedAddressesInConfirmModal();
@@ -17499,6 +17513,9 @@ window.handleProfileClick = function() {
 
                 // Update UI
                 displaySavedAddresses();
+                
+                // **REAL-TIME UPDATE**: Update home page address display
+                updateHomeAddressDisplay();
                 
                 // Also update modal if it's open
                 if (document.getElementById('savedAddressesContainer')) {
@@ -17912,6 +17929,9 @@ window.handleProfileClick = function() {
                 
                 // Also update profile section if visible
                 displaySavedAddresses();
+                
+                // **REAL-TIME UPDATE**: Update home page address display
+                updateHomeAddressDisplay();
                 
                 // Close any open modals
                 closeAddressPopup();
