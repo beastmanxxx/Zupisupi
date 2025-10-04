@@ -3028,16 +3028,19 @@
             height: 56px;
         }
         
-        .search-header .search-input-wrapper {
+        .search-header .address-map-container {
+            flex: none;
+            flex-shrink: 0;
+            flex-grow: 0;
             position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 28px;
-            background: #f8fafc;
-            border: 2px solid #e5e7eb;
+            height: 400px !important;
+            min-height: 400px !important;
+            max-height: 400px !important;
+            background: #f8f9fa;
+            border-radius: 12px;
             overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin: 0 20px 20px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
         
         .search-header .search-input-wrapper:focus-within {
@@ -3577,8 +3580,9 @@
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             .address-map-container {
-                height: 450px;
-                min-height: 450px;
+                height: 400px !important;
+                min-height: 400px !important;
+                max-height: 400px !important;
             }
             
             .address-form-container {
@@ -3604,8 +3608,43 @@
 
         @media (max-height: 600px) {
             .address-map-container {
-                height: 450px;
-                min-height: 450px;
+                height: 400px !important;
+                min-height: 400px !important;
+                max-height: 400px !important;
+            }
+        }
+
+        /* Force fixed height on all screen sizes and orientations */
+        @media screen {
+            .address-map-container {
+                height: 400px !important;
+                min-height: 400px !important;
+                max-height: 400px !important;
+                flex-shrink: 0 !important;
+                flex-grow: 0 !important;
+            }
+        }
+
+        /* Prevent viewport height changes from affecting map */
+        @media screen and (max-height: 500px) {
+            .address-map-container {
+                height: 400px !important;
+                min-height: 400px !important;
+                max-height: 400px !important;
+            }
+        }
+
+        /* iOS Safari specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            .address-map-modal.active {
+                height: 100vh !important;
+                height: -webkit-fill-available !important;
+            }
+            
+            .address-map-container {
+                height: 400px !important;
+                min-height: 400px !important;
+                max-height: 400px !important;
             }
         }
 
@@ -5505,6 +5544,9 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
         }
 
         .address-modal-header {
@@ -5545,10 +5587,11 @@
         }
 
         .address-map-container {
-            flex: 1;
+            flex: none;
             position: relative;
-            height: 450px;
-            min-height: 450px;
+            height: 400px !important;
+            min-height: 400px !important;
+            max-height: 400px !important;
         }
 
         .address-map {
@@ -5698,7 +5741,8 @@
         .current-location-btn {
             position: absolute;
             top: 15px;
-            right: 15px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 1001;
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
@@ -5716,14 +5760,14 @@
         }
 
         .current-location-btn:hover {
-            transform: translateY(-2px);
+            transform: translateX(-50%) translateY(-2px);
             box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
         }
 
         .current-location-btn:disabled {
             background: #9ca3af;
             cursor: not-allowed;
-            transform: none;
+            transform: translateX(-50%);
             box-shadow: 0 2px 8px rgba(156, 163, 175, 0.2);
         }
 
@@ -5752,8 +5796,9 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
-            flex-shrink: 0;
-            min-height: auto;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
         }
 
         .address-input-group {
@@ -20480,6 +20525,33 @@ window.handleProfileClick = function() {
             // Restore opacity
             if (mapContainer) {
                 mapContainer.style.opacity = '1';
+            }
+
+            // Add resize handler to maintain map height
+            const handleResize = () => {
+                if (addressMap) {
+                    // Force map container to maintain 400px height
+                    const mapContainer = document.querySelector('.address-map-container');
+                    if (mapContainer) {
+                        mapContainer.style.height = '400px';
+                        mapContainer.style.minHeight = '400px';
+                        mapContainer.style.maxHeight = '400px';
+                    }
+                    
+                    // Invalidate map size to redraw properly
+                    setTimeout(() => {
+                        addressMap.invalidateSize();
+                    }, 100);
+                }
+            };
+
+            // Listen for viewport changes (including keyboard show/hide)
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', handleResize);
+            
+            // Also handle visual viewport changes (for mobile keyboards)
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', handleResize);
             }
         }
 
