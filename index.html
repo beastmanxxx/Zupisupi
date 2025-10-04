@@ -3068,8 +3068,8 @@
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             .address-map-container {
-                height: 50vh;
-                min-height: 300px;
+                height: 450px;
+                min-height: 450px;
             }
             
             .address-form-container {
@@ -3095,8 +3095,8 @@
 
         @media (max-height: 600px) {
             .address-map-container {
-                height: 40vh;
-                min-height: 250px;
+                height: 450px;
+                min-height: 450px;
             }
         }
 
@@ -4985,8 +4985,8 @@
         .address-map-container {
             flex: 1;
             position: relative;
-            height: 50vh;
-            min-height: 350px;
+            height: 450px;
+            min-height: 450px;
         }
 
         .address-map {
@@ -5063,7 +5063,7 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -100%);
+            transform: translate(-50%, -50%);
             z-index: 1000;
             font-size: 30px;
             color: #10b981;
@@ -19810,8 +19810,8 @@ window.handleProfileClick = function() {
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 15000,
-                    maximumAge: 60000
+                    timeout: 30000,
+                    maximumAge: 0
                 }
             );
         };
@@ -20293,8 +20293,8 @@ window.handleProfileClick = function() {
                 },
                 {
                     enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 60000
+                    timeout: 30000,
+                    maximumAge: 0
                 }
             );
         };
@@ -20581,8 +20581,8 @@ window.handleProfileClick = function() {
                     },
                     {
                         enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 300000
+                        timeout: 30000,
+                        maximumAge: 0
                     }
                 );
             } else {
