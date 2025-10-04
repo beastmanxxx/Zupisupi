@@ -307,7 +307,7 @@
         .nav-logo {
             width: 40px;
             height: 40px;
-            border-radius: 8px;
+            border-radius: 50%;
         }
 
         .location-info {
@@ -403,7 +403,7 @@
             right: -8px;
             background: #e74c3c;
             color: white;
-            border-radius: 50%;
+            border-radius: 8px;
             width: 20px;
             height: 20px;
             font-size: 12px;
@@ -583,7 +583,7 @@
             width: 8px;
             margin: 0 3px;
             background: #c2c8d0;
-            border-radius: 50%;
+            border-radius: 8px;
             display: inline-block;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -877,9 +877,9 @@
             right: 8px;
             background: rgba(255, 255, 255, 0.9);
             border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            border-radius: 8px;
+            width: 55px;
+            height: 55px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1219,7 +1219,7 @@
             border: none;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
+            border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -1233,11 +1233,11 @@
         }
         
         .carousel-nav.prev {
-            left: 10px;
+            left: 50%;
         }
         
         .carousel-nav.next {
-            right: 10px;
+            transform: translateX(-50%) translateY(100px);
         }
         
         .thumbnail-strip {
@@ -1509,9 +1509,9 @@
             right: 8px;
             background: rgba(255, 255, 255, 0.9);
             border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1777,7 +1777,7 @@
             border: none;
             cursor: pointer;
             padding: 12px;
-            border-radius: 50%;
+            border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s ease;
             color: white;
@@ -1810,7 +1810,7 @@
             margin-top: 15px;
             transition: all 0.3s ease;
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
             display: block;
         }
 
@@ -1918,7 +1918,7 @@
             width: 70px;
             height: 70px;
             object-fit: cover;
-            border-radius: 50%;
+            border-radius: 8px;
             margin-bottom: 8px;
             transition: all 0.3s ease;
             border: 2px solid #e5e7eb;
@@ -2320,7 +2320,7 @@
             right: 8px;
             background: rgba(255, 255, 255, 0.9);
             border: none;
-            border-radius: 50%;
+            border-radius: 8px;
             width: 35px;
             height: 35px;
             font-size: 16px;
@@ -2660,7 +2660,7 @@
             left: 5px;
             right: 5px;
             background: white;
-            padding: 12px 20px;
+            padding: 18px 24px;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -2757,7 +2757,7 @@
             right: -8px;
             background: #e74c3c;
             color: white;
-            border-radius: 50%;
+            border-radius: 8px;
             width: 18px;
             height: 18px;
             font-size: 10px;
@@ -2792,7 +2792,7 @@
             transform: translateX(-50%) translateY(100px);
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 12px 20px;
+            padding: 18px 24px;
             border-radius: 50px;
             box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
             z-index: 2000;
@@ -2805,8 +2805,8 @@
             border: 2px solid rgba(255, 255, 255, 0.2);
             opacity: 0;
             visibility: hidden;
-            min-width: 200px;
-            max-width: 300px;
+            width: 90vw;
+            max-width: none;
         }
 
         .floating-cart-notification.show {
@@ -2823,6 +2823,7 @@
         .cart-notification-icon {
             font-size: 20px;
             animation: cartPulse 2s infinite;
+            filter: brightness(0);
         }
 
         @keyframes cartPulse {
@@ -2844,9 +2845,44 @@
         }
 
         .cart-notification-count {
+
+        .cart-notification-total {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 2px;
+        }
             font-size: 12px;
+
+        .cart-notification-total {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 2px;
+        }
             opacity: 0.9;
+
+        .cart-notification-total {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 2px;
+        }
             line-height: 1.2;
+
+        .cart-notification-total {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 2px;
+        }
+        }
+
+        .cart-notification-total {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 2px;
         }
 
         .cart-notification-images {
@@ -2856,9 +2892,9 @@
         }
 
         .cart-notification-image {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
             object-fit: cover;
             border: 2px solid rgba(255, 255, 255, 0.3);
             transition: all 0.2s ease;
@@ -2913,19 +2949,19 @@
         /* Mobile responsive for cart notification */
         @media (max-width: 768px) {
             .floating-cart-notification {
-                left: 10px;
-                right: 10px;
-                transform: translateY(100px);
+                left: 50%;
+                transform: translateX(-50%) translateY(100px);
+                width: 90vw;
                 max-width: none;
                 min-width: auto;
             }
 
             .floating-cart-notification.show {
-                transform: translateY(0);
+                transform: translateX(-50%) translateY(0);
             }
 
             .floating-cart-notification:hover {
-                transform: translateY(-3px);
+                transform: translateX(-50%) translateY(-3px);
             }
         }
 
@@ -3071,7 +3107,7 @@
 
         @keyframes slideUp {
             from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+            to { transform: translateX(-50%) translateY(0); }
         }
 
         .address-popup-header {
@@ -3222,7 +3258,7 @@
             border: none;
             cursor: pointer;
             padding: 12px;
-            border-radius: 50%;
+            border-radius: 8px;
             font-size: 16px;
             transition: all 0.3s ease;
             color: white;
@@ -3277,7 +3313,7 @@
             
             .current-location-btn {
                 top: 10px;
-                right: 10px;
+                transform: translateX(-50%) translateY(100px);
                 padding: 10px 12px;
                 font-size: 12px;
             }
@@ -3536,7 +3572,7 @@
             
             .category-arrow {
                 font-size: 20px;
-                margin-left: 10px;
+                margin-left: 50%;
             }
             
             .category-event-container {
@@ -3968,7 +4004,7 @@
         
         .event-products .product-card {
             flex-shrink: 0;
-            min-width: 200px;
+            width: 90vw;
             max-width: 200px;
             width: 200px;
             height: 220px;
@@ -3976,7 +4012,7 @@
         
         @media (min-width: 640px) {
             .event-products .product-card {
-                min-width: 200px;
+                width: 90vw;
                 max-width: 200px;
                 width: 200px;
                 height: 240px;
@@ -4028,7 +4064,7 @@
         .profile-avatar {
             width: 80px;
             height: 80px;
-            border-radius: 50%;
+            border-radius: 8px;
             overflow: hidden;
             margin-bottom: 16px;
             border: 3px solid #e2e8f0;
@@ -4329,7 +4365,7 @@
             border-radius: 6px;
             background: #f8f9fa;
             cursor: pointer;
-            margin-right: 10px;
+            margin-transform: translateX(-50%) translateY(100px);
         }
 
         .cart-item-info-main {
@@ -4388,7 +4424,7 @@
 
         .cart-checkout-main {
             width: 100%;
-            max-width: 300px;
+            max-width: none;
             background: #27ae60;
             color: white;
             border: none;
@@ -4451,7 +4487,7 @@
             }
 
             .cart-checkout-main {
-                padding: 12px 20px;
+                padding: 18px 24px;
                 font-size: 14px;
             }
         }
@@ -4500,7 +4536,7 @@
             font-size: 18px;
             cursor: pointer;
             float: right;
-            margin-left: 10px;
+            margin-left: 50%;
             padding: 0;
             width: 20px;
             height: 20px;
@@ -4560,11 +4596,11 @@
         .edit-subcategory-remove {
             position: absolute;
             top: 10px;
-            right: 10px;
+            transform: translateX(-50%) translateY(100px);
             background: #ef4444;
             color: white;
             border: none;
-            border-radius: 50%;
+            border-radius: 8px;
             width: 25px;
             height: 25px;
             cursor: pointer;
@@ -4672,7 +4708,7 @@
         .profile-avatar img {
             width: 100px;
             height: 100px;
-            border-radius: 50%;
+            border-radius: 8px;
             object-fit: cover;
         }
 
@@ -4815,7 +4851,7 @@
 
         .slide-form input {
             flex: 1;
-            min-width: 200px;
+            width: 90vw;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -4928,7 +4964,7 @@
             padding: 2px 8px;
             border-radius: 12px;
             font-size: 10px;
-            margin-left: 10px;
+            margin-left: 50%;
         }
 
         .delivery-badge {
@@ -4937,7 +4973,7 @@
             padding: 2px 8px;
             border-radius: 12px;
             font-size: 10px;
-            margin-left: 10px;
+            margin-left: 50%;
         }
 
         .slide-content {
@@ -5217,7 +5253,7 @@
             background: #ef4444;
             color: white;
             border: none;
-            border-radius: 50%;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
             font-size: 20px;
@@ -5363,7 +5399,7 @@
 
         @keyframes bounce {
             0%, 20%, 60%, 100% {
-                transform: translateY(0);
+                transform: translateX(-50%) translateY(0);
             }
             40% {
                 transform: translateY(-10px);
@@ -5484,7 +5520,7 @@
         <div class="add-subcategory-modal-content" style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
             <div class="add-subcategory-modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e74c3c; padding-bottom: 15px;">
                 <h2 style="margin: 0; color: #2c3e50; font-size: 24px;">Add Subcategory</h2>
-                <button onclick="closeAddSubcategoryModal()" style="background: #e74c3c; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
+                <button onclick="closeAddSubcategoryModal()" style="background: #e74c3c; color: white; border: none; border-radius: 8px; width: 35px; height: 35px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
             </div>
             <div class="add-subcategory-modal-body">
                 <form id="addSubcategoryForm">
@@ -5684,11 +5720,11 @@
                         <!-- Order Tabs -->
                         <div style="display: flex; gap: 0; margin-bottom: 20px; background: #f8f9fa; border-radius: 12px; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                             <button id="myOrdersTab" onclick="switchOrderTab('orders')" 
-                                    style="flex: 1; padding: 12px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #3498db, #2980b9); color: white; box-shadow: 0 2px 8px rgba(52,152,219,0.3);">
+                                    style="flex: 1; padding: 18px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #3498db, #2980b9); color: white; box-shadow: 0 2px 8px rgba(52,152,219,0.3);">
                                 🛍️ My Orders
                             </button>
                             <button id="myRefundOrdersTab" onclick="switchOrderTab('refunds')" 
-                                    style="flex: 1; padding: 12px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: transparent; color: #666;">
+                                    style="flex: 1; padding: 18px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: transparent; color: #666;">
                                 💰 My Refund Orders
                             </button>
                         </div>
@@ -6488,7 +6524,7 @@
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
                         <button type="submit" class="btn-primary" style="flex: 1;">✅ Add Product</button>
-                        <button type="button" onclick="if(confirm('Are you sure you want to reset the entire form? All data will be lost.')) { resetProductForm(); showNotification('Form has been reset successfully!', 'success'); }" style="background: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; flex: 0 0 auto;" onmouseover="this.style.background='#7f8c8d'" onmouseout="this.style.background='#95a5a6'">🔄 Reset Form</button>
+                        <button type="button" onclick="if(confirm('Are you sure you want to reset the entire form? All data will be lost.')) { resetProductForm(); showNotification('Form has been reset successfully!', 'success'); }" style="background: #95a5a6; color: white; border: none; padding: 18px 24px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s ease; flex: 0 0 auto;" onmouseover="this.style.background='#7f8c8d'" onmouseout="this.style.background='#95a5a6'">🔄 Reset Form</button>
                     </div>
                 </form>
                 
@@ -6605,7 +6641,7 @@
                         <option value="Shipped">Shipped Orders</option>
                     </select>
                     
-                    <input type="text" id="orderSearchInput" placeholder="Search by email or phone..." onkeyup="searchOrders()" style="flex: 1; min-width: 200px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px;">
+                    <input type="text" id="orderSearchInput" placeholder="Search by email or phone..." onkeyup="searchOrders()" style="flex: 1; width: 90vw; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px;">
                     
                     <button onclick="clearFilters()" style="padding: 8px 12px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 13px; cursor: pointer;">Clear</button>
                 </div>
@@ -6708,8 +6744,8 @@
             </div>
             
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button onclick="closeUpdateCategoriesModal()" style="background: #6b7280; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
-                <button onclick="updateProductCategories()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Update Categories</button>
+                <button onclick="closeUpdateCategoriesModal()" style="background: #6b7280; color: white; border: none; padding: 18px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
+                <button onclick="updateProductCategories()" style="background: #10b981; color: white; border: none; padding: 18px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">Update Categories</button>
             </div>
         </div>
     </div>
@@ -6769,6 +6805,7 @@
             <div class="cart-notification-content">
                 <div class="cart-notification-title">View cart</div>
                 <div class="cart-notification-count" id="cartNotificationCount">1 item</div>
+                <div class="cart-notification-total" id="cartNotificationTotal">₹0</div>
             </div>
             <div class="cart-notification-images" id="cartNotificationImages">
                 <!-- Product images will be populated here -->
@@ -7032,8 +7069,8 @@
                 
                 <!-- Update Button -->
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                    <button type="button" onclick="closeEditProductModal()" style="background: #6b7280; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
-                    <button type="button" onclick="updateEditedProduct()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Update Product</button>
+                    <button type="button" onclick="closeEditProductModal()" style="background: #6b7280; color: white; border: none; padding: 18px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">Cancel</button>
+                    <button type="button" onclick="updateEditedProduct()" style="background: #10b981; color: white; border: none; padding: 18px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">Update Product</button>
                 </div>
             </form>
         </div>
@@ -7072,7 +7109,7 @@
                         <option value="Shipped">Shipped Orders</option>
                     </select>
                     
-                    <input type="text" id="deliveryOrderSearchInput" placeholder="Search by email or phone..." onkeyup="searchDeliveryOrders()" style="flex: 1; min-width: 200px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px;">
+                    <input type="text" id="deliveryOrderSearchInput" placeholder="Search by email or phone..." onkeyup="searchDeliveryOrders()" style="flex: 1; width: 90vw; padding: 8px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px;">
                     
                     <button onclick="clearDeliveryFilters()" style="padding: 8px 12px; background: #6c757d; color: white; border: none; border-radius: 5px; font-size: 13px; cursor: pointer;">Clear</button>
                 </div>
@@ -7655,7 +7692,7 @@
             loadingDiv.id = 'loadingIndicator';
             loadingDiv.innerHTML = `
                 <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                    <div style="width: 50px; height: 50px; border: 3px solid #f3f3f3; border-top: 3px solid #fbbf24; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <div style="width: 50px; height: 50px; border: 3px solid #f3f3f3; border-top: 3px solid #fbbf24; border-radius: 8px; animation: spin 1s linear infinite;"></div>
                     <p style="margin-top: 15px; color: #666; font-family: 'Geologica', sans-serif;">Loading Zupisupi...</p>
                 </div>
                 <style>
@@ -9608,7 +9645,7 @@
                                 ${category.subcategories.map((sub, subIndex) => `
                                     <div style="display: flex; align-items: center; background: #f8f9fa; padding: 5px 10px; border-radius: 15px; border: 1px solid #e9ecef;">
                                         <span style="font-size: 12px; margin-right: 8px;">${sub.name}</span>
-                                        <button onclick="removeSubcategory('${category.id}', ${subIndex})" style="background: #dc3545; color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+                                        <button onclick="removeSubcategory('${category.id}', ${subIndex})" style="background: #dc3545; color: white; border: none; border-radius: 8px; width: 18px; height: 18px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
                                     </div>
                                 `).join('')}
                             </div>
@@ -12618,7 +12655,7 @@
                     </div>
                     
                     <div style="text-align: center; margin-top: 15px;">
-                        <button onclick="openAddressMapModal()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <button onclick="openAddressMapModal()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 18px 24px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                             📍 Add New Address
                         </button>
                     </div>
@@ -12629,7 +12666,7 @@
                     
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;" onclick="selectPaymentMethod('cod', this)">
-                            <input type="radio" name="paymentMethod" value="cod" style="margin-right: 10px;">
+                            <input type="radio" name="paymentMethod" value="cod" style="margin-transform: translateX(-50%) translateY(100px);">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 20px;">💵</span>
                                 <div>
@@ -12640,7 +12677,7 @@
                         </label>
                         
                         <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;" onclick="selectPaymentMethod('online', this)">
-                            <input type="radio" name="paymentMethod" value="online" style="margin-right: 10px;">
+                            <input type="radio" name="paymentMethod" value="online" style="margin-transform: translateX(-50%) translateY(100px);">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 20px;">💳</span>
                                 <div>
@@ -12826,7 +12863,7 @@
                     </div>
                     
                     <div style="text-align: center; margin-top: 15px;">
-                        <button onclick="openAddressMapModal()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 12px 20px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        <button onclick="openAddressMapModal()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: none; padding: 18px 24px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                             📍 Add New Address
                         </button>
                     </div>
@@ -12907,7 +12944,7 @@
                     
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;" onclick="selectPaymentMethod('cod', this)">
-                            <input type="radio" name="paymentMethod" value="cod" style="margin-right: 10px;">
+                            <input type="radio" name="paymentMethod" value="cod" style="margin-transform: translateX(-50%) translateY(100px);">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 20px;">💵</span>
                                 <div>
@@ -12918,7 +12955,7 @@
                         </label>
                         
                         <label style="display: flex; align-items: center; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;" onclick="selectPaymentMethod('online', this)">
-                            <input type="radio" name="paymentMethod" value="online" style="margin-right: 10px;">
+                            <input type="radio" name="paymentMethod" value="online" style="margin-transform: translateX(-50%) translateY(100px);">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 20px;">💳</span>
                                 <div>
@@ -13302,7 +13339,7 @@
                     ${userAddressData && userAddressData.address ? `
                         <div style="margin-bottom: 15px;">
                             <label style="display: flex; align-items: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: #f8f9fa;">
-                                <input type="radio" name="addressOption" value="saved" checked onchange="toggleAddressForm()" style="margin-right: 10px;">
+                                <input type="radio" name="addressOption" value="saved" checked onchange="toggleAddressForm()" style="margin-transform: translateX(-50%) translateY(100px);">
                                 <div>
                                     <div style="font-weight: 600; color: #2c3e50;">Use Saved Address</div>
                                     <div style="font-size: 12px; color: #666; margin-top: 3px; word-break: break-word;">
@@ -13317,7 +13354,7 @@
                     
                     <div style="margin-bottom: 15px;">
                         <label style="display: flex; align-items: center; padding: 10px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;">
-                            <input type="radio" name="addressOption" value="custom" ${!userAddressData || !userAddressData.address ? 'checked' : ''} onchange="toggleAddressForm()" style="margin-right: 10px;">
+                            <input type="radio" name="addressOption" value="custom" ${!userAddressData || !userAddressData.address ? 'checked' : ''} onchange="toggleAddressForm()" style="margin-transform: translateX(-50%) translateY(100px);">
                             <div style="font-weight: 600; color: #2c3e50;">Use Different Address</div>
                         </label>
                     </div>
@@ -13977,6 +14014,13 @@
             // Update count
             const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
             countElement.textContent = totalItems === 1 ? '1 item' : `${totalItems} items`;
+
+            // Update total amount
+            const totalAmount = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const totalElement = document.getElementById('cartNotificationTotal');
+            if (totalElement) {
+                totalElement.textContent = `₹${Math.round(totalAmount * 100) / 100}`;
+            }
             
             // Update product images (show max 3 recent items)
             imagesContainer.innerHTML = '';
@@ -15486,8 +15530,8 @@ window.handleProfileClick = function() {
             
             if (tab === 'orders') {
                 // Style active tab
-                myOrdersTab.style.cssText = 'flex: 1; padding: 12px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #3498db, #2980b9); color: white; box-shadow: 0 2px 8px rgba(52,152,219,0.3);';
-                myRefundOrdersTab.style.cssText = 'flex: 1; padding: 12px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: transparent; color: #666;';
+                myOrdersTab.style.cssText = 'flex: 1; padding: 18px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #3498db, #2980b9); color: white; box-shadow: 0 2px 8px rgba(52,152,219,0.3);';
+                myRefundOrdersTab.style.cssText = 'flex: 1; padding: 18px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: transparent; color: #666;';
                 
                 // Show/hide content
                 myOrdersContent.style.display = 'block';
@@ -15497,8 +15541,8 @@ window.handleProfileClick = function() {
                 loadRegularOrders();
             } else if (tab === 'refunds') {
                 // Style active tab
-                myRefundOrdersTab.style.cssText = 'flex: 1; padding: 12px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #dc3545, #c82333); color: white; box-shadow: 0 2px 8px rgba(220,53,69,0.3);';
-                myOrdersTab.style.cssText = 'flex: 1; padding: 12px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: transparent; color: #666;';
+                myRefundOrdersTab.style.cssText = 'flex: 1; padding: 18px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #dc3545, #c82333); color: white; box-shadow: 0 2px 8px rgba(220,53,69,0.3);';
+                myOrdersTab.style.cssText = 'flex: 1; padding: 18px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: transparent; color: #666;';
                 
                 // Show/hide content
                 myOrdersContent.style.display = 'none';
@@ -19600,14 +19644,14 @@ window.handleProfileClick = function() {
                     
                     <!-- Invoice Details -->
                     <div style="display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 200px;">
+                        <div style="flex: 1; width: 90vw;">
                             <h3 style="color: #2c3e50; margin: 0 0 8px 0; font-size: 16px;">Invoice Details</h3>
                             <p style="margin: 3px 0; color: #555; font-size: 13px;"><strong>Invoice #:</strong> INV-${order.id.substring(0, 8).toUpperCase()}</p>
                             <p style="margin: 3px 0; color: #555; font-size: 13px;"><strong>Order ID:</strong> ${order.id}</p>
                             <p style="margin: 3px 0; color: #555; font-size: 13px;"><strong>Date:</strong> ${orderDate}</p>
                         </div>
                         
-                        <div style="flex: 1; min-width: 200px; text-align: right;">
+                        <div style="flex: 1; width: 90vw; text-align: right;">
                             <h3 style="color: #2c3e50; margin: 0 0 8px 0; font-size: 16px;">Customer Details</h3>
                             <p style="margin: 3px 0; color: #555; font-size: 13px;"><strong>Name:</strong> ${order.userName || 'N/A'}</p>
                             <p style="margin: 3px 0; color: #555; font-size: 13px;"><strong>Email:</strong> ${order.userEmail || 'N/A'}</p>
@@ -19642,7 +19686,7 @@ window.handleProfileClick = function() {
                     
                     <!-- Total Section -->
                     <div style="text-align: right; margin-bottom: 20px;">
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; display: inline-block; min-width: 200px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; display: inline-block; width: 90vw;">
                             ${totalDiscount > 0 ? `
                                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                                     <span style="color: #555; font-size: 13px;">Original Total:</span>
@@ -19980,7 +20024,7 @@ window.handleProfileClick = function() {
                     height: 30px; 
                     background: #ff4444; 
                     border: 3px solid white; 
-                    border-radius: 50%; 
+                    border-radius: 8px; 
                     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
                     position: relative;
                     animation: pulse 2s infinite;
@@ -20580,8 +20624,8 @@ window.handleProfileClick = function() {
                     <div class="confirm-address-item" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s ease;" onclick="selectAddressForOrder(${originalIndex})" onmouseover="this.style.borderColor='#fbbf24'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.transform='translateY(0)'">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 20px; height: 20px; border: 2px solid #fbbf24; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <div style="width: 8px; height: 8px; background: #fbbf24; border-radius: 50%; opacity: 0;" class="address-selector"></div>
+                                <div style="width: 20px; height: 20px; border: 2px solid #fbbf24; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                    <div style="width: 8px; height: 8px; background: #fbbf24; border-radius: 8px; opacity: 0;" class="address-selector"></div>
                                 </div>
                                 <div style="font-weight: 600; color: #2c3e50; font-size: 16px;">📍 Address ${index + 1} ${address.isCurrentLocation ? '<span style="background: #10b981; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: 8px;">📍 CURRENT LOCATION</span>' : ''}</div>
                             </div>
@@ -21227,7 +21271,7 @@ window.handleProfileClick = function() {
     <!-- Wallet Modal -->
     <div id="walletModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.8); z-index: 10000; align-items: center; justify-content: center;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; width: 90%; max-width: 400px; padding: 30px; position: relative;">
-            <button onclick="closeWalletModal()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; cursor: pointer;">✕</button>
+            <button onclick="closeWalletModal()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; width: 35px; height: 35px; cursor: pointer;">✕</button>
             
             <div style="text-align: center; margin-bottom: 30px;">
                 <div style="font-size: 48px; margin-bottom: 10px;">💰</div>
